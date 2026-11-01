@@ -24,7 +24,8 @@ window.MENU_TRANSLATIONS = {
       soda: 'Soda & Eau',
       cookies: 'Cookies',
       brownies: 'Brownies',
-      croissants: 'Croissants'
+      croissants: 'Croissants',
+      formules: 'Formules'
     },
     socialCommunity: 'Bonnes boissons · Bonne ambiance<br>Rejoignez notre communauté',
     followers: 'Abonnés',
@@ -158,7 +159,9 @@ window.MENU_TRANSLATIONS = {
       browniePistachio: 'Brownie à la pistache, fondant et parfumé.',
       brownieDubai: 'Brownie Dubai au chocolat et kadaïf croustillant.',
       croissantNature: 'Croissant beurré croustillant, doré au four chaque matin.',
-      croissantChocolat: 'Croissant au chocolat fondant, feuilleté et gourmand.'
+      croissantChocolat: 'Croissant au chocolat fondant, feuilleté et gourmand.',
+      morningCookie: '1 café + 1 cookie · Tous les jours de 7h00 à 11h00.',
+      morningCroissant: '1 café + 1 croissant · Tous les jours de 7h00 à 10h00.'
     }
   },
   en: {
@@ -186,7 +189,8 @@ window.MENU_TRANSLATIONS = {
       soda: 'Soda & Water',
       cookies: 'Cookies',
       brownies: 'Brownies',
-      croissants: 'Croissants'
+      croissants: 'Croissants',
+      formules: 'Offers'
     },
     socialCommunity: 'Good Drinks · Good Vibes<br>Join our community',
     followers: 'Followers',
@@ -320,7 +324,9 @@ window.MENU_TRANSLATIONS = {
       browniePistachio: 'Pistachio brownie, fudgy and fragrant.',
       brownieDubai: 'Dubai brownie with chocolate and crunchy kadaïf.',
       croissantNature: 'Buttery flaky croissant, golden-baked fresh every morning.',
-      croissantChocolat: 'Chocolate-filled croissant, flaky and indulgent.'
+      croissantChocolat: 'Chocolate-filled croissant, flaky and indulgent.',
+      morningCookie: '1 coffee + 1 cookie · Every day from 7:00 AM to 11:00 AM.',
+      morningCroissant: '1 coffee + 1 croissant · Every day from 7:00 AM to 10:00 AM.'
     }
   },
   ar: {
@@ -348,7 +354,8 @@ window.MENU_TRANSLATIONS = {
       soda: 'مشروبات ومياه',
       cookies: 'كوكيز',
       brownies: 'براونيز',
-      croissants: 'كرواسان'
+      croissants: 'كرواسان',
+      formules: 'العروض'
     },
     socialCommunity: 'مشروبات طيبة · أجواء جميلة<br>انضموا إلى مجتمعنا',
     followers: 'متابعون',
@@ -482,7 +489,9 @@ window.MENU_TRANSLATIONS = {
       browniePistachio: 'براوني بالفستق الحلبي، طري وعطر.',
       brownieDubai: 'براوني دبي بالشوكولاتة والقطايف المقرمش.',
       croissantNature: 'كرواسان بالزبدة مقرمش، يُخبز طازجاً كل صباح.',
-      croissantChocolat: 'كرواسان بالشوكولاتة، هش ولذيذ.'
+      croissantChocolat: 'كرواسان بالشوكولاتة، هش ولذيذ.',
+      morningCookie: 'قهوة واحدة + كوكيز واحدة · يوميًا من ٧:٠٠ إلى ١١:٠٠ صباحًا.',
+      morningCroissant: 'قهوة واحدة + كرواسان واحد · يوميًا من ٧:٠٠ إلى ١٠:٠٠ صباحًا.'
     }
   },
   de: {
@@ -510,7 +519,8 @@ window.MENU_TRANSLATIONS = {
       soda: 'Softdrinks & Wasser',
       cookies: 'Cookies',
       brownies: 'Brownies',
-      croissants: 'Croissants'
+      croissants: 'Croissants',
+      formules: 'Angebote'
     },
     socialCommunity: 'Gute Getränke · Gute Stimmung<br>Werde Teil unserer Community',
     followers: 'Follower',
@@ -644,7 +654,9 @@ window.MENU_TRANSLATIONS = {
       browniePistachio: 'Pistazien-Brownie, fudgig und duftend.',
       brownieDubai: 'Dubai-Brownie mit Schokolade und knusprigem Kadaïf.',
       croissantNature: 'Butteriges, blättriges Croissant, jeden Morgen frisch gebacken.',
-      croissantChocolat: 'Schokoladengefülltes Croissant, blätterig und lecker.'
+      croissantChocolat: 'Schokoladengefülltes Croissant, blätterig und lecker.',
+      morningCookie: '1 Kaffee + 1 Cookie · Täglich von 7:00 bis 11:00 Uhr.',
+      morningCroissant: '1 Kaffee + 1 Croissant · Täglich von 7:00 bis 10:00 Uhr.'
     }
   }
 };

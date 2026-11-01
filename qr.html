@@ -303,6 +303,9 @@
       color: var(--text-dark); white-space: nowrap; overflow: hidden;
       text-overflow: ellipsis; margin-bottom: 3px;
     }
+    .p-row-formula .p-name {
+      white-space: normal; overflow: visible; text-overflow: clip;
+    }
     .p-desc {
       font-size: .7rem; color: var(--text-muted); line-height: 1.45;
       display: -webkit-box; -webkit-line-clamp: 2;
@@ -562,6 +565,10 @@
           <img class="cat-icon" src="logo_houssem.jpeg" alt="" aria-hidden="true" width="32" height="32"/>
           <span data-i18n="categories.all">Tout</span>
         </button>
+        <button class="cat-pill" data-cat="formules">
+          <img class="cat-icon" src="images/formule_matin_cookie.jpg" alt="" aria-hidden="true" width="32" height="32"/>
+          <span data-i18n="categories.formules">Formules</span>
+        </button>
         <button class="cat-pill" data-cat="cafe">
           <img class="cat-icon" src="images/qr_cafe_cappuccino.jpg" alt="" aria-hidden="true" width="32" height="32"/>
           <span data-i18n="categories.cafe">Café</span>
@@ -587,15 +594,15 @@
           <span data-i18n="categories.soda">Soda</span>
         </button>
         <button class="cat-pill" data-cat="cookies">
-          <span>🍪</span>
+          <img class="cat-icon" src="images/cookie_classic.jpg" alt="" aria-hidden="true" width="32" height="32"/>
           <span data-i18n="categories.cookies">Cookies</span>
         </button>
         <button class="cat-pill" data-cat="brownies">
-          <span>🍫</span>
+          <img class="cat-icon" src="images/brownie_classic.jpg" alt="" aria-hidden="true" width="32" height="32"/>
           <span data-i18n="categories.brownies">Brownies</span>
         </button>
         <button class="cat-pill" data-cat="croissants">
-          <span>🥐</span>
+          <img class="cat-icon" src="images/croissant_nature.jpg" alt="" aria-hidden="true" width="32" height="32"/>
           <span data-i18n="categories.croissants">Croissants</span>
         </button>
       </div>
@@ -728,6 +735,9 @@
     // CROISSANTS
     { id:'croissantNature',   cat:'croissants',e:'🥐', bg:'#6a4a10,#b08020', n:'Croissant Nature',  p:'2.5', b:'pop', img:'images/croissant_nature.jpg' },
     { id:'croissantChocolat', cat:'croissants',e:'🥐', bg:'#3a1a08,#7a4010', n:'Croissant Chocolat',p:'2.8', b:'',    img:'images/croissant_chocolat.jpg' },
+    // FORMULES MATIN
+    { id:'morningCookie',    cat:'formules',  e:'☕', bg:'#244432,#8FAF9A', n:'Formule Matin · Café + Cookie',    p:'6',     b:'', img:'images/formule_matin_cookie.jpg' },
+    { id:'morningCroissant', cat:'formules',  e:'☕', bg:'#244432,#8FAF9A', n:'Formule Matin · Café + Croissant', p:'4.500', b:'', img:'images/formule_matin_croissant.jpg' },
   ];
 
   /* ── Render — photo produit avec emoji de secours ─────────────────── */
@@ -746,7 +756,7 @@
         : `<div class="p-thumb" style="background:linear-gradient(135deg,#${p.bg})">${p.e}</div>`;
 
       return `
-        <div class="p-row" style="animation-delay:${i * 0.03}s">
+        <div class="p-row${p.cat === 'formules' ? ' p-row-formula' : ''}" style="animation-delay:${i * 0.03}s">
           ${thumb}
           <div class="p-body">
             <p class="p-cat">${currentLocale.categories[p.cat]}</p>
