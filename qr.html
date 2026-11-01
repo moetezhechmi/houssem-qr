@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width,initial-scale=1.0,viewport-fit=cover"/>
@@ -78,7 +78,7 @@
     /* top bar */
     .hero-nav {
       display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 28px; position: relative; z-index: 2;
+      margin-bottom: 28px; position: relative; z-index: 3;
     }
     .hero-nav-badge {
       display: flex; align-items: center; gap: 6px;
@@ -99,15 +99,51 @@
       font-size: .7rem; font-weight: 600; letter-spacing: .08em;
       color: rgba(255,255,255,.9); text-transform: uppercase;
     }
-    .hero-nav-btn {
-      width: 36px; height: 36px; border-radius: 50%;
+    .language-switcher { position: relative; }
+    .language-trigger {
+      min-width: 76px; min-height: 40px; padding: 0 11px;
+      border-radius: var(--r-pill);
       background: rgba(255,255,255,.2); backdrop-filter: blur(8px);
       border: 1px solid rgba(255,255,255,.25);
-      display: flex; align-items: center; justify-content: center;
-      font-size: 1rem; cursor: pointer; transition: background .2s;
+      display: flex; align-items: center; justify-content: center; gap: 7px;
+      color: #fff; font: inherit; font-size: .73rem; font-weight: 700;
+      letter-spacing: .06em; cursor: pointer; transition: background .2s;
       -webkit-tap-highlight-color: transparent;
     }
-    .hero-nav-btn:active { background: rgba(255,255,255,.35); }
+    .language-trigger svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .language-trigger:hover, .language-trigger[aria-expanded="true"],
+    .language-trigger:active { background: rgba(255,255,255,.35); }
+    .language-trigger:focus-visible {
+      outline: 2px solid #fff; outline-offset: 3px;
+    }
+    .language-option:focus-visible { outline: 2px solid var(--sage-dark); outline-offset: 1px; }
+    .language-menu {
+      position: absolute; inset-block-start: calc(100% + 9px); inset-inline-end: 0;
+      z-index: 20; width: 184px; padding: 7px;
+      display: flex; flex-direction: column; gap: 3px;
+      background: var(--off-white); border: 1px solid rgba(230,213,195,.7);
+      border-radius: 16px; box-shadow: 0 14px 36px rgba(44,30,22,.2);
+      animation: menuIn .18s var(--ease) both;
+    }
+    .language-menu[hidden] { display: none; }
+    @keyframes menuIn {
+      from { opacity: 0; transform: translateY(-5px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .language-option {
+      width: 100%; min-height: 44px; padding: 0 11px;
+      display: flex; align-items: center; gap: 10px;
+      color: var(--text-dark); background: transparent; border: 0;
+      border-radius: 11px; font: inherit; font-size: .84rem;
+      text-align: start; cursor: pointer;
+    }
+    .language-option:hover, .language-option[aria-checked="true"] {
+      color: var(--sage-dark); background: var(--sage-bg);
+    }
+    .language-option[aria-checked="true"] { font-weight: 700; }
+    .language-option .language-check {
+      margin-inline-start: auto; font-size: .8rem;
+    }
 
     /* logo block */
     .hero-logo-wrap {
@@ -120,14 +156,14 @@
       to   { opacity: 1; transform: translateY(0) scale(1); }
     }
     .logo-circle {
-      width: 140px; height: 140px; border-radius: 50%;
+      width: 180px; height: 180px; border-radius: 50%;
       background: rgba(255,255,255,.18); backdrop-filter: blur(12px);
       border: 2px solid rgba(255,255,255,.4);
       display: flex; align-items: center; justify-content: center;
       box-shadow: 0 8px 32px rgba(0,0,0,.18), inset 0 1px 0 rgba(255,255,255,.5);
       margin-bottom: 16px; overflow: hidden;
     }
-    .logo-img { width: 120px; height: 120px; object-fit: contain; }
+    .logo-img { width: 160px; height: 160px; object-fit: contain; }
 
     .hero-name {
       font-family: 'Playfair Display', serif; font-size: 2rem; font-weight: 700;
@@ -206,11 +242,17 @@
     }
     .cat-row::-webkit-scrollbar { display: none; }
     .cat-pill {
-      flex-shrink: 0; padding: 8px 16px; border-radius: var(--r-pill);
+      flex-shrink: 0; padding: 5px 13px 5px 6px; border-radius: var(--r-pill);
+      display: inline-flex; align-items: center; gap: 7px;
       font-size: .76rem; font-weight: 600; background: var(--cream);
       color: var(--text-soft); border: none; cursor: pointer;
       white-space: nowrap; transition: all .2s var(--ease);
       -webkit-tap-highlight-color: transparent;
+    }
+    .cat-icon {
+      width: 32px; height: 32px; flex: 0 0 32px;
+      border: 1px solid rgba(94,138,116,.2); border-radius: 50%;
+      object-fit: cover; background: var(--off-white);
     }
     .cat-pill.active {
       background: var(--espresso); color: var(--off-white);
@@ -365,6 +407,7 @@
       transition: transform .2s var(--spring);
     }
     .sfc:active .sfc-arrow { transform: translateX(4px); }
+    html[dir="rtl"] .sfc:active .sfc-arrow { transform: translateX(-4px); }
 
     /* ─── PAGE: INFO ──────────────────────────────────────────────────── */
     .page-info { padding: 24px 20px; animation: pIn .3s var(--ease) both; }
@@ -406,6 +449,10 @@
     /* ─── VIEWS ───────────────────────────────────────────────────────── */
     .view { display: none; }
     .view.active { display: block; }
+    html[dir="rtl"] .p-row { direction: rtl; }
+    html[dir="rtl"] .p-body,
+    html[dir="rtl"] .info-row > div:last-child { text-align: right; }
+    html[dir="rtl"] .p-name { white-space: normal; }
   </style>
 </head>
 <body>
@@ -420,9 +467,34 @@
     <div class="hero-nav">
       <div class="hero-nav-badge">
         <div class="hero-nav-dot"></div>
-        <span class="hero-nav-text">Open Now</span>
+        <span class="hero-nav-text" data-i18n="openNow">Open Now</span>
       </div>
-      <button class="hero-nav-btn" onclick="switchView('info')">📍</button>
+      <div class="language-switcher">
+        <button class="language-trigger" id="languageTrigger" type="button"
+                aria-haspopup="menu" aria-expanded="false" aria-controls="languageMenu"
+                aria-label="Changer de langue" data-i18n-aria-label="switchLanguage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"></path>
+          </svg>
+          <span id="currentLanguage">FR</span>
+        </button>
+        <div class="language-menu" id="languageMenu" role="menu"
+             aria-label="Choisir une langue" data-i18n-aria-label="selectLanguage" hidden>
+          <button class="language-option" type="button" role="menuitemradio" data-language="fr" aria-checked="true">
+            <span aria-hidden="true">🇫🇷</span><span>Français</span><span class="language-check" aria-hidden="true">✓</span>
+          </button>
+          <button class="language-option" type="button" role="menuitemradio" data-language="en" aria-checked="false">
+            <span aria-hidden="true">🇬🇧</span><span>English</span><span class="language-check" aria-hidden="true"></span>
+          </button>
+          <button class="language-option" type="button" role="menuitemradio" data-language="ar" aria-checked="false">
+            <span aria-hidden="true">🇹🇳</span><span lang="ar">العربية</span><span class="language-check" aria-hidden="true"></span>
+          </button>
+          <button class="language-option" type="button" role="menuitemradio" data-language="de" aria-checked="false">
+            <span aria-hidden="true">🇩🇪</span><span lang="de">Deutsch</span><span class="language-check" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
     </div>
 
     <div class="hero-logo-wrap">
@@ -430,8 +502,8 @@
         <img class="logo-img" src="logo_houssem.jpeg" alt="Bieny Coffeeshop"/>
       </div>
       <h1 class="hero-name">Bieny</h1>
-      <p class="hero-sub">Coffeeshop · Artisan</p>
-      <p class="hero-slogan">« Every cup tells a story. »</p>
+      <p class="hero-sub" data-i18n="heroSubtitle">Coffeeshop · Artisan</p>
+      <p class="hero-slogan" data-i18n="heroSlogan">« Every cup tells a story. »</p>
     </div>
 
     <svg class="hero-wave" viewBox="0 0 390 48" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="none">
@@ -445,8 +517,8 @@
     <!-- Social quick grid -->
     <div class="social-section">
       <div class="section-header">
-        <h2 class="section-title">Suivez-<em>nous</em></h2>
-        <span class="section-badge">3 réseaux</span>
+        <h2 class="section-title"><em data-i18n="socialTitle">Suivez-nous</em></h2>
+        <span class="section-badge" data-i18n="socialCount">3 réseaux</span>
       </div>
       <div class="social-grid">
 
@@ -455,7 +527,7 @@
             <svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
           </div>
           <span class="s-name">Instagram</span>
-          <span class="s-action">Follow</span>
+          <span class="s-action" data-i18n="follow">Follow</span>
         </a>
 
         <a href="https://www.facebook.com/profile.php?id=61594564715382" target="_blank" rel="noopener" class="s-card s-card--fb">
@@ -463,7 +535,7 @@
             <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
           </div>
           <span class="s-name">Facebook</span>
-          <span class="s-action">Join</span>
+          <span class="s-action" data-i18n="join">Join</span>
         </a>
 
         <a href="https://www.tiktok.com/@bieny_coffeeshop" target="_blank" rel="noopener" class="s-card s-card--tt">
@@ -471,7 +543,7 @@
             <svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.82a8.16 8.16 0 0 0 4.77 1.52V6.89a4.85 4.85 0 0 1-1-.2z"/></svg>
           </div>
           <span class="s-name">TikTok</span>
-          <span class="s-action">Watch</span>
+          <span class="s-action" data-i18n="watch">Watch</span>
         </a>
 
       </div>
@@ -482,17 +554,38 @@
     <!-- Menu -->
     <div class="menu-section">
       <div class="section-header" style="margin-bottom:12px;">
-        <h2 class="section-title">Notre <em>Menu</em></h2>
-        <span class="section-badge">Good Drinks</span>
+        <h2 class="section-title"><span data-i18n="menuTitle">Notre Menu</span></h2>
+        <span class="section-badge" data-i18n="menuBadge">Good Drinks</span>
       </div>
       <div class="cat-row" id="catRow">
-        <button class="cat-pill active" data-cat="all">Tout</button>
-        <button class="cat-pill" data-cat="cafe">☕ Café</button>
-        <button class="cat-pill" data-cat="icelatte">🧊 Ice-Latte</button>
-        <button class="cat-pill" data-cat="the">🫖 Thé</button>
-        <button class="cat-pill" data-cat="jus">🍊 Jus</button>
-        <button class="cat-pill" data-cat="signature">✨ Signature</button>
-        <button class="cat-pill" data-cat="soda">💧 Soda</button>
+        <button class="cat-pill active" data-cat="all">
+          <img class="cat-icon" src="logo_houssem.jpeg" alt="" aria-hidden="true" width="32" height="32"/>
+          <span data-i18n="categories.all">Tout</span>
+        </button>
+        <button class="cat-pill" data-cat="cafe">
+          <img class="cat-icon" src="images/qr_cafe_cappuccino.jpg" alt="" aria-hidden="true" width="32" height="32"/>
+          <span data-i18n="categories.cafe">Café</span>
+        </button>
+        <button class="cat-pill" data-cat="icelatte">
+          <img class="cat-icon" src="images/qr_ice_spanish.jpg" alt="" aria-hidden="true" width="32" height="32"/>
+          <span data-i18n="categories.icelatte">Ice-Latte</span>
+        </button>
+        <button class="cat-pill" data-cat="the">
+          <img class="cat-icon" src="images/qr_the_menthe.jpg" alt="" aria-hidden="true" width="32" height="32"/>
+          <span data-i18n="categories.the">Thé</span>
+        </button>
+        <button class="cat-pill" data-cat="jus">
+          <img class="cat-icon" src="images/qr_jus_orange.jpg" alt="" aria-hidden="true" width="32" height="32"/>
+          <span data-i18n="categories.jus">Jus</span>
+        </button>
+        <button class="cat-pill" data-cat="signature">
+          <img class="cat-icon" src="images/qr_sig_passion.jpg" alt="" aria-hidden="true" width="32" height="32"/>
+          <span data-i18n="categories.signature">Signature</span>
+        </button>
+        <button class="cat-pill" data-cat="soda">
+          <img class="cat-icon" src="images/qr_soda.svg" alt="" aria-hidden="true" width="32" height="32"/>
+          <span data-i18n="categories.soda">Soda</span>
+        </button>
       </div>
       <div class="product-list" id="productList"></div>
     </div>
@@ -509,29 +602,29 @@
         </div>
         <div class="social-hero-text">
           <h2>Bieny Coffee</h2>
-          <p>Good Drinks · Good Vibes<br/>Rejoignez notre communauté</p>
+          <p data-i18n-html="socialCommunity">Good Drinks · Good Vibes<br>Rejoignez notre communauté</p>
         </div>
       </div>
 
       <div class="stats-row">
-        <div class="stat-box"><span class="stat-val">2.4k</span><span class="stat-lbl">Followers</span></div>
-        <div class="stat-box"><span class="stat-val">180+</span><span class="stat-lbl">Posts</span></div>
-        <div class="stat-box"><span class="stat-val">★ 4.9</span><span class="stat-lbl">Rating</span></div>
+        <div class="stat-box"><span class="stat-val">2.4k</span><span class="stat-lbl" data-i18n="followers">Followers</span></div>
+        <div class="stat-box"><span class="stat-val">180+</span><span class="stat-lbl" data-i18n="posts">Posts</span></div>
+        <div class="stat-box"><span class="stat-val">★ 4.9</span><span class="stat-lbl" data-i18n="rating">Rating</span></div>
       </div>
 
       <a href="https://www.instagram.com/bieny_coffeeshop/" target="_blank" rel="noopener" class="sfc sfc--ig">
         <div class="sfc-icon"><svg viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg></div>
-        <div class="sfc-body"><p class="sfc-name">Instagram</p><p class="sfc-desc">Nos moments café, latte art et ambiance</p></div>
+        <div class="sfc-body"><p class="sfc-name">Instagram</p><p class="sfc-desc" data-i18n="socialDescriptions.instagram">Nos moments café, latte art et ambiance</p></div>
         <div class="sfc-arrow">→</div>
       </a>
       <a href="https://www.facebook.com/profile.php?id=61594564715382" target="_blank" rel="noopener" class="sfc sfc--fb">
         <div class="sfc-icon"><svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg></div>
-        <div class="sfc-body"><p class="sfc-name">Facebook</p><p class="sfc-desc">Communauté, actualités et offres exclusives</p></div>
+        <div class="sfc-body"><p class="sfc-name">Facebook</p><p class="sfc-desc" data-i18n="socialDescriptions.facebook">Communauté, actualités et offres exclusives</p></div>
         <div class="sfc-arrow">→</div>
       </a>
       <a href="https://www.tiktok.com/@bieny_coffeeshop" target="_blank" rel="noopener" class="sfc sfc--tt">
         <div class="sfc-icon"><svg viewBox="0 0 24 24"><path d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-2.88 2.5 2.89 2.89 0 0 1-2.89-2.89 2.89 2.89 0 0 1 2.89-2.89c.28 0 .54.04.79.1V9.01a6.33 6.33 0 0 0-.79-.05 6.34 6.34 0 0 0-6.34 6.34 6.34 6.34 0 0 0 6.34 6.34 6.34 6.34 0 0 0 6.33-6.34V8.82a8.16 8.16 0 0 0 4.77 1.52V6.89a4.85 4.85 0 0 1-1-.2z"/></svg></div>
-        <div class="sfc-body"><p class="sfc-name">TikTok</p><p class="sfc-desc">Coulisses, recettes et vie du coffeeshop</p></div>
+        <div class="sfc-body"><p class="sfc-name">TikTok</p><p class="sfc-desc" data-i18n="socialDescriptions.tiktok">Coulisses, recettes et vie du coffeeshop</p></div>
         <div class="sfc-arrow">→</div>
       </a>
 
@@ -545,13 +638,13 @@
         <div class="info-hero-logo">
           <img src="logo_houssem.jpeg" alt="Bieny" onerror="this.src='logo_houssem.jpeg'"/>
         </div>
-        <h2>Bieny Coffeeshop</h2>
-        <p>Café · Pâtisserie & More<br/>Good Drinks · Good Vibes</p>
+        <h2 data-i18n="infoTitle">Bieny Coffeeshop</h2>
+        <p data-i18n-html="infoSubtitle">Café · Pâtisserie &amp; Plus<br>Good Drinks · Good Vibes</p>
       </div>
-      <div class="info-row"><div class="info-icon">📍</div><div><p class="info-lbl">Adresse</p><p class="info-val">Djerba Midoun, Tunisie</p></div></div>
-      <div class="info-row"><div class="info-icon">🕐</div><div><p class="info-lbl">Horaires</p><p class="info-val">Lun – Dim · 8h00 – 22h00</p></div></div>
-      <div class="info-row"><div class="info-icon">📞</div><div><p class="info-lbl">Téléphone</p><p class="info-val">+216 95 587 667</p></div></div>
-      <div class="info-row"><div class="info-icon">🌐</div><div><p class="info-lbl">Site web</p><p class="info-val">bieny-coffee.tn</p></div></div>
+      <div class="info-row"><div class="info-icon">📍</div><div><p class="info-lbl" data-i18n="address">Adresse</p><p class="info-val" data-i18n="addressValue">Djerba Midoun, Tunisie</p></div></div>
+      <div class="info-row"><div class="info-icon">🕐</div><div><p class="info-lbl" data-i18n="hours">Horaires</p><p class="info-val" data-i18n="hoursValue">Lun – Dim · 8h00 – 22h00</p></div></div>
+      <div class="info-row"><div class="info-icon">📞</div><div><p class="info-lbl" data-i18n="phone">Téléphone</p><p class="info-val" dir="ltr">+216 95 587 667</p></div></div>
+      <div class="info-row"><div class="info-icon">🌐</div><div><p class="info-lbl" data-i18n="website">Site web</p><a class="info-val" href="https://houssem-qr.onrender.com/" target="_blank" rel="noopener noreferrer" dir="ltr">houssem-qr.onrender.com</a></div></div>
       <div style="height:16px;"></div>
     </div>
   </div>
@@ -559,59 +652,55 @@
   <!-- ══ BOTTOM NAV ════════════════════════════════════════════════════ -->
   <nav class="bottom-nav">
     <button class="bnav active" id="bnav-home"   onclick="switchView('home')">
-      <div class="bnav-icon">🏠</div><span class="bnav-lbl">Home</span>
+      <div class="bnav-icon">🏠</div><span class="bnav-lbl" data-i18n="navigation.home">Home</span>
     </button>
     <button class="bnav"        id="bnav-social" onclick="switchView('social')">
-      <div class="bnav-icon">✨</div><span class="bnav-lbl">Follow</span>
+      <div class="bnav-icon">✨</div><span class="bnav-lbl" data-i18n="navigation.follow">Follow</span>
     </button>
     <button class="bnav"        id="bnav-info"   onclick="switchView('info')">
-      <div class="bnav-icon">📍</div><span class="bnav-lbl">Info</span>
+      <div class="bnav-icon">📍</div><span class="bnav-lbl" data-i18n="navigation.info">Info</span>
     </button>
   </nav>
 
 </div>
 
+<script src="i18n/translations.js"></script>
 <script>
   /* ── Menu data ─────────────────────────────────────────────────────── */
   const PRODUCTS = [
     // CAFÉ
-    { cat:'cafe',      e:'☕', bg:'#5c3820,#9a6840', n:'Espresso',           d:'Extrait pur, crema dorée, intense.',              p:'2.5', b:'',    img:'images/cafe_espresso.jpg' },
-    { cat:'cafe',      e:'☕', bg:'#4a2e18,#8a6040', n:'Direct',             d:'Café allongé doux, idéal pour bien débuter.',     p:'3.5', b:'pop', img:'images/cafe_direct.jpg' },
-    { cat:'cafe',      e:'🥛', bg:'#5c3d2e,#9a7050', n:'Cappuccino',        d:'Espresso, lait velouté, mousse onctueuse.',       p:'3.5', b:'pop', img:'images/cafe_cappuccino.jpg' },
-    { cat:'cafe',      e:'🍫', bg:'#2a1a10,#6a4030', n:'Chocolat Chaud',    d:'Chocolat fondu crémeux et réconfortant.',         p:'4',   b:'',    img:'images/cafe_chocolat.jpg' },
+    { id:'espresso',          cat:'cafe',      e:'☕', bg:'#5c3820,#9a6840', n:'Espresso',           p:'2.5', b:'',    img:'images/qr_cafe_espresso.jpg' },
+    { id:'direct',            cat:'cafe',      e:'☕', bg:'#4a2e18,#8a6040', n:'Direct',             p:'3.5', b:'pop', img:'images/qr_cafe_direct.jpg' },
+    { id:'cappuccino',        cat:'cafe',      e:'🥛', bg:'#5c3d2e,#9a7050', n:'Cappuccino',         p:'3.5', b:'pop', img:'images/qr_cafe_cappuccino.jpg' },
+    { id:'hotChocolate',      cat:'cafe',      e:'🍫', bg:'#2a1a10,#6a4030', n:'Chocolat Chaud',     p:'4',   b:'',    img:'images/qr_cafe_chocolat.jpg' },
     // ICE-LATTE
-    { cat:'icelatte',  e:'🧊', bg:'#1a2a3a,#4a7090', n:'Ice-Latte',         d:'Espresso sur glace, lait frais.',                 p:'4',   b:'pop', img:'images/ice_latte.jpg' },
-    { cat:'icelatte',  e:'🤎', bg:'#2a1f1a,#6a5040', n:'Spanish-Latte',     d:'Lait concentré sucré, espresso glacé.',           p:'5',   b:'pop', img:'images/ice_spanish.jpg' },
-    { cat:'icelatte',  e:'🍦', bg:'#3a2a1a,#8a7050', n:'Vanilla-Latte',     d:'Sirop de vanille, espresso, lait froid.',         p:'5',   b:'',    img:'images/ice_vanilla.jpg' },
-    { cat:'icelatte',  e:'🍮', bg:'#4a2a10,#9a7030', n:'Caramel-Latte',     d:'Caramel maison, espresso, lait glacé.',           p:'5',   b:'',    img:'images/ice_caramel.jpg' },
-    { cat:'icelatte',  e:'🤎', bg:'#3a1e10,#7a5030', n:'Brown Sugar Latte', d:'Cassonade, espresso, lait mousseux sur glace.',   p:'5',   b:'new', img:'images/ice_brownsugar.jpg' },
+    { id:'iceLatte',          cat:'icelatte',  e:'🧊', bg:'#1a2a3a,#4a7090', n:'Ice-Latte',         p:'4',   b:'pop', img:'images/qr_ice_latte.jpg' },
+    { id:'spanishLatte',      cat:'icelatte',  e:'🤎', bg:'#2a1f1a,#6a5040', n:'Spanish-Latte',     p:'5',   b:'pop', img:'images/qr_ice_spanish.jpg' },
+    { id:'vanillaLatte',      cat:'icelatte',  e:'🍦', bg:'#3a2a1a,#8a7050', n:'Vanilla-Latte',     p:'5',   b:'',    img:'images/qr_ice_vanilla.jpg' },
+    { id:'caramelLatte',      cat:'icelatte',  e:'🍮', bg:'#4a2a10,#9a7030', n:'Caramel-Latte',     p:'5',   b:'',    img:'images/qr_ice_caramel.jpg' },
+    { id:'brownSugarLatte',   cat:'icelatte',  e:'🤎', bg:'#3a1e10,#7a5030', n:'Brown Sugar Latte', p:'5',   b:'new', img:'images/qr_ice_brownsugar.jpg' },
     // THÉ
-    { cat:'the',       e:'🫖', bg:'#1a3a1a,#4a8050', n:'Thé à la menthe',   d:'Thé vert, menthe fraîche, sucré.',                p:'4',   b:'pop', img:'images/the_menthe.jpg' },
-    { cat:'the',       e:'🍑', bg:'#3a2a10,#9a7040', n:'Thé glacé pêche',   d:'Thé infusé, sirop de pêche, sur glace.',          p:'5',   b:'',    img:'images/the_peche.jpg' },
-    { cat:'the',       e:'🍋', bg:'#3a3a10,#9a9030', n:'Thé glacé citron',  d:'Thé noir froid, citron pressé.',                  p:'5',   b:'',    img:'images/the_citron.jpg' },
-    { cat:'the',       e:'🌿', bg:'#1a3a20,#5a8a50', n:'Mojito',            d:'Menthe, citron vert, eau gazeuse.',               p:'5',   b:'new', img:'images/the_mojito.jpg' },
+    { id:'mintTea',           cat:'the',       e:'🫖', bg:'#1a3a1a,#4a8050', n:'Thé à la menthe',   p:'4',   b:'pop', img:'images/qr_the_menthe.jpg' },
+    { id:'peachIcedTea',      cat:'the',       e:'🍑', bg:'#3a2a10,#9a7040', n:'Thé glacé pêche',   p:'5',   b:'',    img:'images/qr_the_peche.jpg' },
+    { id:'lemonIcedTea',      cat:'the',       e:'🍋', bg:'#3a3a10,#9a9030', n:'Thé glacé citron',  p:'5',   b:'',    img:'images/qr_the_citron.jpg' },
+    { id:'mojito',            cat:'the',       e:'🌿', bg:'#1a3a20,#5a8a50', n:'Mojito',            p:'5',   b:'new', img:'images/qr_the_mojito.jpg' },
     // JUS
-    { cat:'jus',       e:'🍋', bg:'#3a3a10,#8a8a20', n:'Jus de citron',     d:'Citrons frais pressés, vitaminé.',                p:'4',   b:'',    img:'images/jus_citron.jpg' },
-    { cat:'jus',       e:'🍓', bg:'#3a1010,#8a2030', n:'Jus de fraise',     d:'Fraises fraîches mixées, naturel.',               p:'7',   b:'pop', img:'images/jus_fraise.jpg' },
-    { cat:'jus',       e:'🍊', bg:'#3a2010,#9a5020', n:"Jus d'orange",      d:'Oranges pressées à la commande.',                 p:'5',   b:'',    img:'images/jus_orange.jpg' },
+    { id:'lemonJuice',        cat:'jus',       e:'🍋', bg:'#3a3a10,#8a8a20', n:'Jus de citron',     p:'4',   b:'',    img:'images/qr_jus_citron.jpg' },
+    { id:'strawberryJuice',   cat:'jus',       e:'🍓', bg:'#3a1010,#8a2030', n:'Jus de fraise',     p:'7',   b:'pop', img:'images/qr_jus_fraise.jpg' },
+    { id:'orangeJuice',       cat:'jus',       e:'🍊', bg:'#3a2010,#9a5020', n:"Jus d'orange",      p:'5',   b:'',    img:'images/qr_jus_orange.jpg' },
     // SIGNATURES
-    { cat:'signature', e:'🍃', bg:'#1a3a20,#4a8a50', n:'Bieny Mojito',      d:'Menthe fraîche, citron vert, sirop, eau gazeuse.', p:'5',  b:'pop', img:'images/sig_mojito.jpg' },
-    { cat:'signature', e:'🍓', bg:'#3a1020,#9a3050', n:'Strawberry Bieny',  d:'Fraises fraîches, limonade rose, sirop maison.',   p:'7',  b:'pop', img:'images/sig_strawberry.jpg' },
-    { cat:'signature', e:'🌟', bg:'#3a2a10,#9a7020', n:'Passion Sunset',    d:'Passion, mangue, orange — coucher de soleil.',     p:'5',  b:'new', img:'images/sig_passion.jpg' },
-    { cat:'signature', e:'🍉', bg:'#2a1a1a,#7a3a40', n:'Watermelon Mint',   d:'Pastèque mixée, menthe, citron, glace pilée.',     p:'5',  b:'',    img:'images/sig_watermelon.jpg' },
-    { cat:'signature', e:'🔵', bg:'#10203a,#2050a0', n:'Bieny Blue Lagoon', d:'Blue curaçao, citron, eau gazeuse.',               p:'5',  b:'new', img:'images/sig_bluelagoon.jpg' },
+    { id:'bienyMojito',       cat:'signature', e:'🍃', bg:'#1a3a20,#4a8a50', n:'Bieny Mojito',      p:'5',  b:'pop', img:'images/qr_sig_mojito.jpg' },
+    { id:'strawberryBieny',   cat:'signature', e:'🍓', bg:'#3a1020,#9a3050', n:'Strawberry Bieny',  p:'7',  b:'pop', img:'images/qr_sig_strawberry.jpg' },
+    { id:'passionSunset',     cat:'signature', e:'🌟', bg:'#3a2a10,#9a7020', n:'Passion Sunset',    p:'5',  b:'new', img:'images/qr_sig_passion.jpg' },
+    { id:'watermelonMint',    cat:'signature', e:'🍉', bg:'#2a1a1a,#7a3a40', n:'Watermelon Mint',   p:'5',  b:'',    img:'images/qr_sig_watermelon.jpg' },
+    { id:'blueLagoon',        cat:'signature', e:'🔵', bg:'#10203a,#2050a0', n:'Bieny Blue Lagoon', p:'5',  b:'new', img:'images/qr_sig_bluelagoon.jpg' },
     // SODA & EAU
-    { cat:'soda',      e:'🥤', bg:'#1a1a3a,#3a5a8a', n:'Soda',             d:'Boisson gazeuse fraîche.',                        p:'4',   b:'',    img:'images/soda.jpg' },
-    { cat:'soda',      e:'💧', bg:'#1a2a3a,#3a6a8a', n:'Eau 0,5L',         d:'Eau minérale naturelle.',                         p:'1.5', b:'',    img:'images/eau.jpg' },
-    { cat:'soda',      e:'💧', bg:'#1a2a3a,#2a5a7a', n:'Eau 1L',           d:'Eau minérale, grande bouteille.',                  p:'2',   b:'',    img:'images/eau.jpg' },
+    { id:'soda',              cat:'soda',      e:'🥤', bg:'#1a1a3a,#3a5a8a', n:'Soda',             p:'4',   b:'',    alt:'Canettes Coca-Cola et Fanta', img:'images/qr_soda.svg' },
+    { id:'waterSmall',        cat:'soda',      e:'💧', bg:'#1a2a3a,#3a6a8a', n:'Eau 0,5L',         p:'1.5', b:'',    img:'images/qr_eau.jpg' },
+    { id:'waterLarge',        cat:'soda',      e:'💧', bg:'#1a2a3a,#2a5a7a', n:'Eau 1L',           p:'2',   b:'',    img:'images/qr_eau.jpg' },
   ];
 
-  const CAT_LABELS = {
-    cafe:'Café', icelatte:'Ice-Latte', the:'Thé',
-    jus:'Jus', signature:'Signature', soda:'Soda & Eau'
-  };
-
-  /* ── Render — même layout p-row pour tout, image réelle pour signatures ── */
+  /* ── Render — photo produit avec emoji de secours ─────────────────── */
   function renderProducts(cat) {
     const list  = document.getElementById('productList');
     const items = cat === 'all' ? PRODUCTS : PRODUCTS.filter(p => p.cat === cat);
@@ -620,7 +709,7 @@
       // thumb: real photo if available, gradient+emoji fallback
       const thumb = p.img
         ? `<div class="p-thumb">
-             <img src="${p.img}" alt="${p.n}" loading="lazy"
+             <img src="${p.img}" alt="${p.alt || p.n}" loading="lazy"
                   onerror="this.style.display='none';this.nextElementSibling.style.display='flex'"/>
              <span class="p-thumb-fb" style="display:none;background:linear-gradient(135deg,#${p.bg})">${p.e}</span>
            </div>`
@@ -630,12 +719,12 @@
         <div class="p-row" style="animation-delay:${i * 0.03}s">
           ${thumb}
           <div class="p-body">
-            <p class="p-cat">${CAT_LABELS[p.cat]}</p>
+            <p class="p-cat">${currentLocale.categories[p.cat]}</p>
             <p class="p-name">${p.n}</p>
-            <p class="p-desc">${p.d}</p>
+            <p class="p-desc">${currentLocale.products[p.id]}</p>
           </div>
           <div class="p-right">
-            <p class="p-price">${p.p}<sub>DT</sub></p>
+            <p class="p-price">${p.p}<sub>${currentLocale.currency}</sub></p>
           </div>
         </div>
       `;
@@ -660,8 +749,111 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   }
 
-  /* ── Init ──────────────────────────────────────────────────────────── */
-  renderProducts('all');
+  const languageTrigger = document.getElementById('languageTrigger');
+  const languageMenu = document.getElementById('languageMenu');
+  const languageSwitcher = document.querySelector('.language-switcher');
+  const supportedLanguages = ['fr', 'en', 'ar', 'de'];
+  let currentLanguage = 'fr';
+  let currentLocale = window.MENU_TRANSLATIONS.fr;
+
+  function getSavedLanguage() {
+    try {
+      const savedLanguage = window.localStorage.getItem('bieny-language');
+      return supportedLanguages.includes(savedLanguage) ? savedLanguage : 'fr';
+    } catch (error) {
+      console.error('Unable to read the saved language preference.', error);
+      return 'fr';
+    }
+  }
+
+  function getTranslation(locale, key) {
+    const value = key.split('.').reduce((entry, part) => entry && entry[part], locale);
+    if (typeof value !== 'string') {
+      throw new Error(`Missing translation "${key}" for the selected language.`);
+    }
+    return value;
+  }
+
+  function applyLanguage(language) {
+    if (!supportedLanguages.includes(language)) {
+      throw new Error(`Unsupported language: ${language}`);
+    }
+
+    const locale = window.MENU_TRANSLATIONS[language];
+    if (!locale) {
+      throw new Error(`Translations are not available for "${language}".`);
+    }
+
+    currentLanguage = language;
+    currentLocale = locale;
+    document.documentElement.lang = language;
+    document.documentElement.dir = locale.dir;
+    document.title = locale.title;
+    document.querySelectorAll('[data-i18n]').forEach(element => {
+      element.textContent = getTranslation(locale, element.dataset.i18n);
+    });
+    document.querySelectorAll('[data-i18n-html]').forEach(element => {
+      element.innerHTML = getTranslation(locale, element.dataset.i18nHtml);
+    });
+    document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
+      element.setAttribute('aria-label', getTranslation(locale, element.dataset.i18nAriaLabel));
+    });
+
+    document.getElementById('currentLanguage').textContent = language.toUpperCase();
+    languageTrigger.setAttribute('aria-label', locale.switchLanguage);
+    document.querySelectorAll('.language-option').forEach(option => {
+      const isSelected = option.dataset.language === language;
+      option.setAttribute('aria-checked', String(isSelected));
+      option.querySelector('.language-check').textContent = isSelected ? '✓' : '';
+    });
+
+    const selectedCategory = document.querySelector('.cat-pill.active')?.dataset.cat || 'all';
+    renderProducts(selectedCategory);
+  }
+
+  function closeLanguageMenu(returnFocus) {
+    languageMenu.hidden = true;
+    languageTrigger.setAttribute('aria-expanded', 'false');
+    if (returnFocus) languageTrigger.focus();
+  }
+
+  languageTrigger.addEventListener('click', () => {
+    const isOpening = languageMenu.hidden;
+    languageMenu.hidden = !isOpening;
+    languageTrigger.setAttribute('aria-expanded', String(isOpening));
+  });
+
+  languageMenu.addEventListener('click', event => {
+    const option = event.target.closest('.language-option');
+    if (!option) return;
+
+    const language = option.dataset.language;
+    applyLanguage(language);
+    try {
+      window.localStorage.setItem('bieny-language', language);
+    } catch (error) {
+      console.error('Unable to save the language preference.', error);
+    }
+    closeLanguageMenu(true);
+  });
+
+  document.addEventListener('pointerdown', event => {
+    if (!languageSwitcher.contains(event.target) && !languageMenu.hidden) {
+      closeLanguageMenu(false);
+    }
+  });
+
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !languageMenu.hidden) {
+      closeLanguageMenu(true);
+    }
+  });
+
+  const requestedLanguage = new URLSearchParams(window.location.search).get('lang');
+  const initialLanguage = supportedLanguages.includes(requestedLanguage)
+    ? requestedLanguage
+    : getSavedLanguage();
+  applyLanguage(initialLanguage);
 </script>
 </body>
 </html>

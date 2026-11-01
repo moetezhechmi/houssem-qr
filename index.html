@@ -1,5 +1,5 @@
 ﻿<!DOCTYPE html>
-<html lang="fr">
+<html lang="fr" dir="ltr">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
@@ -88,10 +88,8 @@
       height: 44px;
       background: var(--sage);
       border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 20px;
+      object-fit: cover;
+      flex-shrink: 0;
     }
     .nav-logo-text {
       font-family: var(--font-serif);
@@ -144,12 +142,94 @@
       transform: translateY(-1px);
     }
 
+    .nav-controls {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .nav-language { position: relative; }
+    .language-trigger {
+      min-height: 42px;
+      min-width: 76px;
+      padding: 0 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      border: 1px solid rgba(255,255,255,.32);
+      border-radius: var(--radius-xl);
+      background: rgba(255,255,255,.12);
+      color: var(--off-white);
+      font: inherit;
+      font-size: .76rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      transition: all var(--transition);
+    }
+    .language-trigger:hover,
+    .language-trigger[aria-expanded="true"] { background: rgba(255,255,255,.22); }
+    .language-trigger svg { width: 17px; height: 17px; flex-shrink: 0; }
+    .navbar.scrolled .language-trigger {
+      background: rgba(143,175,154,.12);
+      border-color: rgba(94,138,116,.22);
+      color: var(--espresso);
+    }
+    .navbar.scrolled .language-trigger:hover,
+    .navbar.scrolled .language-trigger[aria-expanded="true"] { background: rgba(143,175,154,.22); }
+    .language-trigger:focus-visible { outline: 2px solid var(--sage-light); outline-offset: 3px; }
+    .language-option:focus-visible { outline: 2px solid var(--sage-dark); outline-offset: 1px; }
+    .language-menu {
+      position: absolute;
+      top: calc(100% + 10px);
+      inset-inline-end: 0;
+      z-index: 1010;
+      width: 184px;
+      padding: 7px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      border: 1px solid rgba(230,213,195,.7);
+      border-radius: 16px;
+      background: var(--off-white);
+      box-shadow: 0 14px 36px rgba(44,30,22,.2);
+      animation: languageMenuIn .18s ease both;
+    }
+    .language-menu[hidden] { display: none; }
+    @keyframes languageMenuIn {
+      from { opacity: 0; transform: translateY(-5px) scale(.98); }
+      to { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    .language-option {
+      width: 100%;
+      min-height: 44px;
+      padding: 0 11px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border: 0;
+      border-radius: 11px;
+      background: transparent;
+      color: var(--text-dark);
+      font: inherit;
+      font-size: .84rem;
+      text-align: start;
+      cursor: pointer;
+    }
+    .language-option:hover,
+    .language-option[aria-checked="true"] { background: #eef4f0; color: var(--sage-dark); }
+    .language-option[aria-checked="true"] { font-weight: 700; }
+    .language-check { margin-inline-start: auto; }
+
     .nav-hamburger {
       display: none;
       flex-direction: column;
       gap: 5px;
       cursor: pointer;
       padding: 4px;
+      border: 0;
+      background: transparent;
     }
     .nav-hamburger span {
       width: 24px;
@@ -390,47 +470,6 @@
       background: rgba(245,240,232,.1);
       border-color: rgba(245,240,232,.6);
       transform: translateY(-3px);
-    }
-
-    /* Scroll indicator */
-    .hero-scroll {
-      position: absolute;
-      bottom: 36px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 2;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 8px;
-      opacity: 0;
-      animation: fadeUp .9s ease forwards 1.4s;
-    }
-    .hero-scroll span {
-      font-size: .7rem;
-      letter-spacing: .18em;
-      text-transform: uppercase;
-      color: rgba(245,240,232,.45);
-    }
-    .scroll-mouse {
-      width: 22px;
-      height: 34px;
-      border: 1.5px solid rgba(245,240,232,.3);
-      border-radius: 11px;
-      display: flex;
-      justify-content: center;
-      padding-top: 6px;
-    }
-    .scroll-dot {
-      width: 4px;
-      height: 7px;
-      background: rgba(245,240,232,.5);
-      border-radius: 2px;
-      animation: scrollAnim 1.8s ease-in-out infinite;
-    }
-    @keyframes scrollAnim {
-      0%   { transform: translateY(0); opacity: 1; }
-      100% { transform: translateY(10px); opacity: 0; }
     }
 
     @keyframes fadeUp {
@@ -681,7 +720,10 @@
 
     .menu-nav-btn {
       flex-shrink: 0;
-      padding: 11px 24px;
+      padding: 6px 18px 6px 7px;
+      display: inline-flex;
+      align-items: center;
+      gap: 9px;
       border-radius: var(--radius-xl);
       font-size: .82rem;
       font-weight: 600;
@@ -693,6 +735,15 @@
       cursor: pointer;
       transition: all var(--transition);
       white-space: nowrap;
+    }
+    .menu-nav-icon {
+      width: 34px;
+      height: 34px;
+      flex: 0 0 34px;
+      border: 1px solid rgba(94,138,116,.2);
+      border-radius: 50%;
+      object-fit: cover;
+      background: var(--off-white);
     }
     .menu-nav-btn:hover {
       border-color: var(--sage);
@@ -748,6 +799,13 @@
       font-size: 3.5rem;
       transition: transform var(--transition);
     }
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform var(--transition);
+    }
+    .product-card:hover .product-img,
     .product-card:hover .product-img-placeholder { transform: scale(1.08); }
 
     .product-badge {
@@ -915,6 +973,16 @@
       .menu-section { padding: 64px 20px 80px; }
     }
 
+    html[dir="rtl"] body { font-family: var(--font-sans), Arial, sans-serif; }
+    html[dir="rtl"] .hero-content,
+    html[dir="rtl"] .social-section,
+    html[dir="rtl"] .menu-section,
+    html[dir="rtl"] .footer { direction: rtl; }
+    html[dir="rtl"] .product-info { text-align: right; }
+    html[dir="rtl"] .social-btn svg { transform: rotate(180deg); }
+    html[dir="rtl"] .menu-nav { direction: rtl; }
+    html[dir="rtl"] .footer-bottom { direction: rtl; }
+
     /* ─── INTERSECTION OBSERVER ANIMATIONS ──────────────────────────────── */
     .reveal {
       opacity: 0;
@@ -935,19 +1003,47 @@
   <!-- ═══ NAVBAR ══════════════════════════════════════════════════════════ -->
   <nav class="navbar" id="navbar">
     <div class="nav-logo">
-      <div class="nav-logo-icon">☕</div>
+      <img class="nav-logo-icon" src="logo_houssem.jpeg" alt="Bieny"/>
       <span class="nav-logo-text">Bieny</span>
     </div>
     <ul class="nav-links">
-      <li><a href="#hero">Home</a></li>
-      <li><a href="#social">Follow Us</a></li>
-      <li><a href="#menu">Menu</a></li>
+      <li><a href="#hero" data-site-i18n="nav.home">Home</a></li>
+      <li><a href="#social" data-site-i18n="nav.follow">Follow Us</a></li>
+      <li><a href="#menu" data-site-i18n="nav.menu">Menu</a></li>
     </ul>
-    <button class="nav-cta" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">
+    <button class="nav-cta" data-site-i18n="nav.menuCta" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">
       Our Menu
     </button>
-    <div class="nav-hamburger">
+    <div class="nav-controls">
+      <div class="nav-language">
+        <button class="language-trigger" id="languageTrigger" type="button"
+                aria-haspopup="menu" aria-expanded="false" aria-controls="languageMenu"
+                aria-label="Change language" data-i18n-aria-label="switchLanguage">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" aria-hidden="true">
+            <circle cx="12" cy="12" r="9"></circle>
+            <path d="M3 12h18M12 3a15 15 0 0 1 0 18M12 3a15 15 0 0 0 0 18"></path>
+          </svg>
+          <span id="currentLanguage">FR</span>
+        </button>
+        <div class="language-menu" id="languageMenu" role="menu"
+             aria-label="Choose a language" data-i18n-aria-label="selectLanguage" hidden>
+          <button class="language-option" type="button" role="menuitemradio" data-language="fr" aria-checked="true">
+            <span aria-hidden="true">🇫🇷</span><span>Français</span><span class="language-check" aria-hidden="true">✓</span>
+          </button>
+          <button class="language-option" type="button" role="menuitemradio" data-language="en" aria-checked="false">
+            <span aria-hidden="true">🇬🇧</span><span>English</span><span class="language-check" aria-hidden="true"></span>
+          </button>
+          <button class="language-option" type="button" role="menuitemradio" data-language="ar" aria-checked="false">
+            <span aria-hidden="true">🇹🇳</span><span lang="ar">العربية</span><span class="language-check" aria-hidden="true"></span>
+          </button>
+          <button class="language-option" type="button" role="menuitemradio" data-language="de" aria-checked="false">
+            <span aria-hidden="true">🇩🇪</span><span lang="de">Deutsch</span><span class="language-check" aria-hidden="true"></span>
+          </button>
+        </div>
+      </div>
+    <button class="nav-hamburger" type="button" aria-label="Open navigation menu" data-site-i18n-aria-label="nav.hamburger">
       <span></span><span></span><span></span>
+    </button>
     </div>
   </nav>
 
@@ -969,7 +1065,7 @@
     <div class="hero-content">
       <div class="hero-badge">
         <span class="hero-badge-dot"></span>
-        Artisan Coffee · Since 2020
+        <span data-site-i18n="heroBadge">Artisan Coffee · Since 2020</span>
         <span class="hero-badge-dot"></span>
       </div>
 
@@ -977,7 +1073,7 @@
         <em>Bieny</em><br/>Coffeeshop
       </h1>
 
-      <p class="hero-slogan">« Every cup tells a story. »</p>
+      <p class="hero-slogan" data-site-i18n="heroSlogan">« Every cup tells a story. »</p>
 
       <div class="hero-divider">
         <div class="hero-divider-line"></div>
@@ -986,36 +1082,29 @@
       </div>
 
       <p class="hero-subtitle">
-        Découvrez un espace chaleureux où chaque tasse est préparée avec soin,
-        des grains soigneusement sélectionnés et une passion authentique pour l'art du café.
+        <span data-site-i18n="heroSubtitle">Découvrez un espace chaleureux où chaque tasse est préparée avec soin, à partir de grains soigneusement sélectionnés et par passion pour l’art du café.</span>
       </p>
 
       <div class="hero-buttons">
-        <button class="btn-primary" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">
+        <button class="btn-primary" data-site-i18n="exploreMenu" onclick="document.getElementById('menu').scrollIntoView({behavior:'smooth'})">
           Explore Our Menu
         </button>
-        <button class="btn-secondary" onclick="document.getElementById('social').scrollIntoView({behavior:'smooth'})">
+        <button class="btn-secondary" data-site-i18n="followJourney" onclick="document.getElementById('social').scrollIntoView({behavior:'smooth'})">
           Follow Our Journey
         </button>
       </div>
     </div>
 
-    <div class="hero-scroll">
-      <span>Scroll</span>
-      <div class="scroll-mouse">
-        <div class="scroll-dot"></div>
-      </div>
-    </div>
   </section>
 
   <!-- ═══ SOCIAL SECTION ══════════════════════════════════════════════════ -->
   <section class="social-section" id="social">
     <div class="social-inner">
       <div class="social-header reveal">
-        <div class="section-label">Rejoignez-nous</div>
-        <h2 class="section-title">Our <em>Community</em></h2>
+        <div class="section-label" data-site-i18n="social.label">Rejoignez-nous</div>
+        <h2 class="section-title" data-site-i18n="social.title">Our Community</h2>
         <p class="section-subtitle" style="margin: 14px auto 0; text-align: center;">
-          Suivez nos moments café, nos créations du jour et la vie dans notre atelier.
+          <span data-site-i18n="social.subtitle">Suivez nos moments café, nos créations du jour et la vie dans notre atelier.</span>
         </p>
       </div>
 
@@ -1030,9 +1119,9 @@
             </svg>
           </div>
           <p class="social-platform">Instagram</p>
-          <p class="social-desc">Discover our<br/>coffee moments</p>
+          <p class="social-desc" data-site-i18n="social.instagramDescription">Discover our<br/>coffee moments</p>
           <span class="social-btn">
-            Follow us
+            <span data-site-i18n="social.instagramAction">Follow us</span>
             <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
           </span>
         </a>
@@ -1046,9 +1135,9 @@
             </svg>
           </div>
           <p class="social-platform">Facebook</p>
-          <p class="social-desc">Join our<br/>community</p>
+          <p class="social-desc" data-site-i18n="social.facebookDescription">Join our<br/>community</p>
           <span class="social-btn">
-            Find us
+            <span data-site-i18n="social.facebookAction">Find us</span>
             <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
           </span>
         </a>
@@ -1062,9 +1151,9 @@
             </svg>
           </div>
           <p class="social-platform">TikTok</p>
-          <p class="social-desc">Behind<br/>the coffee</p>
+          <p class="social-desc" data-site-i18n="social.tiktokDescription">Behind<br/>the coffee</p>
           <span class="social-btn">
-            Watch videos
+            <span data-site-i18n="social.tiktokAction">Watch videos</span>
             <svg viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>
           </span>
         </a>
@@ -1079,35 +1168,56 @@
 
       <div class="menu-header">
         <div class="menu-header-left reveal">
-          <div class="section-label">Notre Carte</div>
-          <h2 class="section-title">Our <em>Menu</em></h2>
+          <div class="section-label" data-site-i18n="menu.label">Notre Carte</div>
+          <h2 class="section-title" data-site-i18n="menu.title">Our Menu</h2>
           <p class="section-subtitle" style="margin-top: 14px;">
-            Des saveurs soigneusement sélectionnées pour éveiller vos sens.
+            <span data-site-i18n="menu.subtitle">Des saveurs soigneusement sélectionnées pour éveiller vos sens.</span>
           </p>
           <div class="menu-tag-row">
-            <span class="menu-tag">☕ Café · Pâtisserie</span>
-            <span class="menu-tag">🌿 Fresh Daily</span>
-            <span class="menu-tag">✨ Signatures</span>
+            <span class="menu-tag" data-site-i18n="menu.coffeePastries">☕ Café · Pâtisserie</span>
+            <span class="menu-tag" data-site-i18n="menu.freshDaily">🌿 Fresh Daily</span>
+            <span class="menu-tag" data-site-i18n="menu.signatures">✨ Signatures</span>
           </div>
         </div>
       </div>
 
       <!-- Category Navigation -->
       <div class="menu-nav reveal">
-        <button class="menu-nav-btn active" data-cat="all">All</button>
-        <button class="menu-nav-btn" data-cat="cafe">☕ Café</button>
-        <button class="menu-nav-btn" data-cat="icelatte">🧊 Ice-Latte</button>
-        <button class="menu-nav-btn" data-cat="the">🫖 Thé</button>
-        <button class="menu-nav-btn" data-cat="jus">🍊 Jus</button>
-        <button class="menu-nav-btn" data-cat="signature">✨ Signature</button>
-        <button class="menu-nav-btn" data-cat="soda">💧 Soda & Eau</button>
+        <button class="menu-nav-btn active" data-cat="all">
+          <img class="menu-nav-icon" src="logo_houssem.jpeg" alt="" aria-hidden="true" width="34" height="34"/>
+          <span data-i18n="categories.all">All</span>
+        </button>
+        <button class="menu-nav-btn" data-cat="cafe">
+          <img class="menu-nav-icon" src="images/qr_cafe_cappuccino.jpg" alt="" aria-hidden="true" width="34" height="34"/>
+          <span data-i18n="categories.cafe">Café</span>
+        </button>
+        <button class="menu-nav-btn" data-cat="icelatte">
+          <img class="menu-nav-icon" src="images/qr_ice_spanish.jpg" alt="" aria-hidden="true" width="34" height="34"/>
+          <span data-i18n="categories.icelatte">Ice-Latte</span>
+        </button>
+        <button class="menu-nav-btn" data-cat="the">
+          <img class="menu-nav-icon" src="images/qr_the_menthe.jpg" alt="" aria-hidden="true" width="34" height="34"/>
+          <span data-i18n="categories.the">Thé</span>
+        </button>
+        <button class="menu-nav-btn" data-cat="jus">
+          <img class="menu-nav-icon" src="images/qr_jus_orange.jpg" alt="" aria-hidden="true" width="34" height="34"/>
+          <span data-i18n="categories.jus">Jus</span>
+        </button>
+        <button class="menu-nav-btn" data-cat="signature">
+          <img class="menu-nav-icon" src="images/qr_sig_passion.jpg" alt="" aria-hidden="true" width="34" height="34"/>
+          <span data-i18n="categories.signature">Signature</span>
+        </button>
+        <button class="menu-nav-btn" data-cat="soda">
+          <img class="menu-nav-icon" src="images/qr_soda.svg" alt="" aria-hidden="true" width="34" height="34"/>
+          <span data-i18n="categories.soda">Soda &amp; Eau</span>
+        </button>
       </div>
 
       <!-- Product Grid — données réelles menu Bieny -->
       <div class="menu-grid" id="menuGrid">
 
         <!-- ── CAFÉ ────────────────────────────────────────────── -->
-        <div class="product-card visible" data-cat="cafe">
+        <div class="product-card visible" data-cat="cafe" data-product-id="espresso">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#3d2517,#7a5233);">☕</div>
           </div>
@@ -1119,7 +1229,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="cafe">
+        <div class="product-card visible" data-cat="cafe" data-product-id="direct">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#4a2e1a,#8a6040);">☕</div>
             <span class="product-badge badge-popular">Popular</span>
@@ -1132,7 +1242,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="cafe">
+        <div class="product-card visible" data-cat="cafe" data-product-id="cappuccino">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#5c3d2e,#9a7050);">🥛</div>
             <span class="product-badge badge-popular">Popular</span>
@@ -1145,7 +1255,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="cafe">
+        <div class="product-card visible" data-cat="cafe" data-product-id="hotChocolate">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#2a1a10,#6a4030);">🍫</div>
           </div>
@@ -1158,7 +1268,7 @@
         </div>
 
         <!-- ── ICE-LATTE ───────────────────────────────────────── -->
-        <div class="product-card visible" data-cat="icelatte">
+        <div class="product-card visible" data-cat="icelatte" data-product-id="iceLatte">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#1a2a3a,#4a7090);">🧊</div>
             <span class="product-badge badge-popular">Popular</span>
@@ -1171,7 +1281,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="icelatte">
+        <div class="product-card visible" data-cat="icelatte" data-product-id="spanishLatte">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#2a1f1a,#6a5040);">🧊</div>
             <span class="product-badge badge-popular">Popular</span>
@@ -1184,7 +1294,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="icelatte">
+        <div class="product-card visible" data-cat="icelatte" data-product-id="vanillaLatte">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#3a2a1a,#8a7050);">🍦</div>
           </div>
@@ -1196,7 +1306,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="icelatte">
+        <div class="product-card visible" data-cat="icelatte" data-product-id="caramelLatte">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#4a2a10,#9a7030);">🍮</div>
           </div>
@@ -1208,7 +1318,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="icelatte">
+        <div class="product-card visible" data-cat="icelatte" data-product-id="brownSugarLatte">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#3a1e10,#7a5030);">🤎</div>
             <span class="product-badge badge-new">New</span>
@@ -1222,7 +1332,7 @@
         </div>
 
         <!-- ── THÉ ─────────────────────────────────────────────── -->
-        <div class="product-card visible" data-cat="the">
+        <div class="product-card visible" data-cat="the" data-product-id="mintTea">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#1a3a1a,#4a8050);">🫖</div>
             <span class="product-badge badge-popular">Popular</span>
@@ -1235,7 +1345,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="the">
+        <div class="product-card visible" data-cat="the" data-product-id="peachIcedTea">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#3a2a10,#9a7040);">🍑</div>
           </div>
@@ -1247,7 +1357,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="the">
+        <div class="product-card visible" data-cat="the" data-product-id="lemonIcedTea">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#3a3a10,#9a9030);">🍋</div>
           </div>
@@ -1259,7 +1369,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="the">
+        <div class="product-card visible" data-cat="the" data-product-id="mojito">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#1a3a20,#5a8a50);">🌿</div>
             <span class="product-badge badge-new">New</span>
@@ -1273,7 +1383,7 @@
         </div>
 
         <!-- ── JUS ─────────────────────────────────────────────── -->
-        <div class="product-card visible" data-cat="jus">
+        <div class="product-card visible" data-cat="jus" data-product-id="lemonJuice">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#3a3a10,#8a8a20);">🍋</div>
           </div>
@@ -1285,7 +1395,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="jus">
+        <div class="product-card visible" data-cat="jus" data-product-id="strawberryJuice">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#3a1010,#8a2030);">🍓</div>
             <span class="product-badge badge-popular">Popular</span>
@@ -1298,7 +1408,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="jus">
+        <div class="product-card visible" data-cat="jus" data-product-id="orangeJuice">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#3a2010,#9a5020);">🍊</div>
           </div>
@@ -1311,7 +1421,7 @@
         </div>
 
         <!-- ── SIGNATURES ──────────────────────────────────────── -->
-        <div class="product-card visible" data-cat="signature">
+        <div class="product-card visible" data-cat="signature" data-product-id="bienyMojito">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#1a3a20,#4a8a50);">🍃</div>
             <span class="product-badge badge-popular">Popular</span>
@@ -1324,7 +1434,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="signature">
+        <div class="product-card visible" data-cat="signature" data-product-id="strawberryBieny">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#3a1020,#9a3050);">🍓</div>
             <span class="product-badge badge-popular">Popular</span>
@@ -1337,7 +1447,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="signature">
+        <div class="product-card visible" data-cat="signature" data-product-id="passionSunset">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#3a2a10,#9a7020);">🌟</div>
             <span class="product-badge badge-new">New</span>
@@ -1350,7 +1460,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="signature">
+        <div class="product-card visible" data-cat="signature" data-product-id="watermelonMint">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#2a1a1a,#7a3a40);">🍉</div>
           </div>
@@ -1362,7 +1472,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="signature">
+        <div class="product-card visible" data-cat="signature" data-product-id="blueLagoon">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#10203a,#2050a0);">🔵</div>
             <span class="product-badge badge-new">New</span>
@@ -1376,7 +1486,7 @@
         </div>
 
         <!-- ── SODA & EAU ──────────────────────────────────────── -->
-        <div class="product-card visible" data-cat="soda">
+        <div class="product-card visible" data-cat="soda" data-product-id="soda">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#1a1a3a,#3a5a8a);">🥤</div>
           </div>
@@ -1388,7 +1498,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="soda">
+        <div class="product-card visible" data-cat="soda" data-product-id="waterSmall">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#1a2a3a,#3a6a8a);">💧</div>
           </div>
@@ -1400,7 +1510,7 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="soda">
+        <div class="product-card visible" data-cat="soda" data-product-id="waterLarge">
           <div class="product-img-wrap">
             <div class="product-img-placeholder" style="background:linear-gradient(135deg,#1a2a3a,#2a5a7a);">💧</div>
           </div>
@@ -1422,11 +1532,7 @@
       <div class="footer-top">
         <div>
           <p class="footer-brand-name">Bieny</p>
-          <p class="footer-tagline">
-            Un espace où le café devient une expérience.<br/>
-            Des grains sélectionnés, des mains passionnées,<br/>
-            et chaque tasse raconte une histoire.
-          </p>
+          <p class="footer-tagline" data-site-i18n-html="footer.tagline">Un espace où le café devient une expérience.<br>Des grains sélectionnés, des mains passionnées,<br>et chaque tasse raconte une histoire.</p>
           <div class="footer-social">
             <a href="https://www.instagram.com/bieny_coffeeshop/" target="_blank" rel="noopener" class="footer-social-link" title="Instagram">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(245,240,232,.7)"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
@@ -1441,32 +1547,34 @@
         </div>
 
         <div>
-          <p class="footer-col-title">Navigation</p>
+          <p class="footer-col-title" data-site-i18n="footer.navigation">Navigation</p>
           <ul class="footer-links">
-            <li><a href="#hero">Home</a></li>
-            <li><a href="#social">Follow Us</a></li>
-            <li><a href="#menu">Our Menu</a></li>
+            <li><a href="#hero" data-site-i18n="nav.home">Home</a></li>
+            <li><a href="#social" data-site-i18n="nav.follow">Follow Us</a></li>
+            <li><a href="#menu" data-site-i18n="nav.menu">Our Menu</a></li>
+            <li><a href="qrcode.html" data-site-i18n="footer.qrCode">QR Code</a></li>
           </ul>
         </div>
 
         <div>
-          <p class="footer-col-title">Visit Us</p>
+          <p class="footer-col-title" data-site-i18n="footer.visit">Visit Us</p>
           <ul class="footer-links">
-            <li><a href="#">📍 Djerba Midoun, Tunisia</a></li>
-            <li><a href="#">🕐 Mon–Sun: 8h – 22h</a></li>
+            <li><a href="#">📍 <span data-i18n="addressValue">Djerba Midoun, Tunisia</span></a></li>
+            <li><a href="#">🕐 <span data-i18n="hoursValue">Mon – Sun · 8:00 AM – 10:00 PM</span></a></li>
             <li><a href="#">📞 +216 95 587 667</a></li>
           </ul>
         </div>
       </div>
 
       <div class="footer-bottom">
-        <p>© 2026 Bieny Coffeeshop. All rights reserved.</p>
-        <p>Made with <span class="footer-heart">♥</span> for great coffee</p>
+        <p>© 2026 Bieny Coffeeshop. <span data-site-i18n="footer.copyright">All rights reserved.</span></p>
+        <p data-site-i18n-html="footer.madeWith">Made with <span class="footer-heart">♥</span> for great coffee</p>
       </div>
     </div>
   </footer>
 
   <!-- ═══ JAVASCRIPT ═══════════════════════════════════════════════════════ -->
+  <script src="i18n/translations.js"></script>
   <script>
     // ── Navbar scroll effect ─────────────────────────────────────────────
     const navbar = document.getElementById('navbar');
@@ -1477,6 +1585,54 @@
     // ── Menu category filter ─────────────────────────────────────────────
     const navBtns  = document.querySelectorAll('.menu-nav-btn');
     const cards    = document.querySelectorAll('.product-card');
+
+    const productImages = {
+      espresso: 'images/qr_cafe_espresso.jpg',
+      direct: 'images/qr_cafe_direct.jpg',
+      cappuccino: 'images/qr_cafe_cappuccino.jpg',
+      hotChocolate: 'images/qr_cafe_chocolat.jpg',
+      iceLatte: 'images/qr_ice_latte.jpg',
+      spanishLatte: 'images/qr_ice_spanish.jpg',
+      vanillaLatte: 'images/qr_ice_vanilla.jpg',
+      caramelLatte: 'images/qr_ice_caramel.jpg',
+      brownSugarLatte: 'images/qr_ice_brownsugar.jpg',
+      mintTea: 'images/qr_the_menthe.jpg',
+      peachIcedTea: 'images/qr_the_peche.jpg',
+      lemonIcedTea: 'images/qr_the_citron.jpg',
+      mojito: 'images/qr_the_mojito.jpg',
+      lemonJuice: 'images/qr_jus_citron.jpg',
+      strawberryJuice: 'images/qr_jus_fraise.jpg',
+      orangeJuice: 'images/qr_jus_orange.jpg',
+      bienyMojito: 'images/qr_sig_mojito.jpg',
+      strawberryBieny: 'images/qr_sig_strawberry.jpg',
+      passionSunset: 'images/qr_sig_passion.jpg',
+      watermelonMint: 'images/qr_sig_watermelon.jpg',
+      blueLagoon: 'images/qr_sig_bluelagoon.jpg',
+      soda: 'images/qr_soda.svg',
+      waterSmall: 'images/qr_eau.jpg',
+      waterLarge: 'images/qr_eau.jpg'
+    };
+
+    cards.forEach(card => {
+      const imagePath = productImages[card.dataset.productId];
+      if (!imagePath) {
+        throw new Error(`Missing product image for "${card.dataset.productId}".`);
+      }
+
+      const image = document.createElement('img');
+      const placeholder = card.querySelector('.product-img-placeholder');
+      image.className = 'product-img';
+      image.src = imagePath;
+      image.alt = card.querySelector('.product-name').textContent;
+      image.loading = 'lazy';
+      image.hidden = true;
+      image.addEventListener('load', () => {
+        image.hidden = false;
+        placeholder.hidden = true;
+      }, { once: true });
+      image.addEventListener('error', () => image.remove(), { once: true });
+      card.querySelector('.product-img-wrap').prepend(image);
+    });
 
     navBtns.forEach(btn => {
       btn.addEventListener('click', () => {
@@ -1496,6 +1652,133 @@
         });
       });
     });
+
+    // ── Language switcher ────────────────────────────────────────────────
+    const languageTrigger = document.getElementById('languageTrigger');
+    const languageMenu = document.getElementById('languageMenu');
+    const languageSwitcher = document.querySelector('.nav-language');
+    const supportedLanguages = ['fr', 'en', 'ar', 'de'];
+
+    function getSavedLanguage() {
+      try {
+        const language = window.localStorage.getItem('bieny-language');
+        return supportedLanguages.includes(language) ? language : 'fr';
+      } catch (error) {
+        console.error('Unable to read the saved language preference.', error);
+        return 'fr';
+      }
+    }
+
+    function getTranslation(locale, key) {
+      const value = key.split('.').reduce((entry, part) => entry && entry[part], locale);
+      if (typeof value !== 'string') {
+        throw new Error(`Missing translation "${key}" for the selected language.`);
+      }
+      return value;
+    }
+
+    function applyLanguage(language) {
+      if (!supportedLanguages.includes(language)) {
+        throw new Error(`Unsupported language: ${language}`);
+      }
+
+      const locale = window.MENU_TRANSLATIONS[language];
+      if (!locale) {
+        throw new Error(`Translations are not available for "${language}".`);
+      }
+
+      const site = locale.site;
+      if (!site) throw new Error(`Site translations are not available for "${language}".`);
+
+      document.documentElement.lang = language;
+      document.documentElement.dir = locale.dir;
+      document.title = site.documentTitle;
+
+      document.querySelectorAll('[data-i18n]').forEach(element => {
+        element.textContent = getTranslation(locale, element.dataset.i18n);
+      });
+      document.querySelectorAll('[data-i18n-html]').forEach(element => {
+        element.innerHTML = getTranslation(locale, element.dataset.i18nHtml);
+      });
+      document.querySelectorAll('[data-i18n-aria-label]').forEach(element => {
+        element.setAttribute('aria-label', getTranslation(locale, element.dataset.i18nAriaLabel));
+      });
+      document.querySelectorAll('[data-site-i18n]').forEach(element => {
+        element.textContent = getTranslation(site, element.dataset.siteI18n);
+      });
+      document.querySelectorAll('[data-site-i18n-html]').forEach(element => {
+        element.innerHTML = getTranslation(site, element.dataset.siteI18nHtml);
+      });
+      document.querySelectorAll('[data-site-i18n-aria-label]').forEach(element => {
+        element.setAttribute('aria-label', getTranslation(site, element.dataset.siteI18nAriaLabel));
+      });
+
+      document.getElementById('currentLanguage').textContent = language.toUpperCase();
+      languageTrigger.setAttribute('aria-label', locale.switchLanguage);
+      document.querySelectorAll('.language-option').forEach(option => {
+        const isSelected = option.dataset.language === language;
+        option.setAttribute('aria-checked', String(isSelected));
+        option.querySelector('.language-check').textContent = isSelected ? '✓' : '';
+      });
+
+      document.querySelectorAll('.product-card').forEach(card => {
+        const productId = card.dataset.productId;
+        const productDescription = site.products[productId];
+        if (typeof productDescription !== 'string') {
+          throw new Error(`Missing "${productId}" product translation for "${language}".`);
+        }
+        card.querySelector('.product-category').textContent = locale.categories[card.dataset.cat];
+        card.querySelector('.product-desc').textContent = productDescription;
+        const badge = card.querySelector('.product-badge');
+        if (badge) {
+          badge.textContent = badge.classList.contains('badge-popular') ? site.menu.popular : site.menu.new;
+        }
+      });
+    }
+
+    function closeLanguageMenu(returnFocus) {
+      languageMenu.hidden = true;
+      languageTrigger.setAttribute('aria-expanded', 'false');
+      if (returnFocus) languageTrigger.focus();
+    }
+
+    languageTrigger.addEventListener('click', () => {
+      const isOpening = languageMenu.hidden;
+      languageMenu.hidden = !isOpening;
+      languageTrigger.setAttribute('aria-expanded', String(isOpening));
+    });
+
+    languageMenu.addEventListener('click', event => {
+      const option = event.target.closest('.language-option');
+      if (!option) return;
+
+      const language = option.dataset.language;
+      applyLanguage(language);
+      try {
+        window.localStorage.setItem('bieny-language', language);
+      } catch (error) {
+        console.error('Unable to save the language preference.', error);
+      }
+      closeLanguageMenu(true);
+    });
+
+    document.addEventListener('pointerdown', event => {
+      if (!languageSwitcher.contains(event.target) && !languageMenu.hidden) {
+        closeLanguageMenu(false);
+      }
+    });
+
+    document.addEventListener('keydown', event => {
+      if (event.key === 'Escape' && !languageMenu.hidden) {
+        closeLanguageMenu(true);
+      }
+    });
+
+    const requestedLanguage = new URLSearchParams(window.location.search).get('lang');
+    const initialLanguage = supportedLanguages.includes(requestedLanguage)
+      ? requestedLanguage
+      : getSavedLanguage();
+    applyLanguage(initialLanguage);
 
     // ── Intersection Observer — reveal on scroll ──────────────────────────
     const revealEls = document.querySelectorAll('.reveal');
