@@ -41,7 +41,7 @@ window.MENU_TRANSLATIONS = {
     address: 'Adresse',
     addressValue: 'Djerba Midoun, Tunisie',
     hours: 'Horaires',
-    hoursValue: 'Lun – Dim · 8h00 – 22h00',
+    hoursValue: 'Lun – Dim · 7h00 – 22h00',
     phone: 'Téléphone',
     website: 'Site web',
     navigation: {
@@ -208,7 +208,7 @@ window.MENU_TRANSLATIONS = {
     address: 'Address',
     addressValue: 'Djerba Midoun, Tunisia',
     hours: 'Opening hours',
-    hoursValue: 'Mon – Sun · 8:00 AM – 10:00 PM',
+    hoursValue: 'Mon – Sun · 7:00 AM – 10:00 PM',
     phone: 'Phone',
     website: 'Website',
     navigation: {
@@ -375,7 +375,7 @@ window.MENU_TRANSLATIONS = {
     address: 'العنوان',
     addressValue: 'جربة ميدون، تونس',
     hours: 'أوقات العمل',
-    hoursValue: 'كل الأيام · ٨:٠٠ صباحًا – ١٠:٠٠ مساءً',
+    hoursValue: 'كل الأيام · ٧:٠٠ صباحًا – ١٠:٠٠ مساءً',
     phone: 'الهاتف',
     website: 'الموقع الإلكتروني',
     navigation: {
@@ -542,7 +542,7 @@ window.MENU_TRANSLATIONS = {
     address: 'Adresse',
     addressValue: 'Djerba Midoun, Tunesien',
     hours: 'Öffnungszeiten',
-    hoursValue: 'Mo. – So. · 8:00 – 22:00 Uhr',
+    hoursValue: 'Mo. – So. · 7:00 – 22:00 Uhr',
     phone: 'Telefon',
     website: 'Webseite',
     navigation: {
