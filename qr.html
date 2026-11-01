@@ -586,6 +586,18 @@
           <img class="cat-icon" src="images/qr_soda.svg" alt="" aria-hidden="true" width="32" height="32"/>
           <span data-i18n="categories.soda">Soda</span>
         </button>
+        <button class="cat-pill" data-cat="cookies">
+          <span>🍪</span>
+          <span data-i18n="categories.cookies">Cookies</span>
+        </button>
+        <button class="cat-pill" data-cat="brownies">
+          <span>🍫</span>
+          <span data-i18n="categories.brownies">Brownies</span>
+        </button>
+        <button class="cat-pill" data-cat="croissants">
+          <span>🥐</span>
+          <span data-i18n="categories.croissants">Croissants</span>
+        </button>
       </div>
       <div class="product-list" id="productList"></div>
     </div>
@@ -698,6 +710,24 @@
     { id:'soda',              cat:'soda',      e:'🥤', bg:'#1a1a3a,#3a5a8a', n:'Soda',             p:'4',   b:'',    alt:'Canettes Coca-Cola et Fanta', img:'images/qr_soda.svg' },
     { id:'waterSmall',        cat:'soda',      e:'💧', bg:'#1a2a3a,#3a6a8a', n:'Eau 0,5L',         p:'1.5', b:'',    img:'images/qr_eau.jpg' },
     { id:'waterLarge',        cat:'soda',      e:'💧', bg:'#1a2a3a,#2a5a7a', n:'Eau 1L',           p:'2',   b:'',    img:'images/qr_eau.jpg' },
+    // COOKIES
+    { id:'cookieClassic',     cat:'cookies',   e:'🍪', bg:'#5a3a10,#b08040', n:'Cookie Classic',    p:'4.5', b:'pop', img:'images/cookie_classic.jpg' },
+    { id:'cookieChocolate',   cat:'cookies',   e:'🍪', bg:'#3a1a10,#7a3820', n:'Cookie Chocolate',  p:'5',   b:'',    img:'images/cookie_chocolate.jpg' },
+    { id:'cookieNutella',     cat:'cookies',   e:'🍪', bg:'#4a2a10,#8a5020', n:'Cookie Nutella',    p:'6',   b:'',    img:'images/cookie_nutella.jpg' },
+    { id:'cookieBueno',       cat:'cookies',   e:'🍪', bg:'#3a2a10,#7a5030', n:'Cookie Bueno',      p:'6',   b:'',    img:'images/cookie_bueno.jpg' },
+    { id:'cookiePistachio',   cat:'cookies',   e:'🍪', bg:'#2a3a10,#5a7030', n:'Cookie Pistachio',  p:'7',   b:'',    img:'images/cookie_pistachio.jpg' },
+    { id:'cookieDubai',       cat:'cookies',   e:'🍪', bg:'#3a2a10,#8a6030', n:'Cookie Dubai',      p:'8',   b:'new', img:'images/cookie_dubai.jpg' },
+    { id:'cookieBiscoff',     cat:'cookies',   e:'🍪', bg:'#5a3010,#9a6020', n:'Cookie Biscoff',    p:'6',   b:'',    img:'images/cookie_biscoff.jpg' },
+    { id:'redVelvet',         cat:'cookies',   e:'🍪', bg:'#5a1010,#9a2020', n:'Red Velvet',        p:'6',   b:'',    img:'images/cookie_redvelvet.jpg' },
+    // BROWNIES
+    { id:'brownieClassic',    cat:'brownies',  e:'🍫', bg:'#2a1a08,#5a3010', n:'Brownie Classic',   p:'4',   b:'pop', img:'images/brownie_classic.jpg' },
+    { id:'brownieBiscoff',    cat:'brownies',  e:'🍫', bg:'#4a2a08,#8a5010', n:'Brownie Biscoff',   p:'6',   b:'',    img:'images/brownie_biscoff.jpg' },
+    { id:'brownieBueno',      cat:'brownies',  e:'🍫', bg:'#3a2010,#7a4010', n:'Brownie Bueno',     p:'6',   b:'',    img:'images/brownie_bueno.jpg' },
+    { id:'browniePistachio',  cat:'brownies',  e:'🍫', bg:'#2a3010,#4a6020', n:'Brownie Pistachio', p:'7',   b:'',    img:'images/brownie_pistachio.jpg' },
+    { id:'brownieDubai',      cat:'brownies',  e:'🍫', bg:'#3a2a10,#7a5020', n:'Brownie Dubai',     p:'8',   b:'new', img:'images/brownie_dubai.jpg' },
+    // CROISSANTS
+    { id:'croissantNature',   cat:'croissants',e:'🥐', bg:'#6a4a10,#b08020', n:'Croissant Nature',  p:'2.5', b:'pop', img:'images/croissant_nature.jpg' },
+    { id:'croissantChocolat', cat:'croissants',e:'🥐', bg:'#3a1a08,#7a4010', n:'Croissant Chocolat',p:'2.8', b:'',    img:'images/croissant_chocolat.jpg' },
   ];
 
   /* ── Render — photo produit avec emoji de secours ─────────────────── */

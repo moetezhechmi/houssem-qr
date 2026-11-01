@@ -21,7 +21,10 @@ window.MENU_TRANSLATIONS = {
       the: 'Thé',
       jus: 'Jus',
       signature: 'Signature',
-      soda: 'Soda & Eau'
+      soda: 'Soda & Eau',
+      cookies: 'Cookies',
+      brownies: 'Brownies',
+      croissants: 'Croissants'
     },
     socialCommunity: 'Bonnes boissons · Bonne ambiance<br>Rejoignez notre communauté',
     followers: 'Abonnés',
@@ -140,7 +143,22 @@ window.MENU_TRANSLATIONS = {
       blueLagoon: 'Blue curaçao, citron, eau gazeuse.',
       soda: 'Coca-Cola et Fanta, boissons gazeuses fraîches.',
       waterSmall: 'Eau minérale naturelle.',
-      waterLarge: 'Eau minérale, grande bouteille.'
+      waterLarge: 'Eau minérale, grande bouteille.',
+      cookieClassic: 'Cookie croustillant aux pépites de chocolat, beurré et généreux.',
+      cookieChocolate: 'Cookie tout chocolat, intense et fondant au cœur.',
+      cookieNutella: 'Cookie gourmand fourré au Nutella, irrésistible.',
+      cookieBueno: 'Cookie au praliné Kinder Bueno, croustillant et doux.',
+      cookiePistachio: 'Cookie à la pistache, délicatement parfumé et coloré.',
+      cookieDubai: 'Cookie Dubai au chocolat et kadaïf, notre star du moment.',
+      cookieBiscoff: 'Cookie au beurre de spéculoos Biscoff, caramélisé et fondant.',
+      redVelvet: 'Cookie Red Velvet au cream cheese, rouge velours et doux.',
+      brownieClassic: 'Brownie classique au chocolat noir, dense et fondant.',
+      brownieBiscoff: 'Brownie au spéculoos Biscoff, caramel et chocolat.',
+      brownieBueno: 'Brownie au Kinder Bueno, praliné et chocolat au lait.',
+      browniePistachio: 'Brownie à la pistache, fondant et parfumé.',
+      brownieDubai: 'Brownie Dubai au chocolat et kadaïf croustillant.',
+      croissantNature: 'Croissant beurré croustillant, doré au four chaque matin.',
+      croissantChocolat: 'Croissant au chocolat fondant, feuilleté et gourmand.'
     }
   },
   en: {
@@ -165,7 +183,10 @@ window.MENU_TRANSLATIONS = {
       the: 'Tea',
       jus: 'Juice',
       signature: 'Signature',
-      soda: 'Soda & Water'
+      soda: 'Soda & Water',
+      cookies: 'Cookies',
+      brownies: 'Brownies',
+      croissants: 'Croissants'
     },
     socialCommunity: 'Good Drinks · Good Vibes<br>Join our community',
     followers: 'Followers',
@@ -284,7 +305,22 @@ window.MENU_TRANSLATIONS = {
       blueLagoon: 'Blue curaçao, lemon and sparkling water.',
       soda: 'Refreshing Coca-Cola and Fanta soft drinks.',
       waterSmall: 'Natural mineral water.',
-      waterLarge: 'Natural mineral water, large bottle.'
+      waterLarge: 'Natural mineral water, large bottle.',
+      cookieClassic: 'Crunchy chocolate chip cookie, buttery and generous.',
+      cookieChocolate: 'All-chocolate cookie, intense and soft in the center.',
+      cookieNutella: 'Indulgent Nutella-filled cookie, utterly irresistible.',
+      cookieBueno: 'Kinder Bueno praline cookie, crunchy and creamy.',
+      cookiePistachio: 'Pistachio cookie, delicately flavored and beautifully colored.',
+      cookieDubai: 'Dubai cookie with chocolate and kadaïf, our star of the moment.',
+      cookieBiscoff: 'Biscoff speculoos butter cookie, caramelized and melt-in-your-mouth.',
+      redVelvet: 'Red Velvet cream cheese cookie, velvety red and soft.',
+      brownieClassic: 'Classic dark chocolate brownie, dense and fudgy.',
+      brownieBiscoff: 'Biscoff speculoos brownie with caramel and chocolate.',
+      brownieBueno: 'Kinder Bueno brownie with praline and milk chocolate.',
+      browniePistachio: 'Pistachio brownie, fudgy and fragrant.',
+      brownieDubai: 'Dubai brownie with chocolate and crunchy kadaïf.',
+      croissantNature: 'Buttery flaky croissant, golden-baked fresh every morning.',
+      croissantChocolat: 'Chocolate-filled croissant, flaky and indulgent.'
     }
   },
   ar: {
@@ -309,7 +345,10 @@ window.MENU_TRANSLATIONS = {
       the: 'شاي',
       jus: 'عصائر',
       signature: 'مشروباتنا الخاصة',
-      soda: 'مشروبات ومياه'
+      soda: 'مشروبات ومياه',
+      cookies: 'كوكيز',
+      brownies: 'براونيز',
+      croissants: 'كرواسان'
     },
     socialCommunity: 'مشروبات طيبة · أجواء جميلة<br>انضموا إلى مجتمعنا',
     followers: 'متابعون',
@@ -428,7 +467,22 @@ window.MENU_TRANSLATIONS = {
       blueLagoon: 'بلو كوراكاو وليمون وماء فوار.',
       soda: 'مشروبات كوكاكولا وفانتا الغازية والمنعشة.',
       waterSmall: 'مياه معدنية طبيعية.',
-      waterLarge: 'مياه معدنية طبيعية، عبوة كبيرة.'
+      waterLarge: 'مياه معدنية طبيعية، عبوة كبيرة.',
+      cookieClassic: 'كوكي مقرمش بقطع الشوكولاتة، بالزبدة وبحجم سخي.',
+      cookieChocolate: 'كوكي شوكولاتة كامل، كثيف وطري من الداخل.',
+      cookieNutella: 'كوكي محشو بالنوتيلا، لا يمكن مقاومته.',
+      cookieBueno: 'كوكي بحشوة كيندر بوينو، مقرمش وكريمي.',
+      cookiePistachio: 'كوكي بالفستق الحلبي، برائحة لطيفة ولون جميل.',
+      cookieDubai: 'كوكي دبي بالشوكولاتة والقطايف، نجمة اللحظة.',
+      cookieBiscoff: 'كوكي بزبدة البسكويت بيسكوف، بنكهة الكراميل.',
+      redVelvet: 'كوكي ريد فيلفيت بكريمة الجبن، أحمر ناعم ومميز.',
+      brownieClassic: 'براوني كلاسيكي بالشوكولاتة الداكنة، كثيف وطري.',
+      brownieBiscoff: 'براوني بيسكوف بالكراميل والشوكولاتة.',
+      brownieBueno: 'براوني كيندر بوينو بالبرالين وشوكولاتة الحليب.',
+      browniePistachio: 'براوني بالفستق الحلبي، طري وعطر.',
+      brownieDubai: 'براوني دبي بالشوكولاتة والقطايف المقرمش.',
+      croissantNature: 'كرواسان بالزبدة مقرمش، يُخبز طازجاً كل صباح.',
+      croissantChocolat: 'كرواسان بالشوكولاتة، هش ولذيذ.'
     }
   },
   de: {
@@ -453,7 +507,10 @@ window.MENU_TRANSLATIONS = {
       the: 'Tee',
       jus: 'Säfte',
       signature: 'Spezialitäten',
-      soda: 'Softdrinks & Wasser'
+      soda: 'Softdrinks & Wasser',
+      cookies: 'Cookies',
+      brownies: 'Brownies',
+      croissants: 'Croissants'
     },
     socialCommunity: 'Gute Getränke · Gute Stimmung<br>Werde Teil unserer Community',
     followers: 'Follower',
@@ -572,7 +629,22 @@ window.MENU_TRANSLATIONS = {
       blueLagoon: 'Blue Curaçao, Zitrone und sprudelndes Wasser.',
       soda: 'Erfrischende Coca-Cola und Fanta.',
       waterSmall: 'Natürliches Mineralwasser.',
-      waterLarge: 'Natürliches Mineralwasser in der großen Flasche.'
+      waterLarge: 'Natürliches Mineralwasser in der großen Flasche.',
+      cookieClassic: 'Knuspriger Schokostückchen-Cookie, butterig und großzügig.',
+      cookieChocolate: 'Ganzer Schokoladencookie, intensiv und mit weichem Kern.',
+      cookieNutella: 'Göttlicher Nutella-gefüllter Cookie.',
+      cookieBueno: 'Kinder-Bueno-Pralinee-Cookie, knusprig und cremig.',
+      cookiePistachio: 'Pistazien-Cookie, fein aromatisiert und farbenfroh.',
+      cookieDubai: 'Dubai-Cookie mit Schokolade und Kadaïf, unser Star des Moments.',
+      cookieBiscoff: 'Biscoff-Spekulatius-Butter-Cookie, karamellisiert und zart.',
+      redVelvet: 'Red-Velvet-Frischkäse-Cookie, samtrot und weich.',
+      brownieClassic: 'Klassischer Zartbitterschokoladen-Brownie, dicht und fudgig.',
+      brownieBiscoff: 'Biscoff-Brownie mit Karamell und Schokolade.',
+      brownieBueno: 'Kinder-Bueno-Brownie mit Pralinee und Milchschokolade.',
+      browniePistachio: 'Pistazien-Brownie, fudgig und duftend.',
+      brownieDubai: 'Dubai-Brownie mit Schokolade und knusprigem Kadaïf.',
+      croissantNature: 'Butteriges, blättriges Croissant, jeden Morgen frisch gebacken.',
+      croissantChocolat: 'Schokoladengefülltes Croissant, blätterig und lecker.'
     }
   }
 };
