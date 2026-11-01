@@ -1187,6 +1187,10 @@
           <img class="menu-nav-icon" src="logo_houssem.jpeg" alt="" aria-hidden="true" width="34" height="34"/>
           <span data-i18n="categories.all">All</span>
         </button>
+        <button class="menu-nav-btn" data-cat="formules">
+          <img class="menu-nav-icon" src="images/formule_matin_cookie.jpg" alt="" aria-hidden="true" width="34" height="34"/>
+          <span data-i18n="categories.formules">Formules</span>
+        </button>
         <button class="menu-nav-btn" data-cat="cafe">
           <img class="menu-nav-icon" src="images/qr_cafe_cappuccino.jpg" alt="" aria-hidden="true" width="34" height="34"/>
           <span data-i18n="categories.cafe">Café</span>
@@ -1210,6 +1214,18 @@
         <button class="menu-nav-btn" data-cat="soda">
           <img class="menu-nav-icon" src="images/qr_soda.svg" alt="" aria-hidden="true" width="34" height="34"/>
           <span data-i18n="categories.soda">Soda &amp; Eau</span>
+        </button>
+        <button class="menu-nav-btn" data-cat="cookies">
+          <img class="menu-nav-icon" src="images/cookie_classic.jpg" alt="" aria-hidden="true" width="34" height="34"/>
+          <span data-i18n="categories.cookies">Cookies</span>
+        </button>
+        <button class="menu-nav-btn" data-cat="brownies">
+          <img class="menu-nav-icon" src="images/brownie_classic.jpg" alt="" aria-hidden="true" width="34" height="34"/>
+          <span data-i18n="categories.brownies">Brownies</span>
+        </button>
+        <button class="menu-nav-btn" data-cat="croissants">
+          <img class="menu-nav-icon" src="images/croissant_nature.jpg" alt="" aria-hidden="true" width="34" height="34"/>
+          <span data-i18n="categories.croissants">Croissants</span>
         </button>
       </div>
 
@@ -1341,7 +1357,7 @@
             <p class="product-category">Thé</p>
             <h3 class="product-name">Thé à la menthe</h3>
             <p class="product-desc">Thé vert infusé, menthe fraîche généreuse, sucré selon votre goût.</p>
-            <div class="product-footer"><p class="product-price">4<span>DT</span></p></div>
+            <div class="product-footer"><p class="product-price">2<span>DT</span></p></div>
           </div>
         </div>
 
@@ -1369,16 +1385,27 @@
           </div>
         </div>
 
-        <div class="product-card visible" data-cat="the" data-product-id="mojito">
+        <div class="product-card visible" data-cat="the" data-product-id="almondTea">
           <div class="product-img-wrap">
-            <div class="product-img-placeholder" style="background:linear-gradient(135deg,#1a3a20,#5a8a50);">🌿</div>
-            <span class="product-badge badge-new">New</span>
+            <div class="product-img-placeholder" style="background:linear-gradient(135deg,#5a3a20,#b08050);">🫖</div>
           </div>
           <div class="product-info">
-            <p class="product-category">Thé Glacé</p>
-            <h3 class="product-name">Mojito</h3>
-            <p class="product-desc">Menthe fraîche, citron vert, sirop, eau gazeuse — la fraîcheur ultime.</p>
+            <p class="product-category">Thé</p>
+            <h3 class="product-name">Thé aux amandes</h3>
+            <p class="product-desc">Thé parfumé aux amandes.</p>
             <div class="product-footer"><p class="product-price">5<span>DT</span></p></div>
+          </div>
+        </div>
+
+        <div class="product-card visible" data-cat="the" data-product-id="baklawaTea">
+          <div class="product-img-wrap">
+            <div class="product-img-placeholder" style="background:linear-gradient(135deg,#6a4a20,#b08040);">🫖</div>
+          </div>
+          <div class="product-info">
+            <p class="product-category">Thé</p>
+            <h3 class="product-name">Thé Baklawa</h3>
+            <p class="product-desc">Thé accompagné de baklawa.</p>
+            <div class="product-footer"><p class="product-price">7<span>DT</span></p></div>
           </div>
         </div>
 
@@ -1522,6 +1549,167 @@
           </div>
         </div>
 
+        <!-- ── COOKIES ─────────────────────────────────────────── -->
+        <div class="product-card visible" data-cat="cookies" data-product-id="cookieClassic">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🍪</div></div>
+          <div class="product-info">
+            <p class="product-category">Cookies</p>
+            <h3 class="product-name">Cookie Classic</h3>
+            <p class="product-desc">Cookie aux pépites de chocolat.</p>
+            <div class="product-footer"><p class="product-price">4.5<span>DT</span></p></div>
+          </div>
+        </div>
+        <div class="product-card visible" data-cat="cookies" data-product-id="cookieChocolate">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🍪</div></div>
+          <div class="product-info">
+            <p class="product-category">Cookies</p>
+            <h3 class="product-name">Cookie Chocolate</h3>
+            <p class="product-desc">Cookie tout chocolat.</p>
+            <div class="product-footer"><p class="product-price">5<span>DT</span></p></div>
+          </div>
+        </div>
+        <div class="product-card visible" data-cat="cookies" data-product-id="cookieNutella">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🍪</div></div>
+          <div class="product-info">
+            <p class="product-category">Cookies</p>
+            <h3 class="product-name">Cookie Nutella</h3>
+            <p class="product-desc">Cookie fourré au Nutella.</p>
+            <div class="product-footer"><p class="product-price">6<span>DT</span></p></div>
+          </div>
+        </div>
+        <div class="product-card visible" data-cat="cookies" data-product-id="cookieBueno">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🍪</div></div>
+          <div class="product-info">
+            <p class="product-category">Cookies</p>
+            <h3 class="product-name">Cookie Bueno</h3>
+            <p class="product-desc">Cookie au praliné Kinder Bueno.</p>
+            <div class="product-footer"><p class="product-price">6<span>DT</span></p></div>
+          </div>
+        </div>
+        <div class="product-card visible" data-cat="cookies" data-product-id="cookiePistachio">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🍪</div></div>
+          <div class="product-info">
+            <p class="product-category">Cookies</p>
+            <h3 class="product-name">Cookie Pistachio</h3>
+            <p class="product-desc">Cookie à la pistache.</p>
+            <div class="product-footer"><p class="product-price">7<span>DT</span></p></div>
+          </div>
+        </div>
+        <div class="product-card visible" data-cat="cookies" data-product-id="cookieDubai">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🍪</div></div>
+          <div class="product-info">
+            <p class="product-category">Cookies</p>
+            <h3 class="product-name">Cookie Dubai</h3>
+            <p class="product-desc">Cookie au chocolat et kadaïf.</p>
+            <div class="product-footer"><p class="product-price">8<span>DT</span></p></div>
+          </div>
+        </div>
+        <div class="product-card visible" data-cat="cookies" data-product-id="cookieBiscoff">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🍪</div></div>
+          <div class="product-info">
+            <p class="product-category">Cookies</p>
+            <h3 class="product-name">Cookie Biscoff</h3>
+            <p class="product-desc">Cookie au spéculoos Biscoff.</p>
+            <div class="product-footer"><p class="product-price">6<span>DT</span></p></div>
+          </div>
+        </div>
+        <div class="product-card visible" data-cat="cookies" data-product-id="redVelvet">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🍪</div></div>
+          <div class="product-info">
+            <p class="product-category">Cookies</p>
+            <h3 class="product-name">Red Velvet</h3>
+            <p class="product-desc">Cookie Red Velvet au cream cheese.</p>
+            <div class="product-footer"><p class="product-price">6<span>DT</span></p></div>
+          </div>
+        </div>
+
+        <!-- ── BROWNIES ────────────────────────────────────────── -->
+        <div class="product-card visible" data-cat="brownies" data-product-id="brownieClassic">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🍫</div></div>
+          <div class="product-info">
+            <p class="product-category">Brownies</p>
+            <h3 class="product-name">Brownie Classic</h3>
+            <p class="product-desc">Brownie classique au chocolat noir.</p>
+            <div class="product-footer"><p class="product-price">4<span>DT</span></p></div>
+          </div>
+        </div>
+        <div class="product-card visible" data-cat="brownies" data-product-id="brownieBiscoff">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🍫</div></div>
+          <div class="product-info">
+            <p class="product-category">Brownies</p>
+            <h3 class="product-name">Brownie Biscoff</h3>
+            <p class="product-desc">Brownie au spéculoos Biscoff.</p>
+            <div class="product-footer"><p class="product-price">6<span>DT</span></p></div>
+          </div>
+        </div>
+        <div class="product-card visible" data-cat="brownies" data-product-id="brownieBueno">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🍫</div></div>
+          <div class="product-info">
+            <p class="product-category">Brownies</p>
+            <h3 class="product-name">Brownie Bueno</h3>
+            <p class="product-desc">Brownie au Kinder Bueno.</p>
+            <div class="product-footer"><p class="product-price">6<span>DT</span></p></div>
+          </div>
+        </div>
+        <div class="product-card visible" data-cat="brownies" data-product-id="browniePistachio">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🍫</div></div>
+          <div class="product-info">
+            <p class="product-category">Brownies</p>
+            <h3 class="product-name">Brownie Pistachio</h3>
+            <p class="product-desc">Brownie à la pistache.</p>
+            <div class="product-footer"><p class="product-price">7<span>DT</span></p></div>
+          </div>
+        </div>
+        <div class="product-card visible" data-cat="brownies" data-product-id="brownieDubai">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🍫</div></div>
+          <div class="product-info">
+            <p class="product-category">Brownies</p>
+            <h3 class="product-name">Brownie Dubai</h3>
+            <p class="product-desc">Brownie au chocolat et kadaïf.</p>
+            <div class="product-footer"><p class="product-price">8<span>DT</span></p></div>
+          </div>
+        </div>
+
+        <!-- ── CROISSANTS ──────────────────────────────────────── -->
+        <div class="product-card visible" data-cat="croissants" data-product-id="croissantNature">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🥐</div></div>
+          <div class="product-info">
+            <p class="product-category">Croissants</p>
+            <h3 class="product-name">Croissant Nature</h3>
+            <p class="product-desc">Croissant beurré et croustillant.</p>
+            <div class="product-footer"><p class="product-price">2.5<span>DT</span></p></div>
+          </div>
+        </div>
+        <div class="product-card visible" data-cat="croissants" data-product-id="croissantChocolat">
+          <div class="product-img-wrap"><div class="product-img-placeholder">🥐</div></div>
+          <div class="product-info">
+            <p class="product-category">Croissants</p>
+            <h3 class="product-name">Croissant Chocolat</h3>
+            <p class="product-desc">Croissant feuilleté au chocolat.</p>
+            <div class="product-footer"><p class="product-price">2.8<span>DT</span></p></div>
+          </div>
+        </div>
+
+        <!-- ── FORMULES MATIN ──────────────────────────────────── -->
+        <div class="product-card visible" data-cat="formules" data-product-id="morningCookie">
+          <div class="product-img-wrap"><div class="product-img-placeholder">☕</div></div>
+          <div class="product-info">
+            <p class="product-category">Formules</p>
+            <h3 class="product-name">Formule Matin · Café + Cookie</h3>
+            <p class="product-desc">1 café + 1 cookie · Tous les jours de 7h00 à 11h00.</p>
+            <div class="product-footer"><p class="product-price">6<span>DT</span></p></div>
+          </div>
+        </div>
+        <div class="product-card visible" data-cat="formules" data-product-id="morningCroissant">
+          <div class="product-img-wrap"><div class="product-img-placeholder">☕</div></div>
+          <div class="product-info">
+            <p class="product-category">Formules</p>
+            <h3 class="product-name">Formule Matin · Café + Croissant</h3>
+            <p class="product-desc">1 café + 1 croissant · Tous les jours de 7h00 à 10h00.</p>
+            <div class="product-footer"><p class="product-price">4.500<span>DT</span></p></div>
+          </div>
+        </div>
+
       </div>
     </div>
   </section>
@@ -1599,7 +1787,8 @@
       mintTea: 'images/qr_the_menthe.jpg',
       peachIcedTea: 'images/qr_the_peche.jpg',
       lemonIcedTea: 'images/qr_the_citron.jpg',
-      mojito: 'images/qr_the_mojito.jpg',
+      almondTea: 'images/qr_the_amandes.jpg',
+      baklawaTea: 'images/qr_the_baklawa.jpg',
       lemonJuice: 'images/qr_jus_citron.jpg',
       strawberryJuice: 'images/qr_jus_fraise.jpg',
       orangeJuice: 'images/qr_jus_orange.jpg',
@@ -1610,7 +1799,24 @@
       blueLagoon: 'images/qr_sig_bluelagoon.jpg',
       soda: 'images/qr_soda.svg',
       waterSmall: 'images/qr_eau.jpg',
-      waterLarge: 'images/qr_eau.jpg'
+      waterLarge: 'images/qr_eau.jpg',
+      cookieClassic: 'images/cookie_classic.jpg',
+      cookieChocolate: 'images/cookie_chocolate.jpg',
+      cookieNutella: 'images/cookie_nutella.jpg',
+      cookieBueno: 'images/cookie_bueno.jpg',
+      cookiePistachio: 'images/cookie_pistachio.jpg',
+      cookieDubai: 'images/cookie_dubai.jpg',
+      cookieBiscoff: 'images/cookie_biscoff.jpg',
+      redVelvet: 'images/cookie_redvelvet.jpg',
+      brownieClassic: 'images/brownie_classic.jpg',
+      brownieBiscoff: 'images/brownie_biscoff.jpg',
+      brownieBueno: 'images/brownie_bueno.jpg',
+      browniePistachio: 'images/brownie_pistachio.jpg',
+      brownieDubai: 'images/brownie_dubai.jpg',
+      croissantNature: 'images/croissant_nature.jpg',
+      croissantChocolat: 'images/croissant_chocolat.jpg',
+      morningCookie: 'images/formule_matin_cookie.jpg',
+      morningCroissant: 'images/formule_matin_croissant.jpg'
     };
 
     cards.forEach(card => {
@@ -1723,7 +1929,7 @@
 
       document.querySelectorAll('.product-card').forEach(card => {
         const productId = card.dataset.productId;
-        const productDescription = site.products[productId];
+        const productDescription = site.products[productId] || locale.products[productId];
         if (typeof productDescription !== 'string') {
           throw new Error(`Missing "${productId}" product translation for "${language}".`);
         }
