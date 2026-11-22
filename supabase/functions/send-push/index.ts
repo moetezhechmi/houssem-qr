@@ -39,18 +39,32 @@ Deno.serve(async (req) => {
   const { data: subs, error: sErr } = await q;
   if (sErr) return json(500, { error: 'FETCH_FAILED', message: sErr.message });
 
-  const results: any[] = [];
-  for (const sub of subs ?? []) {
-    // Preferences check
-    const { data: pref } = await admin.from('NotificationPreferences').select('*').eq('customer_id', sub.customer_id).maybeSingle();
-    if (!pref?.push_enabled) continue;
-    if (type === 'marketing' && !pref.marketing_enabled) continue;
-    if (type === 'reward' && !pref.reward_notifications) continue;
-    if (type === 'reminder' && !pref.reminder_notifications) continue;
-    if (type === 'progress' && !pref.progress_notifications) continue;
-    if (type === 'card' && !pref.card_notifications) continue;
+  // Filter subscriptions matching target customers
+  const activeSubs = subs ?? [];
+  if (activeSubs.length === 0) {
+    return json(200, { ok: true, sent: 0, results: [] });
+  }
 
-    const payload = JSON.stringify({ title, body: message, icon: '/icon.svg', data: { url } });
+  // Batch-fetch preferences in one single query to save database roundtrips
+  const subCustomerIds = [...new Set(activeSubs.map((s: any) => s.customer_id))];
+  const { data: allPrefs } = await admin.from('NotificationPreferences').select('*').in('customer_id', subCustomerIds);
+  const prefMap = new Map((allPrefs ?? []).map((p: any) => [p.customer_id, p]));
+
+  const eligibleSubs = activeSubs.filter((sub: any) => {
+    const pref = prefMap.get(sub.customer_id);
+    if (!pref?.push_enabled) return false;
+    if (type === 'marketing' && !pref.marketing_enabled) return false;
+    if (type === 'reward' && !pref.reward_notifications) return false;
+    if (type === 'reminder' && !pref.reminder_notifications) return false;
+    if (type === 'progress' && !pref.progress_notifications) return false;
+    if (type === 'card' && !pref.card_notifications) return false;
+    return true;
+  });
+
+  const payload = JSON.stringify({ title, body: message, icon: '/icon.svg', data: { url } });
+
+  // Parallel sending with Promise.allSettled (fast & lightweight for free tier CPU)
+  const tasks = eligibleSubs.map(async (sub: any) => {
     try {
       await webpush.sendNotification(
         { endpoint: sub.endpoint, keys: { p256dh: sub.p256dh, auth: sub.auth } },
@@ -65,12 +79,11 @@ Deno.serve(async (req) => {
         status: 'sent',
         related_reward_id: body?.related_reward_id ?? null,
         related_card_id: body?.related_card_id ?? null,
-        dedup_key: dedupKey,
+        dedup_key: dedupKey ? `${dedupKey}_${sub.id}` : null,
       });
       await admin.from('PushSubscriptions').update({ last_used_at: new Date().toISOString() }).eq('id', sub.id);
-      results.push({ subscription: sub.id, status: 'sent' });
+      return { subscription: sub.id, status: 'sent' };
     } catch (err: any) {
-      console.error('send-push failed', err?.statusCode, err?.message ?? err);
       const code = err?.statusCode;
       if (code === 410 || code === 404) {
         await admin.from('PushSubscriptions').update({ is_active: false }).eq('id', sub.id);
@@ -87,9 +100,12 @@ Deno.serve(async (req) => {
         related_card_id: body?.related_card_id ?? null,
         dedup_key: dedupKey ? `${dedupKey}_${sub.id}` : null,
       });
-      results.push({ subscription: sub.id, status: 'failed', code, error: errMsg });
+      return { subscription: sub.id, status: 'failed', code, error: errMsg };
     }
-  }
+  });
 
-  return json(200, { ok: true, sent: results.filter(r => r.status === 'sent').length, results });
+  const settled = await Promise.allSettled(tasks);
+  const results = settled.map((s) => (s.status === 'fulfilled' ? s.value : { status: 'failed', error: 'Promise rejected' }));
+
+  return json(200, { ok: true, sent: results.filter((r: any) => r.status === 'sent').length, results });
 });

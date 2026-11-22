@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { createClient } from '@supabase/supabase-js';
 
 export function AdminNotifications() {
   const [campaigns, setCampaigns] = useState<any[]>([]);
@@ -27,7 +28,26 @@ export function AdminNotifications() {
     } catch {}
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+
+    // Supabase Realtime synchronization for Admin with minimal footprint
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
+    if (!url || !key) return;
+
+    const supabase = createClient(url, key);
+    const channel = supabase
+      .channel('admin_push_live_sync')
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'PushSubscriptions' }, () => load())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'NotificationCampaigns' }, () => load())
+      .on('postgres_changes', { event: '*', schema: 'public', table: 'NotificationHistory' }, () => load())
+      .subscribe();
+
+    return () => {
+      channel.unsubscribe();
+    };
+  }, []);
 
   const createCampaign = async (immediate: boolean) => {
     if (!title.trim() || !message.trim()) return;

@@ -100,21 +100,36 @@ export function ClientPushOptIn({ token }: { token: string }) {
         const existing = await navigator.serviceWorker.getRegistration('/').catch(() => undefined);
         reg = existing ?? null;
       }
-      console.log('[push] registration =', !!reg, 'active =', !!reg?.active, 'installing =', !!reg?.installing, 'waiting =', !!reg?.waiting);
-      // Poll for an active service worker (more reliable on iOS than events)
-      const start = Date.now();
-      while (!reg?.active && Date.now() - start < 12000) {
-        try { await reg?.update(); } catch {}
-        await new Promise((r) => setTimeout(r, 500));
-        const r2 = await navigator.serviceWorker.getRegistration('/').catch(() => undefined);
-        if (r2) reg = r2;
-        console.log('[push] poll active =', !!reg?.active);
-      }
+      
+      // Wait quickly for ready or active worker
       if (!reg?.active) {
+        const readyPromise = navigator.serviceWorker.ready.then((r) => { reg = r; return true; }).catch(() => false);
+        const pollPromise = (async () => {
+          const start = Date.now();
+          while (!reg?.active && Date.now() - start < 6000) {
+            await new Promise((r) => setTimeout(r, 200));
+            const cur = await navigator.serviceWorker.getRegistration('/').catch(() => undefined);
+            if (cur?.active) { reg = cur; return true; }
+          }
+          return !!reg?.active;
+        })();
+        await Promise.race([readyPromise, pollPromise]);
+      }
+
+      if (!reg?.active && !reg?.pushManager) {
+        const fallbackReady = await Promise.race([
+          navigator.serviceWorker.ready,
+          new Promise<null>((r) => setTimeout(() => r(null), 3000)),
+        ]);
+        if (fallbackReady) reg = fallbackReady;
+      }
+
+      const pm = reg?.pushManager || (reg as any)?.active?.pushManager;
+      if (!pm && !reg?.active) {
         throw new Error('Service worker non actif. Rechargez la page (tirez pour rafraîchir).');
       }
-      console.log('[push] active =', !!reg.active, 'pushManager =', !!reg.pushManager);
-      if (!reg.pushManager) {
+      console.log('[push] active =', !!reg?.active, 'pushManager =', !!(reg?.pushManager));
+      if (!reg?.pushManager) {
         throw new Error('PushManager non disponible (navigateur non compatible)');
       }
       console.log('[push] subscribing');
@@ -172,21 +187,13 @@ export function ClientPushOptIn({ token }: { token: string }) {
     }
   };
 
+  // If the user has already subscribed, completely hide the block so they cannot unsubscribe
+  if (subscribed) {
+    return null;
+  }
+
   if (!supported) {
-    return (
-      <div className="ui-card" style={{ marginBottom: '1.25rem', padding: '1.25rem' }}>
-        <div style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>
-          Notifications
-        </div>
-        <p style={{ fontSize: '0.84rem', color: 'var(--coral)', margin: 0, lineHeight: 1.4 }}>
-          Notifications non supportées sur ce navigateur/appareil.
-          <br />
-          <span style={{ fontSize: '0.72rem', color: 'var(--coffee-mid)' }}>
-            debug: standalone={String(standaloneState)} ios={String(iosState)} vapid={VAPID_PUBLIC ? 'ok' : 'MISSING'}
-          </span>
-        </p>
-      </div>
-    );
+    return null;
   }
 
   return (
@@ -208,49 +215,14 @@ export function ClientPushOptIn({ token }: { token: string }) {
           Sur iPhone, installez d’abord la carte sur l’écran d’accueil (Safari → Partager → Ajouter), puis activez les notifications.
         </div>
       )}
-      <div style={{ fontSize: '0.68rem', color: 'var(--coffee-mid)', marginTop: '0.5rem', opacity: 0.7 }}>
-        debug: standalone={String(standaloneState)} ios={String(iosState)} perm={permission} vapid={VAPID_PUBLIC ? 'ok' : 'MISSING'} sub={String(subscribed)} err={error ?? 'none'} ep={lastEndpoint ? 'set' : 'none'}
-      </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
-        {subscribed ? (
-          <>
-            <span className="ui-badge ui-badge--sage">Activées</span>
-            <button type="button" className="touch-btn touch-btn--outline" style={{ minHeight: '38px', fontSize: '0.8rem' }} onClick={unsubscribe} disabled={loading}>
-              {loading ? '…' : 'Désactiver'}
-            </button>
-          </>
-        ) : (
-          <button type="button" className="touch-btn touch-btn--primary" style={{ minHeight: '38px', fontSize: '0.8rem' }} onClick={subscribe} disabled={loading || permission === 'denied'}>
-            {loading ? '…' : 'Activer les notifications'}
-          </button>
-        )}
+        <button type="button" className="touch-btn touch-btn--primary" style={{ minHeight: '38px', fontSize: '0.8rem' }} onClick={subscribe} disabled={loading || permission === 'denied'}>
+          {loading ? '…' : 'Activer les notifications'}
+        </button>
         {permission === 'denied' && (
           <span style={{ fontSize: '0.76rem', color: 'var(--coral)' }}>Notifications bloquées dans le navigateur.</span>
         )}
       </div>
-      {subscribed && (
-        <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '0.75rem', fontSize: '0.8rem', color: 'var(--coffee-mid)' }}>
-          <input type="checkbox" checked={marketing} onChange={async (e) => {
-            const val = e.target.checked;
-            setMarketing(val);
-            if (subscribed && supported) {
-              try {
-                const reg = await navigator.serviceWorker.ready;
-                const sub = await reg.pushManager.getSubscription();
-                if (sub) {
-                  await fetch('/api/server/push/subscribe', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'same-origin',
-                    body: JSON.stringify({ token, subscription: sub.toJSON(), device_type: /Mobi/.test(navigator.userAgent) ? 'mobile' : 'desktop', marketing: val }),
-                  });
-                }
-              } catch {}
-            }
-          }} />
-          Recevoir les promotions et offres spéciales
-        </label>
-      )}
     </div>
 
     {showPopup && !subscribed && (
