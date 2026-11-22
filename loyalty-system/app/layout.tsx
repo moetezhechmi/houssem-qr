@@ -6,13 +6,13 @@ export const viewport: Viewport = {
   width: 'device-width',
   initialScale: 1,
   maximumScale: 5,
+  themeColor: '#8FAF9A',
 };
 
 export const metadata: Metadata = {
   title: 'Bieny Coffeeshop',
   description: 'Consultez votre progression et vos récompenses via votre lien personnel',
   manifest: '/manifest.webmanifest',
-  themeColor: '#8FAF9A',
   appleWebApp: {
     capable: true,
     statusBarStyle: 'default',
