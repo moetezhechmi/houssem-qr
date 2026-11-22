@@ -95,42 +95,24 @@ export function ClientPushOptIn({ token }: { token: string }) {
         return;
       }
       console.log('[push] registering service worker');
-      let reg = await navigator.serviceWorker.register('/sw.js').catch((e) => { console.error('[push] register failed', e); return null; });
+      let reg = await navigator.serviceWorker.register('/sw.js', { updateViaCache: 'none' }).catch((e) => { console.error('[push] register failed', e); return null; });
       if (!reg) {
         const existing = await navigator.serviceWorker.getRegistration('/').catch(() => undefined);
         reg = existing ?? null;
       }
       console.log('[push] registration =', !!reg, 'active =', !!reg?.active, 'installing =', !!reg?.installing, 'waiting =', !!reg?.waiting);
-      // Wait for an active service worker
-      if (!reg?.active) {
-        // try to update
-        try { await reg?.update(); } catch (e) { console.log('[push] update failed', e); }
-        await new Promise<void>((resolve, reject) => {
-          const timeout = setTimeout(() => reject(new Error('Service worker non prêt (timeout)')), 15000);
-          const check = () => {
-            if (reg?.active) { clearTimeout(timeout); resolve(); return; }
-            if (reg?.installing) {
-              reg.installing.addEventListener('statechange', () => {
-                if (reg?.active) { clearTimeout(timeout); resolve(); }
-              });
-            }
-            if (reg?.waiting) {
-              reg.waiting.addEventListener('statechange', () => {
-                if (reg?.active) { clearTimeout(timeout); resolve(); }
-              });
-            }
-          };
-          check();
-          // also listen for controllerchange
-          navigator.serviceWorker.addEventListener('controllerchange', () => {
-            if (reg?.active) { clearTimeout(timeout); resolve(); }
-          }, { once: true });
-        });
+      // Poll for an active service worker (more reliable on iOS than events)
+      const start = Date.now();
+      while (!reg?.active && Date.now() - start < 12000) {
+        try { await reg?.update(); } catch {}
+        await new Promise((r) => setTimeout(r, 500));
+        const r2 = await navigator.serviceWorker.getRegistration('/').catch(() => undefined);
+        if (r2) reg = r2;
+        console.log('[push] poll active =', !!reg?.active);
       }
-      // refresh registration reference
-      const refreshed = await navigator.serviceWorker.getRegistration('/').catch(() => undefined);
-      reg = refreshed ?? reg ?? null;
-      if (!reg) throw new Error('Service worker registration failed');
+      if (!reg?.active) {
+        throw new Error('Service worker non actif. Rechargez la page (tirez pour rafraîchir).');
+      }
       console.log('[push] active =', !!reg.active, 'pushManager =', !!reg.pushManager);
       if (!reg.pushManager) {
         throw new Error('PushManager non disponible (navigateur non compatible)');
