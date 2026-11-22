@@ -104,6 +104,7 @@ export function PwaInstallPrompt({ token }: { token: string }) {
           await Notification.requestPermission();
         }
       } catch {}
+      try { window.dispatchEvent(new Event('pwa-installed')); } catch {}
     } else {
       try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch {}
     }

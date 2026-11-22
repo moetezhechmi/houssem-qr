@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useRouter } from 'next/navigation';
 import {
   CoffeeIcon,
@@ -135,7 +136,7 @@ export function FicheActions({
   return (
     <>
       {/* Toast Notification */}
-      {toast && (
+      {toast && typeof document !== 'undefined' && createPortal(
         <div
           style={{
             position: 'fixed',
@@ -159,11 +160,12 @@ export function FicheActions({
         >
           <span>{toast.type === 'error' ? '⚠️' : '✅'}</span>
           <span>{toast.msg}</span>
-        </div>
+        </div>,
+        document.body
       )}
 
       {/* ── Confirmation Modal ── */}
-      {confirmModal && (
+      {confirmModal && typeof document !== 'undefined' && createPortal(
         <div
           style={{
             position: 'fixed',
@@ -176,6 +178,7 @@ export function FicheActions({
             justifyContent: 'center',
             padding: '1.25rem',
           }}
+          onClick={() => setConfirmModal(null)}
         >
           <div
             style={{
@@ -187,6 +190,7 @@ export function FicheActions({
               boxShadow: '0 25px 60px rgba(0,0,0,0.4)',
               textAlign: 'center',
             }}
+            onClick={(e) => e.stopPropagation()}
           >
             <div style={{ fontSize: '2.8rem', marginBottom: '0.5rem' }}>
               {confirmModal === 'consumption' ? '☕' : '🎉'}
@@ -260,7 +264,8 @@ export function FicheActions({
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+          document.body
       )}
 
       {/* ── Action Buttons Flow ── */}

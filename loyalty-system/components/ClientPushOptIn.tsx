@@ -42,12 +42,29 @@ export function ClientPushOptIn({ token }: { token: string }) {
         reg.pushManager.getSubscription().then((sub) => {
           if (sub) setSubscribed(true);
           else if (Notification.permission !== 'denied') {
-            // Show popup after full load if not subscribed
-            setTimeout(() => setShowPopup(true), 2000);
+            // On iOS, push only works in standalone (installed) mode.
+            const iosNotInstalled = isIOS() && !isStandalone();
+            if (!iosNotInstalled) {
+              setTimeout(() => setShowPopup(true), 4000);
+            }
           }
         });
-      });
+      }).catch(() => null);
     }
+
+    // Show notification popup after a successful install
+    const onInstalled = () => {
+      if (Notification.permission === 'denied') return;
+      setTimeout(() => {
+        navigator.serviceWorker?.ready?.then((reg) => {
+          reg.pushManager.getSubscription().then((sub) => {
+            if (!sub) setShowPopup(true);
+          }).catch(() => setShowPopup(true));
+        }).catch(() => setShowPopup(true));
+      }, 800);
+    };
+    window.addEventListener('pwa-installed', onInstalled);
+    return () => window.removeEventListener('pwa-installed', onInstalled);
   }, []);
 
   const subscribe = async () => {
@@ -79,7 +96,7 @@ export function ClientPushOptIn({ token }: { token: string }) {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
-        body: JSON.stringify({ token, subscription: sub.toJSON(), device_type: /Mobi/.test(navigator.userAgent) ? 'mobile' : 'desktop' }),
+        body: JSON.stringify({ token, subscription: sub.toJSON(), device_type: /Mobi/.test(navigator.userAgent) ? 'mobile' : 'desktop', marketing }),
       });
       // Actually call Edge Function directly? We'll call our Next API proxy.
       if (!res.ok) {
@@ -133,6 +150,11 @@ export function ClientPushOptIn({ token }: { token: string }) {
           ⚠️ {error}
         </div>
       )}
+      {isIOS() && !isStandalone() && (
+        <div style={{ fontSize: '0.78rem', color: 'var(--coffee-mid)', marginBottom: '0.75rem', lineHeight: 1.4 }}>
+          Sur iPhone, installez d’abord la carte sur l’écran d’accueil (Safari → Partager → Ajouter), puis activez les notifications.
+        </div>
+      )}
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
         {subscribed ? (
           <>
@@ -152,7 +174,24 @@ export function ClientPushOptIn({ token }: { token: string }) {
       </div>
       {subscribed && (
         <label style={{ display: 'flex', alignItems: 'center', gap: '8px', marginTop: '0.75rem', fontSize: '0.8rem', color: 'var(--coffee-mid)' }}>
-          <input type="checkbox" checked={marketing} onChange={(e) => setMarketing(e.target.checked)} />
+          <input type="checkbox" checked={marketing} onChange={async (e) => {
+            const val = e.target.checked;
+            setMarketing(val);
+            if (subscribed && supported) {
+              try {
+                const reg = await navigator.serviceWorker.ready;
+                const sub = await reg.pushManager.getSubscription();
+                if (sub) {
+                  await fetch('/api/server/push/subscribe', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    credentials: 'same-origin',
+                    body: JSON.stringify({ token, subscription: sub.toJSON(), device_type: /Mobi/.test(navigator.userAgent) ? 'mobile' : 'desktop', marketing: val }),
+                  });
+                }
+              } catch {}
+            }
+          }} />
           Recevoir les promotions et offres spéciales
         </label>
       )}

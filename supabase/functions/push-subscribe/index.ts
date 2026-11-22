@@ -36,9 +36,17 @@ Deno.serve(async (req) => {
 
   if (upErr) return json(500, { error: 'SUBSCRIBE_FAILED', message: upErr.message });
 
+  // Merge preferences: keep existing marketing_enabled unless explicitly provided.
+  const { data: existingPref } = await admin.from('NotificationPreferences').select('marketing_enabled').eq('customer_id', customerId).maybeSingle();
+  const marketingProvided = body?.marketing !== undefined || body?.marketing_enabled !== undefined;
+  const marketingEnabled = marketingProvided
+    ? (body?.marketing === true || body?.marketing_enabled === true)
+    : (existingPref?.marketing_enabled ?? false);
+
   await admin.from('NotificationPreferences').upsert({
     customer_id: customerId,
     push_enabled: true,
+    marketing_enabled: marketingEnabled,
     updated_at: new Date().toISOString(),
   }, { onConflict: 'customer_id' });
 

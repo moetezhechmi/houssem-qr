@@ -70,10 +70,12 @@ Deno.serve(async (req) => {
       await admin.from('PushSubscriptions').update({ last_used_at: new Date().toISOString() }).eq('id', sub.id);
       results.push({ subscription: sub.id, status: 'sent' });
     } catch (err: any) {
+      console.error('send-push failed', err?.statusCode, err?.message ?? err);
       const code = err?.statusCode;
       if (code === 410 || code === 404) {
         await admin.from('PushSubscriptions').update({ is_active: false }).eq('id', sub.id);
       }
+      const errMsg = String(err?.message ?? err ?? 'unknown');
       await admin.from('NotificationHistory').insert({
         customer_id: sub.customer_id,
         subscription_id: sub.id,
@@ -85,7 +87,7 @@ Deno.serve(async (req) => {
         related_card_id: body?.related_card_id ?? null,
         dedup_key: dedupKey ? `${dedupKey}_${sub.id}` : null,
       });
-      results.push({ subscription: sub.id, status: 'failed', code });
+      results.push({ subscription: sub.id, status: 'failed', code, error: errMsg });
     }
   }
 

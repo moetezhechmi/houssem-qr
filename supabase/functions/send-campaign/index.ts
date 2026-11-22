@@ -41,12 +41,15 @@ Deno.serve(async (req) => {
 
   const dedupKey = campaign.id ? `campaign:${campaign.id}` : null;
 
+  // 'all' targets must not require marketing_enabled; only marketing targets are 'marketing' type.
+  const pushType = campaign.target === 'marketing' ? 'marketing' : 'generic';
+
   const res = await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
     method: 'POST',
     headers: { Authorization: `Bearer ${SERVICE_KEY}`, 'Content-Type': 'application/json' },
     body: JSON.stringify({
       customer_ids: customerIds,
-      type: 'marketing',
+      type: pushType,
       title: campaign.title,
       message: campaign.message,
       url: '/',
@@ -56,7 +59,10 @@ Deno.serve(async (req) => {
   const data = await res.json().catch(() => ({}));
 
   if (campaign.id) {
-    await admin.from('NotificationCampaigns').update({ status: 'sent', sent_at: new Date().toISOString() }).eq('id', campaign.id);
+    await admin.from('NotificationCampaigns').update({
+      status: res.ok ? 'sent' : 'failed',
+      sent_at: res.ok ? new Date().toISOString() : null,
+    }).eq('id', campaign.id);
   }
 
   return json(res.status, data);
