@@ -1,4 +1,4 @@
-const CACHE = 'coffee-loyalty-v2';
+const CACHE = 'coffee-loyalty-v3';
 const PRECACHE = ['/', '/icon.svg', '/logo_houssem.jpeg'];
 
 self.addEventListener('install', (event) => {
@@ -19,14 +19,14 @@ self.addEventListener('activate', (event) => {
 
 // Push notifications
 self.addEventListener('push', (event) => {
-  let data: any = {};
-  try { data = event.data ? event.data.json() : {}; } catch { data = { body: event.data?.text() }; }
+  let data = {};
+  try { data = event.data ? event.data.json() : {}; } catch { data = { body: event.data ? event.data.text() : '' }; }
   const title = data.title || 'Coffee Loyalty';
-  const options: any = {
+  const options = {
     body: data.body || data.message || '',
     icon: data.icon || '/icon.svg',
     badge: '/icon.svg',
-    data: { url: data.url || data?.data?.url || '/' },
+    data: { url: data.url || (data.data && data.data.url) || '/' },
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });
