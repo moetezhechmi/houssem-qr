@@ -134,7 +134,22 @@ export function ClientPushOptIn({ token }: { token: string }) {
     }
   };
 
-  if (!supported) return null;
+  if (!supported) {
+    return (
+      <div className="ui-card" style={{ marginBottom: '1.25rem', padding: '1.25rem' }}>
+        <div style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>
+          Notifications
+        </div>
+        <p style={{ fontSize: '0.84rem', color: 'var(--coral)', margin: 0, lineHeight: 1.4 }}>
+          Notifications non supportées sur ce navigateur/appareil.
+          <br />
+          <span style={{ fontSize: '0.72rem', color: 'var(--coffee-mid)' }}>
+            debug: standalone={String(isStandalone())} ios={String(isIOS())} vapid={VAPID_PUBLIC ? 'ok' : 'MISSING'}
+          </span>
+        </p>
+      </div>
+    );
+  }
 
   return (
     <>
@@ -155,6 +170,9 @@ export function ClientPushOptIn({ token }: { token: string }) {
           Sur iPhone, installez d’abord la carte sur l’écran d’accueil (Safari → Partager → Ajouter), puis activez les notifications.
         </div>
       )}
+      <div style={{ fontSize: '0.68rem', color: 'var(--coffee-mid)', marginTop: '0.5rem', opacity: 0.7 }}>
+        debug: standalone={String(isStandalone())} ios={String(isIOS())} perm={permission} vapid={VAPID_PUBLIC ? 'ok' : 'MISSING'} sub={String(subscribed)}
+      </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
         {subscribed ? (
           <>
