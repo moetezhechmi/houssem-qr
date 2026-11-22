@@ -33,6 +33,7 @@ export function ClientPushOptIn({ token }: { token: string }) {
   const [showPopup, setShowPopup] = useState(false);
   const [iosState, setIosState] = useState(false);
   const [standaloneState, setStandaloneState] = useState(false);
+  const [lastEndpoint, setLastEndpoint] = useState<string | null>(null);
 
   useEffect(() => {
     setIosState(isIOS());
@@ -147,10 +148,15 @@ export function ClientPushOptIn({ token }: { token: string }) {
         body: JSON.stringify({ token, subscription: sub.toJSON(), device_type: /Mobi/.test(navigator.userAgent) ? 'mobile' : 'desktop', marketing }),
       });
       console.log('[push] api response =', res.status);
+      const apiData = await res.json().catch(() => ({}));
+      console.log('[push] api data =', apiData);
       if (!res.ok) {
-        const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error?.message ?? `Échec de l’enregistrement (HTTP ${res.status})`);
+        throw new Error(apiData?.error?.message ?? `Échec de l’enregistrement (HTTP ${res.status})`);
       }
+      // Verify the subscription is still present in the browser
+      const checkSub = await reg.pushManager.getSubscription();
+      console.log('[push] browser sub after =', checkSub?.endpoint);
+      setLastEndpoint(checkSub?.endpoint ?? null);
       console.log('[push] success');
       setSubscribed(true);
     } catch (e: any) {
@@ -221,7 +227,7 @@ export function ClientPushOptIn({ token }: { token: string }) {
         </div>
       )}
       <div style={{ fontSize: '0.68rem', color: 'var(--coffee-mid)', marginTop: '0.5rem', opacity: 0.7 }}>
-        debug: standalone={String(standaloneState)} ios={String(iosState)} perm={permission} vapid={VAPID_PUBLIC ? 'ok' : 'MISSING'} sub={String(subscribed)} err={error ?? 'none'}
+        debug: standalone={String(standaloneState)} ios={String(iosState)} perm={permission} vapid={VAPID_PUBLIC ? 'ok' : 'MISSING'} sub={String(subscribed)} err={error ?? 'none'} ep={lastEndpoint ? 'set' : 'none'}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
         {subscribed ? (
