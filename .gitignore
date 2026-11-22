@@ -1,0 +1,27 @@
+# Dependencies
+node_modules/
+loyalty-system/node_modules/
+
+# Next.js build output
+loyalty-system/.next/
+loyalty-system/out/
+
+# Env secrets
+.env
+.env.local
+.env.*.local
+loyalty-system/.env.local
+loyalty-system/.env.server.local
+loyalty-system/.env.*.local
+
+# TypeScript
+*.tsbuildinfo
+loyalty-system/tsconfig.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS
+.DS_Store
+Thumbs.db
