@@ -84,32 +84,46 @@ export function ClientPushOptIn({ token }: { token: string }) {
     setLoading(true);
     setError(null);
     try {
+      console.log('[push] requesting permission');
       const perm = await Notification.requestPermission();
+      console.log('[push] permission =', perm);
       setPermission(perm);
       if (perm !== 'granted') {
-        setError('Autorisation refusée.');
+        setError('Autorisation refusée par le navigateur.');
         setLoading(false);
         return;
       }
-      const reg = await navigator.serviceWorker.ready;
+      console.log('[push] waiting for service worker');
+      const reg = await Promise.race([
+        navigator.serviceWorker.ready,
+        new Promise((_, reject) => setTimeout(() => reject(new Error('Service worker non prêt (timeout)')), 10000)),
+      ]) as ServiceWorkerRegistration;
+      console.log('[push] sw ready, pushManager =', !!reg.pushManager);
+      if (!reg.pushManager) {
+        throw new Error('PushManager non disponible (navigateur non compatible)');
+      }
+      console.log('[push] subscribing');
       const sub = await reg.pushManager.subscribe({
         userVisibleOnly: true,
         applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC),
       });
+      console.log('[push] subscribed, endpoint =', sub.endpoint);
       const res = await fetch('/api/server/push/subscribe', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         credentials: 'same-origin',
         body: JSON.stringify({ token, subscription: sub.toJSON(), device_type: /Mobi/.test(navigator.userAgent) ? 'mobile' : 'desktop', marketing }),
       });
-      // Actually call Edge Function directly? We'll call our Next API proxy.
+      console.log('[push] api response =', res.status);
       if (!res.ok) {
         const data = await res.json().catch(() => ({}));
-        throw new Error(data?.error?.message ?? 'Échec de l’enregistrement');
+        throw new Error(data?.error?.message ?? `Échec de l’enregistrement (HTTP ${res.status})`);
       }
+      console.log('[push] success');
       setSubscribed(true);
     } catch (e: any) {
-      setError(e?.message ?? 'Erreur');
+      console.error('[push] error', e);
+      setError(e?.message ?? 'Erreur inconnue');
     } finally {
       setLoading(false);
     }
