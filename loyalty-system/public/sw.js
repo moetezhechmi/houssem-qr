@@ -1,4 +1,4 @@
-const CACHE = 'coffee-loyalty-v1';
+const CACHE = 'coffee-loyalty-v2';
 const PRECACHE = ['/', '/icon.svg', '/logo_houssem.jpeg'];
 
 self.addEventListener('install', (event) => {
