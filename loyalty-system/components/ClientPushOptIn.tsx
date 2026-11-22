@@ -30,6 +30,7 @@ export function ClientPushOptIn({ token }: { token: string }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [marketing, setMarketing] = useState(false);
+  const [showPopup, setShowPopup] = useState(false);
 
   useEffect(() => {
     const ok = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
@@ -40,6 +41,10 @@ export function ClientPushOptIn({ token }: { token: string }) {
       navigator.serviceWorker.ready.then((reg) => {
         reg.pushManager.getSubscription().then((sub) => {
           if (sub) setSubscribed(true);
+          else if (Notification.permission !== 'denied') {
+            // Show popup after full load if not subscribed
+            setTimeout(() => setShowPopup(true), 2000);
+          }
         });
       });
     }
@@ -115,6 +120,7 @@ export function ClientPushOptIn({ token }: { token: string }) {
   if (!supported) return null;
 
   return (
+    <>
     <div className="ui-card" style={{ marginBottom: '1.25rem', padding: '1.25rem' }}>
       <div style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', letterSpacing: '0.08em', marginBottom: '0.5rem' }}>
         Notifications
@@ -151,5 +157,41 @@ export function ClientPushOptIn({ token }: { token: string }) {
         </label>
       )}
     </div>
+
+    {showPopup && !subscribed && (
+      <div
+        style={{
+          position: 'fixed',
+          inset: 0,
+          zIndex: 200,
+          background: 'rgba(0,0,0,0.65)',
+          backdropFilter: 'blur(6px)',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          padding: '1rem',
+        }}
+        onClick={(e) => { if (e.target === e.currentTarget) setShowPopup(false); }}
+      >
+        <div style={{ width: '100%', maxWidth: '380px', background: '#FFFFFF', borderRadius: '22px', padding: '1.5rem', boxShadow: '0 25px 60px rgba(0,0,0,0.4)', textAlign: 'center' }}>
+          <div style={{ fontSize: '2.2rem', marginBottom: '0.5rem' }}>🔔</div>
+          <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.25rem', fontWeight: 700, color: 'var(--espresso)', margin: '0 0 0.5rem' }}>
+            Ne manquez aucune récompense !
+          </h3>
+          <p style={{ fontSize: '0.84rem', color: 'var(--coffee-mid)', margin: '0 0 1.25rem', lineHeight: 1.5 }}>
+            Activez les notifications pour être informé de vos récompenses et des offres spéciales.
+          </p>
+          <div style={{ display: 'flex', gap: '0.65rem' }}>
+            <button type="button" className="touch-btn touch-btn--outline" style={{ flex: 1, minHeight: '42px', fontSize: '0.82rem' }} onClick={() => setShowPopup(false)}>
+              Plus tard
+            </button>
+            <button type="button" className="touch-btn touch-btn--primary" style={{ flex: 1, minHeight: '42px', fontSize: '0.82rem' }} onClick={() => { setShowPopup(false); subscribe(); }} disabled={loading}>
+              {loading ? '…' : 'Activer'}
+            </button>
+          </div>
+        </div>
+      </div>
+    )}
+    </>
   );
 }
