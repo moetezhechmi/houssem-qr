@@ -31,8 +31,12 @@ export function ClientPushOptIn({ token }: { token: string }) {
   const [error, setError] = useState<string | null>(null);
   const [marketing, setMarketing] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
+  const [iosState, setIosState] = useState(false);
+  const [standaloneState, setStandaloneState] = useState(false);
 
   useEffect(() => {
+    setIosState(isIOS());
+    setStandaloneState(isStandalone());
     const ok = 'serviceWorker' in navigator && 'PushManager' in window && 'Notification' in window;
     setSupported(ok);
     if (ok) setPermission(Notification.permission);
@@ -144,7 +148,7 @@ export function ClientPushOptIn({ token }: { token: string }) {
           Notifications non supportées sur ce navigateur/appareil.
           <br />
           <span style={{ fontSize: '0.72rem', color: 'var(--coffee-mid)' }}>
-            debug: standalone={String(isStandalone())} ios={String(isIOS())} vapid={VAPID_PUBLIC ? 'ok' : 'MISSING'}
+            debug: standalone={String(standaloneState)} ios={String(iosState)} vapid={VAPID_PUBLIC ? 'ok' : 'MISSING'}
           </span>
         </p>
       </div>
@@ -165,13 +169,13 @@ export function ClientPushOptIn({ token }: { token: string }) {
           ⚠️ {error}
         </div>
       )}
-      {isIOS() && !isStandalone() && (
+      {iosState && !standaloneState && (
         <div style={{ fontSize: '0.78rem', color: 'var(--coffee-mid)', marginBottom: '0.75rem', lineHeight: 1.4 }}>
           Sur iPhone, installez d’abord la carte sur l’écran d’accueil (Safari → Partager → Ajouter), puis activez les notifications.
         </div>
       )}
       <div style={{ fontSize: '0.68rem', color: 'var(--coffee-mid)', marginTop: '0.5rem', opacity: 0.7 }}>
-        debug: standalone={String(isStandalone())} ios={String(isIOS())} perm={permission} vapid={VAPID_PUBLIC ? 'ok' : 'MISSING'} sub={String(subscribed)} err={error ?? 'none'}
+        debug: standalone={String(standaloneState)} ios={String(iosState)} perm={permission} vapid={VAPID_PUBLIC ? 'ok' : 'MISSING'} sub={String(subscribed)} err={error ?? 'none'}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
         {subscribed ? (
