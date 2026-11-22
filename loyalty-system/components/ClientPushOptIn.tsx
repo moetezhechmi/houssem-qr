@@ -171,7 +171,7 @@ export function ClientPushOptIn({ token }: { token: string }) {
         </div>
       )}
       <div style={{ fontSize: '0.68rem', color: 'var(--coffee-mid)', marginTop: '0.5rem', opacity: 0.7 }}>
-        debug: standalone={String(isStandalone())} ios={String(isIOS())} perm={permission} vapid={VAPID_PUBLIC ? 'ok' : 'MISSING'} sub={String(subscribed)}
+        debug: standalone={String(isStandalone())} ios={String(isIOS())} perm={permission} vapid={VAPID_PUBLIC ? 'ok' : 'MISSING'} sub={String(subscribed)} err={error ?? 'none'}
       </div>
       <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
         {subscribed ? (
