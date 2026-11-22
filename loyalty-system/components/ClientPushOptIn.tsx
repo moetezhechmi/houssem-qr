@@ -93,12 +93,44 @@ export function ClientPushOptIn({ token }: { token: string }) {
         setLoading(false);
         return;
       }
-      console.log('[push] waiting for service worker');
-      const reg = await Promise.race([
-        navigator.serviceWorker.ready,
-        new Promise((_, reject) => setTimeout(() => reject(new Error('Service worker non prêt (timeout)')), 10000)),
-      ]) as ServiceWorkerRegistration;
-      console.log('[push] sw ready, pushManager =', !!reg.pushManager);
+      console.log('[push] registering service worker');
+      let reg = await navigator.serviceWorker.register('/sw.js').catch((e) => { console.error('[push] register failed', e); return null; });
+      if (!reg) {
+        const existing = await navigator.serviceWorker.getRegistration('/').catch(() => undefined);
+        reg = existing ?? null;
+      }
+      console.log('[push] registration =', !!reg, 'active =', !!reg?.active, 'installing =', !!reg?.installing, 'waiting =', !!reg?.waiting);
+      // Wait for an active service worker
+      if (!reg?.active) {
+        // try to update
+        try { await reg?.update(); } catch (e) { console.log('[push] update failed', e); }
+        await new Promise<void>((resolve, reject) => {
+          const timeout = setTimeout(() => reject(new Error('Service worker non prêt (timeout)')), 15000);
+          const check = () => {
+            if (reg?.active) { clearTimeout(timeout); resolve(); return; }
+            if (reg?.installing) {
+              reg.installing.addEventListener('statechange', () => {
+                if (reg?.active) { clearTimeout(timeout); resolve(); }
+              });
+            }
+            if (reg?.waiting) {
+              reg.waiting.addEventListener('statechange', () => {
+                if (reg?.active) { clearTimeout(timeout); resolve(); }
+              });
+            }
+          };
+          check();
+          // also listen for controllerchange
+          navigator.serviceWorker.addEventListener('controllerchange', () => {
+            if (reg?.active) { clearTimeout(timeout); resolve(); }
+          }, { once: true });
+        });
+      }
+      // refresh registration reference
+      const refreshed = await navigator.serviceWorker.getRegistration('/').catch(() => undefined);
+      reg = refreshed ?? reg ?? null;
+      if (!reg) throw new Error('Service worker registration failed');
+      console.log('[push] active =', !!reg.active, 'pushManager =', !!reg.pushManager);
       if (!reg.pushManager) {
         throw new Error('PushManager non disponible (navigateur non compatible)');
       }
