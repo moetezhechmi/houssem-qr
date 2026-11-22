@@ -1,18 +1,8 @@
-'use client';
+import { cookies } from 'next/headers';
+import { redirect } from 'next/navigation';
 
-import { useEffect } from 'react';
-import { useRouter } from 'next/navigation';
-
-export default function Page() {
-  const router = useRouter();
-  useEffect(() => {
-    let token = '';
-    try { token = localStorage.getItem('last_card_token') || ''; } catch {}
-    if (token) {
-      router.replace(`/client/${token}`);
-    } else {
-      router.replace('/serveur');
-    }
-  }, [router]);
-  return null;
+export default async function Page() {
+  const token = (await cookies()).get('last_card_token')?.value;
+  if (token) redirect(`/client/${token}`);
+  redirect('/serveur');
 }

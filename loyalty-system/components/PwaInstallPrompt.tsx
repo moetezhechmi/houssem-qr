@@ -98,6 +98,12 @@ export function PwaInstallPrompt({ token }: { token: string }) {
     if (outcome === 'accepted') {
       setInstalled(true);
       try { localStorage.setItem(INSTALLED_KEY, '1'); } catch {}
+      // Request notification permission right after install (user gesture context)
+      try {
+        if ('Notification' in window && Notification.permission === 'default') {
+          await Notification.requestPermission();
+        }
+      } catch {}
     } else {
       try { localStorage.setItem(DISMISS_KEY, String(Date.now())); } catch {}
     }
@@ -212,7 +218,14 @@ export function PwaInstallPrompt({ token }: { token: string }) {
                   type="button"
                   className="touch-btn touch-btn--primary"
                   style={{ width: '100%', minHeight: '44px' }}
-                  onClick={dismiss}
+                  onClick={async () => {
+                    try {
+                      if ('Notification' in window && Notification.permission === 'default') {
+                        await Notification.requestPermission();
+                      }
+                    } catch {}
+                    dismiss();
+                  }}
                 >
                   J'ai compris
                 </button>

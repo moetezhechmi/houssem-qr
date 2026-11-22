@@ -45,6 +45,9 @@ export default function ClientCard({ token, initialData }: { token: string; init
 
   useEffect(() => {
     setCardUrl(window.location.href);
+    // Persist personal token for PWA reopen
+    try { localStorage.setItem('last_card_token', token); } catch {}
+    try { document.cookie = `last_card_token=${token}; path=/; max-age=31536000; SameSite=Lax`; } catch {}
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;
     if (!url || !key) return;
