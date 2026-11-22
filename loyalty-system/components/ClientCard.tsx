@@ -12,6 +12,8 @@ import {
   HistoryIcon,
   ClockIcon,
   CheckIcon,
+  BookOpenIcon,
+  ExternalLinkIcon,
 } from './Icons';
 
 type CardData = {
@@ -28,7 +30,7 @@ type CardData = {
   history: Array<{ id: string; transaction_reference: string; created_at: string; status: string }>;
 };
 
-type View = 'card' | 'reward' | 'history';
+type View = 'card' | 'menu' | 'reward' | 'history';
 
 export default function ClientCard({ token, initialData }: { token: string; initialData: CardData }) {
   const [data, setData] = useState<CardData>(initialData);
@@ -490,6 +492,67 @@ export default function ClientCard({ token, initialData }: { token: string; init
               </p>
             </div>
 
+            {/* ── Quick Menu Banner Shortcut ── */}
+            <div
+              className="ui-card"
+              onClick={() => setView('menu')}
+              style={{
+                marginBottom: '1.25rem',
+                padding: '1.1rem 1.25rem',
+                cursor: 'pointer',
+                background: 'linear-gradient(135deg, #FAF7F2 0%, #F3ECE1 100%)',
+                border: '1.5px solid var(--crema-border)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                boxShadow: 'var(--shadow-sm)',
+                transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+                <div
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '12px',
+                    background: 'var(--espresso)',
+                    color: 'var(--gold)',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    boxShadow: '0 4px 10px rgba(44, 30, 22, 0.2)',
+                  }}
+                >
+                  <BookOpenIcon size={22} />
+                </div>
+                <div>
+                  <div style={{ fontWeight: 800, fontSize: '0.94rem', color: 'var(--espresso)' }}>
+                    Consulter le Menu Bieny
+                  </div>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--coffee-mid)', marginTop: '0.15rem' }}>
+                    Boissons chaudes, fraîches & douceurs
+                  </div>
+                </div>
+              </div>
+
+              <div
+                style={{
+                  width: '32px',
+                  height: '32px',
+                  borderRadius: '50%',
+                  background: 'var(--crema-surface)',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  border: '1px solid var(--crema-border)',
+                  color: 'var(--espresso)',
+                  fontSize: '0.9rem',
+                }}
+              >
+                →
+              </div>
+            </div>
+
             {/* ── How it works ── */}
             <div className="ui-card" style={{ background: 'var(--crema-subtle)', padding: '1.25rem' }}>
               <div style={{ fontWeight: 800, fontSize: '0.86rem', color: 'var(--espresso)', marginBottom: '0.6rem' }}>
@@ -666,6 +729,79 @@ export default function ClientCard({ token, initialData }: { token: string; init
             )}
           </div>
         )}
+        {/* VIEW 4: MENU */}
+        {view === 'menu' && (
+          <div className="animate-in" style={{ paddingBottom: '1rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
+              <div>
+                <h2
+                  style={{
+                    fontFamily: 'var(--font-serif)',
+                    fontSize: '1.4rem',
+                    fontWeight: 700,
+                    color: 'var(--espresso)',
+                    lineHeight: 1.2,
+                  }}
+                >
+                  Notre Menu Gourmand
+                </h2>
+                <div style={{ fontSize: '0.8rem', color: 'var(--coffee-mid)', marginTop: '0.2rem' }}>
+                  Cafés, boissons signature & pâtisseries fraîches
+                </div>
+              </div>
+
+              <a
+                href="https://houssem-qr.onrender.com/qr"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="touch-btn touch-btn--outline"
+                style={{
+                  minHeight: '36px',
+                  padding: '6px 12px',
+                  fontSize: '0.76rem',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  borderRadius: '999px',
+                  background: 'var(--crema-surface)',
+                }}
+              >
+                <span>Plein écran</span>
+                <ExternalLinkIcon size={14} />
+              </a>
+            </div>
+
+            {/* Menu container iframe */}
+            <div
+              className="ui-card"
+              style={{
+                padding: '0',
+                overflow: 'hidden',
+                borderRadius: 'var(--r-lg)',
+                border: '1.5px solid var(--crema-border)',
+                background: '#FFFFFF',
+                boxShadow: 'var(--shadow-md)',
+                height: 'calc(100dvh - 195px)',
+                minHeight: '520px',
+                position: 'relative',
+              }}
+            >
+              <iframe
+                src="https://houssem-qr.onrender.com/qr"
+                title="Menu Bieny Coffeeshop"
+                style={{
+                  width: '100%',
+                  height: '100%',
+                  border: 'none',
+                  display: 'block',
+                  background: 'transparent',
+                }}
+                loading="lazy"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
+              />
+            </div>
+          </div>
+        )}
       </main>
 
       <PwaInstallPrompt token={token} />
@@ -682,6 +818,17 @@ export default function ClientCard({ token, initialData }: { token: string; init
             <CoffeeIcon size={20} />
           </div>
           <span className="bottom-tab__label">Ma Carte</span>
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setView('menu')}
+          className={`bottom-tab ${view === 'menu' ? 'bottom-tab--active' : ''}`}
+        >
+          <div className="bottom-tab__icon-wrap">
+            <BookOpenIcon size={20} />
+          </div>
+          <span className="bottom-tab__label">Le Menu</span>
         </button>
 
         <button
