@@ -50,7 +50,7 @@ export default function ClientCard({ token, initialData }: { token: string; init
     try { document.cookie = `last_card_token=${token}; path=/; max-age=31536000; SameSite=Lax`; } catch {}
     // Register service worker early so push subscription can resolve
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => null);
+      navigator.serviceWorker.register('/sw.js?v=2').catch(() => null);
     }
     const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
     const key = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY;

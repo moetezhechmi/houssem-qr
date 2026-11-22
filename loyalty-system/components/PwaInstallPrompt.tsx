@@ -34,7 +34,7 @@ export function PwaInstallPrompt({ token }: { token: string }) {
   // Register service worker
   useEffect(() => {
     if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('/sw.js').catch(() => null);
+      navigator.serviceWorker.register('/sw.js?v=2').catch(() => null);
     }
   }, []);
 
