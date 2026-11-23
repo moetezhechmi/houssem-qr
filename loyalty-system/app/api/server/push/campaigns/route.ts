@@ -36,7 +36,11 @@ export async function POST(req: Request) {
 
   if (immediate) {
     // fire-and-forget send
-    invokeEdge('send-campaign', { campaign_id: camp.id }, { key: 'service' }).catch(() => null);
+    invokeEdge('send-campaign', {
+      campaign_id: camp.id,
+      btn_text: body?.btn_text,
+      btn_action: body?.btn_action,
+    }, { key: 'service' }).catch(() => null);
   }
 
   return NextResponse.json(camp, { status: 201 });

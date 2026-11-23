@@ -32,7 +32,10 @@ self.addEventListener('push', (event) => {
       url: notifUrl,
       title: title,
       body: bodyText,
-      type: data.type || 'generic',
+      type: data.type || (data.data && data.data.type) || 'generic',
+      image_url: data.image_url || (data.data && data.data.image_url) || null,
+      btn_text: data.btn_text || (data.data && data.data.btn_text) || 'Découvrir & Profiter',
+      btn_action: data.btn_action || (data.data && data.data.btn_action) || 'close',
       timestamp: Date.now(),
     },
   };
@@ -50,6 +53,9 @@ self.addEventListener('notificationclick', (event) => {
     title: notifData.title || event.notification.title || 'Bieny Coffeeshop',
     body: notifData.body || event.notification.body || '',
     type: notifData.type || 'generic',
+    image_url: notifData.image_url || null,
+    btn_text: notifData.btn_text || 'Découvrir & Profiter',
+    btn_action: notifData.btn_action || 'close',
     timestamp: Date.now(),
   };
   parsedUrl.searchParams.set('notif_open', '1');

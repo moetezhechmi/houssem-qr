@@ -47,6 +47,16 @@ export default function ClientCard({ token, initialData }: { token: string; init
   }, [token]);
 
   useEffect(() => {
+    const handleNav = (e: any) => {
+      if (e.detail && ['card', 'menu', 'reward', 'history'].includes(e.detail)) {
+        setView(e.detail);
+      }
+    };
+    window.addEventListener('bieny_navigate_view', handleNav);
+    return () => window.removeEventListener('bieny_navigate_view', handleNav);
+  }, []);
+
+  useEffect(() => {
     setCardUrl(window.location.href);
     // Persist personal token for PWA reopen
     try { localStorage.setItem('last_card_token', token); } catch {}

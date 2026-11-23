@@ -62,17 +62,27 @@ Deno.serve(async (req) => {
     return true;
   });
 
+  const imageUrl = body?.image_url ? String(body.image_url) : null;
+  const btnText = body?.btn_text ? String(body.btn_text) : 'Découvrir & Profiter';
+  const btnAction = body?.btn_action ? String(body.btn_action) : 'close';
+
   const payload = JSON.stringify({
     title,
     body: message,
     icon,
     badge: icon,
     type,
+    image_url: imageUrl,
+    btn_text: btnText,
+    btn_action: btnAction,
     data: {
       url,
       title,
       body: message,
       type,
+      image_url: imageUrl,
+      btn_text: btnText,
+      btn_action: btnAction,
     }
   });
 
