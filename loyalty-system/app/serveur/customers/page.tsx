@@ -17,47 +17,67 @@ export default async function ServeurCustomers({
   const customers = await getSearchCustomers(q);
 
   return (
-    <main className="shell animate-in">
+    <main className="shell animate-in" style={{ paddingBottom: '2rem' }}>
       {/* ── Header Title & Back Link ── */}
       <div style={{ marginBottom: '1.25rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.45rem' }}>
           <a
             href="/serveur"
             style={{
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              fontSize: '0.8rem',
+              fontSize: 'var(--text-xs)',
               color: 'var(--coffee-mid)',
               fontWeight: 700,
               textDecoration: 'none',
+              padding: '4px 8px',
+              borderRadius: 'var(--r-sm)',
+              background: 'var(--crema-surface)',
+              border: '1px solid var(--crema-border)',
+              boxShadow: 'var(--shadow-xs)',
             }}
           >
-            <ArrowLeftIcon size={16} />
+            <ArrowLeftIcon size={14} />
             <span>Tableau de bord</span>
           </a>
+
+          <span
+            style={{
+              fontSize: 'var(--text-2xs)',
+              fontWeight: 800,
+              letterSpacing: '0.08em',
+              textTransform: 'uppercase',
+              color: 'var(--gold-dark)',
+            }}
+          >
+            Espace Barista
+          </span>
         </div>
+
         <h1
           style={{
             fontFamily: 'var(--font-serif)',
-            fontSize: '1.85rem',
+            fontSize: 'var(--text-2xl)',
             fontWeight: 700,
             color: 'var(--espresso)',
             margin: '0 0 0.25rem',
+            lineHeight: 1.2,
           }}
         >
-          Recherche & Clients
+          Clients & Cartes
         </h1>
-        <p style={{ fontSize: '0.86rem', color: 'var(--coffee-mid)', margin: 0 }}>
-          Recherchez par numéro de téléphone ou nom pour valider un café ou appliquer une réduction.
+        <p style={{ fontSize: 'var(--text-sm)', color: 'var(--coffee-mid)', margin: 0, lineHeight: 1.45 }}>
+          Recherchez par nom, téléphone ou carte pour ajouter un tampon ou valider une remise.
         </p>
       </div>
 
-      {/* ── Add Client Form (Accordion) ── */}
+      {/* ── Add Client Form (Accordion / Quick Create) ── */}
       <div style={{ marginBottom: '1.25rem' }}>
         <AddClientForm initialOpen={action === 'new'} />
       </div>
 
+      {/* ── Customer Search & Live Results ── */}
       <CustomerSearch initialQuery={q} initialCustomers={customers} />
     </main>
   );
