@@ -1,5 +1,5 @@
-const CACHE = 'coffee-loyalty-v5';
-const PRECACHE = ['/', '/logo_houssem.jpeg', '/icon.svg'];
+const CACHE = 'coffee-loyalty-v6';
+const PRECACHE = ['/', '/logo_houssem.jpeg', '/icon.svg', '/badge.png', '/icon-192.png'];
 
 self.addEventListener('install', (event) => {
   event.waitUntil(
@@ -27,7 +27,7 @@ self.addEventListener('push', (event) => {
   const options = {
     body: bodyText,
     icon: data.icon || '/logo_houssem.jpeg',
-    badge: '/logo_houssem.jpeg',
+    badge: '/badge.png',
     data: {
       url: notifUrl,
       title: title,
