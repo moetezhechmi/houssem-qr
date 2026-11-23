@@ -38,6 +38,7 @@ export default function ClientCard({ token, initialData }: { token: string; init
   const [view, setView] = useState<View>('card');
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [cardUrl, setCardUrl] = useState('');
+  const [qrCodeData, setQrCodeData] = useState('');
 
   const refresh = useCallback(async () => {
     setIsRefreshing(true);
@@ -57,7 +58,9 @@ export default function ClientCard({ token, initialData }: { token: string; init
   }, []);
 
   useEffect(() => {
-    setCardUrl(window.location.href);
+    const origin = typeof window !== 'undefined' ? window.location.origin : '';
+    setCardUrl(`${origin}/client/${token}`);
+    setQrCodeData(`${origin}/client/${token}?scan=1`);
     try { localStorage.setItem('last_card_token', token); } catch {}
     try { document.cookie = `last_card_token=${token}; path=/; max-age=31536000; SameSite=Lax`; } catch {}
     if ('serviceWorker' in navigator) {
@@ -545,7 +548,7 @@ export default function ClientCard({ token, initialData }: { token: string; init
               </h3>
 
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.85rem' }}>
-                {cardUrl ? (
+                {qrCodeData || cardUrl ? (
                   <div
                     style={{
                       padding: '12px',
@@ -556,7 +559,7 @@ export default function ClientCard({ token, initialData }: { token: string; init
                     }}
                   >
                     <img
-                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cardUrl)}`}
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(qrCodeData || cardUrl)}`}
                       alt="QR code de votre carte de fidélité"
                       width={200}
                       height={200}
