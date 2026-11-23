@@ -18,7 +18,7 @@ Deno.serve(async (req) => {
   } else {
     campaign = {
       id: null,
-      title: String(body?.title ?? 'Coffee Loyalty'),
+      title: String(body?.title ?? 'Bieny Coffeeshop'),
       message: String(body?.message ?? ''),
       image_url: body?.image_url ?? null,
       target: body?.target ?? 'all',
@@ -52,6 +52,7 @@ Deno.serve(async (req) => {
       type: pushType,
       title: campaign.title,
       message: campaign.message,
+      icon: campaign.image_url || '/logo_houssem.jpeg',
       url: '/',
       dedup_key: dedupKey,
     }),

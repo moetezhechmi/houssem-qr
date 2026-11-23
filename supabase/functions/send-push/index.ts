@@ -18,9 +18,10 @@ function json(status: number, obj: unknown) {
 Deno.serve(async (req) => {
   const body = await req.json().catch(() => null);
   const type = String(body?.type ?? 'generic');
-  const title = String(body?.title ?? 'Coffee Loyalty');
+  const title = String(body?.title ?? 'Bieny Coffeeshop');
   const message = String(body?.message ?? '');
   const url = String(body?.url ?? '/');
+  const icon = String(body?.icon ?? '/logo_houssem.jpeg');
   const dedupKey = body?.dedup_key ? String(body.dedup_key) : null;
   const customerIds: string[] | null = Array.isArray(body?.customer_ids) ? body.customer_ids : null;
   const marketing = body?.marketing === true;
@@ -61,7 +62,13 @@ Deno.serve(async (req) => {
     return true;
   });
 
-  const payload = JSON.stringify({ title, body: message, icon: '/icon.svg', data: { url } });
+  const payload = JSON.stringify({
+    title,
+    body: message,
+    icon,
+    badge: icon,
+    data: { url }
+  });
 
   // Parallel sending with Promise.allSettled (fast & lightweight for free tier CPU)
   const tasks = eligibleSubs.map(async (sub: any) => {

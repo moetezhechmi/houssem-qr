@@ -19,7 +19,7 @@ export const metadata: Metadata = {
     title: 'Bieny Coffeeshop',
   },
   icons: {
-    icon: '/icon.svg',
+    icon: '/logo_houssem.jpeg',
     apple: '/logo_houssem.jpeg',
   },
 };

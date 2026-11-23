@@ -1,7 +1,7 @@
 {
   "name": "Bieny Coffeeshop",
   "short_name": "Bieny",
-  "description": "Votre carte de fidélité Coffee Loyalty",
+  "description": "Votre carte de fidélité Bieny Coffeeshop",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -9,7 +9,8 @@
   "background_color": "#FAF9F6",
   "theme_color": "#8FAF9A",
   "icons": [
-    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" },
-    { "src": "/logo_houssem.jpeg", "sizes": "1402x1122", "type": "image/jpeg" }
+    { "src": "/logo_houssem.jpeg", "sizes": "any", "type": "image/jpeg", "purpose": "any" },
+    { "src": "/logo_houssem.jpeg", "sizes": "1402x1122", "type": "image/jpeg" },
+    { "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
   ]
 }
