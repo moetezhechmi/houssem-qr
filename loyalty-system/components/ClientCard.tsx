@@ -58,10 +58,8 @@ export default function ClientCard({ token, initialData }: { token: string; init
 
   useEffect(() => {
     setCardUrl(window.location.href);
-    // Persist personal token for PWA reopen
     try { localStorage.setItem('last_card_token', token); } catch {}
     try { document.cookie = `last_card_token=${token}; path=/; max-age=31536000; SameSite=Lax`; } catch {}
-    // Register service worker early so push subscription can resolve
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/sw.js').catch(() => null);
     }
@@ -96,6 +94,7 @@ export default function ClientCard({ token, initialData }: { token: string; init
   const cycle = data.active_cycle;
   const done = cycle ? cycle.current_consumptions : 0;
   const total = cycle ? cycle.required_consumptions : 9;
+  const progressPercent = Math.min(100, Math.round((done / total) * 100));
   const expired = card.status === 'expired' || card.status === 'completed' || card.status === 'archived';
   const availableReward = data.rewards.find((r) => r.status === 'available' && new Date(r.expires_at).getTime() > Date.now());
   const daysTillExpiry = daysUntil(card.expiration_date);
@@ -113,33 +112,35 @@ export default function ClientCard({ token, initialData }: { token: string; init
             style={{
               width: '38px',
               height: '38px',
-              borderRadius: '12px',
+              borderRadius: '11px',
               objectFit: 'cover',
-              boxShadow: '0 2px 8px rgba(24, 16, 10, 0.15)',
+              boxShadow: '0 2px 8px rgba(24, 16, 10, 0.16)',
+              border: '1.5px solid rgba(212, 160, 84, 0.4)',
             }}
           />
           <div>
             <div
               style={{
                 fontFamily: 'var(--font-serif)',
-                fontSize: '1.1rem',
+                fontSize: 'var(--text-md)',
                 fontWeight: 700,
                 color: 'var(--espresso)',
                 lineHeight: 1.15,
+                letterSpacing: '-0.01em',
               }}
             >
               Bieny Coffeeshop
             </div>
             <div
               style={{
-                fontSize: '0.68rem',
-                color: 'var(--coffee-mid)',
-                fontWeight: 600,
-                letterSpacing: '0.04em',
+                fontSize: 'var(--text-2xs)',
+                color: 'var(--gold-dark)',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
                 textTransform: 'uppercase',
               }}
             >
-              Carte de Fidélité Digitale
+              Carte de Fidélité
             </div>
           </div>
         </div>
@@ -151,13 +152,14 @@ export default function ClientCard({ token, initialData }: { token: string; init
               display: 'inline-flex',
               alignItems: 'center',
               gap: '6px',
-              padding: '4px 10px',
-              borderRadius: '999px',
-              background: 'var(--crema-subtle)',
+              padding: '4px 11px',
+              borderRadius: 'var(--r-pill)',
+              background: 'var(--crema-surface)',
               border: '1px solid var(--crema-border)',
-              fontSize: '0.76rem',
+              fontSize: 'var(--text-xs)',
               fontWeight: 700,
               color: 'var(--espresso)',
+              boxShadow: 'var(--shadow-xs)',
             }}
           >
             <span
@@ -168,6 +170,7 @@ export default function ClientCard({ token, initialData }: { token: string; init
                 background: isRefreshing ? 'var(--gold)' : 'var(--sage)',
                 boxShadow: `0 0 6px ${isRefreshing ? 'var(--gold)' : 'var(--sage)'}`,
                 display: 'inline-block',
+                transition: 'background 0.2s ease',
               }}
             />
             {data.customer.first_name}
@@ -179,27 +182,27 @@ export default function ClientCard({ token, initialData }: { token: string; init
       <main className="shell animate-in">
         {/* VIEW 1: MA CARTE */}
         {view === 'card' && (
-          <div>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
             {/* Status alerts */}
             {expired && (
               <div
                 style={{
                   background: 'var(--coral-light)',
                   border: '1.5px solid var(--coral-border)',
-                  borderRadius: 'var(--r-md)',
-                  padding: '1rem',
-                  marginBottom: '1rem',
+                  borderRadius: 'var(--r-lg)',
+                  padding: '1.15rem 1.25rem',
                   display: 'flex',
                   alignItems: 'flex-start',
-                  gap: '10px',
+                  gap: '12px',
                   color: 'var(--coral)',
+                  boxShadow: 'var(--shadow-xs)',
                 }}
               >
-                <span style={{ fontSize: '1.25rem' }}>⚠️</span>
+                <span style={{ fontSize: '1.4rem' }}>⚠️</span>
                 <div>
-                  <strong style={{ fontSize: '0.92rem' }}>Carte expirée</strong>
-                  <div style={{ fontSize: '0.82rem', marginTop: '0.2rem', lineHeight: 1.4 }}>
-                    Votre cycle de 30 jours est arrivé à son terme. Demandez à votre barista de renouveler votre carte pour redémarrer un cycle.
+                  <strong style={{ fontSize: 'var(--text-base)', display: 'block' }}>Cycle de 30 jours terminé</strong>
+                  <div style={{ fontSize: 'var(--text-sm)', marginTop: '0.25rem', lineHeight: 1.45 }}>
+                    Votre cycle de fidélité est arrivé à son terme. Rendez-vous au comptoir de votre barista pour débuter un nouveau cycle.
                   </div>
                 </div>
               </div>
@@ -209,31 +212,46 @@ export default function ClientCard({ token, initialData }: { token: string; init
               <div
                 className="animate-in"
                 style={{
-                  background: 'var(--sage-light)',
-                  border: '2px solid var(--sage)',
-                  borderRadius: 'var(--r-md)',
-                  padding: '1.1rem',
-                  marginBottom: '1rem',
+                  background: 'linear-gradient(135deg, #EEF7F1 0%, #D8EDE0 100%)',
+                  border: '1.5px solid var(--sage)',
+                  borderRadius: 'var(--r-lg)',
+                  padding: '1.25rem',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '12px',
-                  boxShadow: '0 8px 24px rgba(62, 123, 92, 0.18)',
-                  animation: 'rewardPop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both',
+                  gap: '14px',
+                  boxShadow: '0 8px 24px var(--sage-glow)',
+                  animation: 'rewardPop 0.5s var(--ease-spring) both',
                 }}
               >
-                <span style={{ fontSize: '2rem' }}>🎉</span>
-                <div>
-                  <strong style={{ color: 'var(--sage)', fontSize: '0.96rem' }}>
-                    Félicitations ! Vous avez débloqué une réduction de 30 % sur votre prochaine commande.
-                  </strong>
-                  <div style={{ fontSize: '0.82rem', color: 'var(--espresso)', marginTop: '0.2rem', lineHeight: 1.4 }}>
-                    Présentez votre carte en caisse lors de votre commande pour profiter de votre remise.
-                    {availableReward.expires_at && (
-                      <div style={{ marginTop: '0.35rem', fontWeight: 700, color: 'var(--coral)' }}>
-                        ⏳ Valable jusqu’au {fmtDateTime(availableReward.expires_at)}
-                      </div>
-                    )}
+                <div
+                  style={{
+                    width: '48px',
+                    height: '48px',
+                    borderRadius: '14px',
+                    background: 'var(--sage)',
+                    color: '#fff',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    fontSize: '1.6rem',
+                    flexShrink: 0,
+                    boxShadow: '0 4px 12px var(--sage-glow)',
+                  }}
+                >
+                  🎉
+                </div>
+                <div style={{ flex: 1 }}>
+                  <div style={{ color: 'var(--sage-dark)', fontSize: 'var(--text-base)', fontWeight: 800 }}>
+                    Félicitations ! Remise de -30% débloquée
                   </div>
+                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--espresso)', marginTop: '0.2rem', lineHeight: 1.4 }}>
+                    Présentez votre carte au barista lors de votre commande pour profiter de votre récompense.
+                  </div>
+                  {availableReward.expires_at && (
+                    <div style={{ marginTop: '0.35rem', fontSize: 'var(--text-2xs)', fontWeight: 700, color: 'var(--coral)' }}>
+                      ⏳ Valable jusqu’au {fmtDateTime(availableReward.expires_at)}
+                    </div>
+                  )}
                 </div>
               </div>
             )}
@@ -241,21 +259,20 @@ export default function ClientCard({ token, initialData }: { token: string; init
             {warnExpiring && !availableReward && (
               <div
                 style={{
-                  background: 'rgba(212, 160, 84, 0.15)',
-                  border: '1.5px solid var(--gold)',
+                  background: 'var(--notif-reminder-bg)',
+                  border: '1.5px solid var(--notif-reminder-bdr)',
                   borderRadius: 'var(--r-md)',
-                  padding: '0.85rem 1rem',
-                  marginBottom: '1rem',
+                  padding: '0.9rem 1.15rem',
                   display: 'flex',
                   alignItems: 'center',
                   gap: '10px',
-                  fontSize: '0.84rem',
-                  color: '#9E6E28',
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--notif-reminder-text)',
                 }}
               >
-                <span>⏳</span>
+                <span style={{ fontSize: '1.2rem' }}>⏳</span>
                 <span>
-                  Attention : votre carte expire dans <strong>{daysTillExpiry} jour(s)</strong> !
+                  Plus que <strong>{daysTillExpiry} jour(s)</strong> avant l'expiration de votre carte !
                 </span>
               </div>
             )}
@@ -265,20 +282,20 @@ export default function ClientCard({ token, initialData }: { token: string; init
               className="ui-card ui-card--espresso"
               style={{
                 padding: '1.6rem 1.4rem',
-                marginBottom: '1.25rem',
                 position: 'relative',
                 overflow: 'hidden',
               }}
             >
+              {/* Radial ambient gold halo */}
               <div
                 style={{
                   position: 'absolute',
-                  top: '-40%',
-                  right: '-10%',
-                  width: '280px',
-                  height: '280px',
+                  top: '-30%',
+                  right: '-15%',
+                  width: '320px',
+                  height: '320px',
                   borderRadius: '50%',
-                  background: 'radial-gradient(circle, var(--gold-glow) 0%, transparent 70%)',
+                  background: 'radial-gradient(circle, rgba(212, 160, 84, 0.22) 0%, transparent 68%)',
                   pointerEvents: 'none',
                 }}
               />
@@ -286,23 +303,30 @@ export default function ClientCard({ token, initialData }: { token: string; init
               <div style={{ position: 'relative', zIndex: 2 }}>
                 {/* Card Top: Logo & Status */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.2rem' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <img
                       src="/logo_houssem.jpeg"
                       alt="Logo"
-                      style={{ width: '38px', height: '38px', borderRadius: '10px', objectFit: 'cover' }}
+                      style={{
+                        width: '42px',
+                        height: '42px',
+                        borderRadius: '12px',
+                        objectFit: 'cover',
+                        border: '1.5px solid rgba(212, 160, 84, 0.5)',
+                        boxShadow: '0 3px 10px rgba(0,0,0,0.3)',
+                      }}
                     />
                     <div>
-                      <div style={{ fontSize: '0.68rem', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--gold)', fontWeight: 700 }}>
+                      <div style={{ fontSize: 'var(--text-2xs)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--gold)', fontWeight: 800 }}>
                         Bieny Loyalty Club
                       </div>
                       <div
                         style={{
                           fontFamily: 'var(--font-serif)',
-                          fontSize: '1.35rem',
+                          fontSize: 'var(--text-xl)',
                           fontWeight: 700,
-                          color: '#FAF9F6',
-                          lineHeight: 1.1,
+                          color: '#FAF8F5',
+                          lineHeight: 1.15,
                         }}
                       >
                         {data.customer.first_name} {data.customer.last_name}
@@ -312,14 +336,15 @@ export default function ClientCard({ token, initialData }: { token: string; init
 
                   <span
                     style={{
-                      fontSize: '0.7rem',
+                      fontSize: 'var(--text-2xs)',
                       fontWeight: 800,
-                      padding: '4px 10px',
-                      borderRadius: '999px',
-                      background: expired ? 'rgba(201, 74, 74, 0.25)' : 'rgba(62, 123, 92, 0.25)',
-                      color: expired ? '#FF9E9E' : '#A2E3BF',
-                      border: `1px solid ${expired ? 'rgba(201, 74, 74, 0.4)' : 'rgba(62, 123, 92, 0.4)'}`,
+                      padding: '4px 11px',
+                      borderRadius: 'var(--r-pill)',
+                      background: expired ? 'rgba(201, 74, 74, 0.25)' : 'rgba(98, 150, 119, 0.28)',
+                      color: expired ? '#FF9E9E' : '#B4E8C8',
+                      border: `1px solid ${expired ? 'rgba(201, 74, 74, 0.45)' : 'rgba(98, 150, 119, 0.5)'}`,
                       textTransform: 'uppercase',
+                      letterSpacing: '0.04em',
                     }}
                   >
                     {expired ? 'Expirée' : 'Active'}
@@ -329,21 +354,44 @@ export default function ClientCard({ token, initialData }: { token: string; init
                 {/* Card Number & Stamps Count */}
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-end', marginBottom: '1.25rem' }}>
                   <div>
-                    <code style={{ fontSize: '0.85rem', letterSpacing: '0.1em', opacity: 0.7, color: 'var(--crema-border)' }}>
+                    <code style={{ fontSize: 'var(--text-sm)', letterSpacing: '0.12em', color: 'var(--gold-light)', fontWeight: 700 }}>
                       {card.card_number}
                     </code>
-                    <div style={{ fontSize: '0.72rem', opacity: 0.6, marginTop: '0.2rem' }}>
+                    <div style={{ fontSize: 'var(--text-2xs)', opacity: 0.65, marginTop: '0.2rem' }}>
                       Ouverte le {fmtDate(card.start_date)}
                     </div>
                   </div>
 
                   <div style={{ textAlign: 'right' }}>
-                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.85rem', fontWeight: 700, lineHeight: 1 }}>
-                      {done} <span style={{ fontSize: '1.1rem', color: 'var(--gold)' }}>/ {total}</span>
+                    <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-3xl)', fontWeight: 800, lineHeight: 1 }}>
+                      {done} <span style={{ fontSize: 'var(--text-lg)', color: 'var(--gold)', fontWeight: 700 }}>/ {total}</span>
                     </div>
-                    <div style={{ fontSize: '0.66rem', letterSpacing: '0.06em', textTransform: 'uppercase', opacity: 0.7, marginTop: '0.2rem' }}>
-                      Tampons
+                    <div style={{ fontSize: 'var(--text-2xs)', letterSpacing: '0.08em', textTransform: 'uppercase', opacity: 0.7, marginTop: '0.25rem' }}>
+                      Tampons Café
                     </div>
+                  </div>
+                </div>
+
+                {/* Progress bar inside card */}
+                <div style={{ marginBottom: '1.25rem' }}>
+                  <div
+                    style={{
+                      height: '6px',
+                      borderRadius: '999px',
+                      background: 'rgba(255, 255, 255, 0.1)',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    <div
+                      style={{
+                        height: '100%',
+                        borderRadius: '999px',
+                        width: `${progressPercent}%`,
+                        background: 'var(--gold-gradient)',
+                        boxShadow: '0 0 10px var(--gold-glow)',
+                        transition: 'width 0.4s var(--ease-spring)',
+                      }}
+                    />
                   </div>
                 </div>
 
@@ -352,20 +400,23 @@ export default function ClientCard({ token, initialData }: { token: string; init
                   style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(3, 1fr)',
-                    gap: '10px',
+                    gap: '11px',
                     maxWidth: '360px',
-                    margin: '0 auto 1.15rem auto',
+                    margin: '0 auto 1.25rem auto',
                   }}
                 >
                   {Array.from({ length: total }).map((_, i) => {
                     const isStamped = i < done;
                     const isLast = i === total - 1;
+                    const isCurrent = i === done - 1;
 
                     return (
                       <div
                         key={i}
+                        className={isCurrent ? 'stamp-pop' : ''}
                         style={{
                           aspectRatio: '1',
+                          minHeight: '62px',
                           borderRadius: '16px',
                           display: 'flex',
                           flexDirection: 'column',
@@ -375,24 +426,23 @@ export default function ClientCard({ token, initialData }: { token: string; init
                           background: isStamped
                             ? isLast
                               ? 'var(--gold-gradient)'
-                              : '#FAF9F6'
-                            : 'rgba(255, 255, 255, 0.08)',
+                              : '#FAF8F5'
+                            : 'rgba(255, 255, 255, 0.06)',
                           color: isStamped
-                            ? isLast
-                              ? 'var(--espresso)'
-                              : 'var(--espresso)'
-                            : 'rgba(255, 255, 255, 0.4)',
+                            ? 'var(--espresso)'
+                            : 'rgba(255, 255, 255, 0.35)',
                           border: isStamped
                             ? isLast
-                              ? '2px solid rgba(212, 160, 84, 0.6)'
-                              : 'none'
-                            : '1.5px dashed rgba(255, 255, 255, 0.22)',
+                              ? '2px solid rgba(240, 211, 155, 0.8)'
+                              : '1px solid rgba(255, 255, 255, 0.4)'
+                            : '1.5px dashed rgba(255, 255, 255, 0.18)',
                           boxShadow: isStamped
                             ? isLast
                               ? '0 6px 18px var(--gold-glow)'
-                              : '0 4px 12px rgba(0,0,0,0.25)'
+                              : '0 4px 12px rgba(0,0,0,0.22)'
                             : 'none',
-                          transition: 'all 0.2s ease',
+                          transition: 'all 0.25s var(--ease-spring)',
+                          position: 'relative',
                         }}
                       >
                         <div>
@@ -403,20 +453,20 @@ export default function ClientCard({ token, initialData }: { token: string; init
                               <CoffeeIcon size={22} color="var(--espresso)" />
                             )
                           ) : isLast ? (
-                            <GiftIcon size={20} color="rgba(255, 255, 255, 0.35)" />
+                            <GiftIcon size={20} color="rgba(255, 255, 255, 0.3)" />
                           ) : (
-                            <CoffeeIcon size={18} color="rgba(255, 255, 255, 0.3)" />
+                            <CoffeeIcon size={18} color="rgba(255, 255, 255, 0.25)" />
                           )}
                         </div>
 
                         <span
                           style={{
-                            fontSize: '0.66rem',
+                            fontSize: 'var(--text-2xs)',
                             fontWeight: 800,
                             letterSpacing: '0.04em',
                             color: isStamped
                               ? 'var(--espresso)'
-                              : 'rgba(255, 255, 255, 0.55)',
+                              : 'rgba(255, 255, 255, 0.5)',
                           }}
                         >
                           {isLast ? '-30%' : `#${i + 1}`}
@@ -427,45 +477,51 @@ export default function ClientCard({ token, initialData }: { token: string; init
                 </div>
 
                 {/* Motivational cue */}
-                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: '0.78rem', opacity: 0.85 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', fontSize: 'var(--text-xs)', opacity: 0.9 }}>
                   <span>
                     {done >= total
-                      ? '🎉 Cycle complété ! Récompense prête.'
-                      : `Plus que ${total - done} boisson${total - done > 1 ? 's' : ''} pour votre remise`}
+                      ? '🎉 Cycle complet ! Récompense de 30% débloquée.'
+                      : `Encore ${total - done} café${total - done > 1 ? 's' : ''} pour votre remise`}
                   </span>
-                  <span style={{ fontWeight: 700 }}>
-                    {Math.round((done / total) * 100)}%
+                  <span style={{ fontWeight: 800, color: 'var(--gold)' }}>
+                    {progressPercent}%
                   </span>
                 </div>
               </div>
             </div>
 
             {/* ── Validity Card ── */}
-            <div className="ui-card" style={{ marginBottom: '1.25rem', padding: '1.25rem' }}>
-              <div style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', letterSpacing: '0.08em', marginBottom: '0.75rem' }}>
-                Période de validité du cycle
+            <div className="ui-card" style={{ padding: '1.25rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.85rem' }}>
+                <div className="section-label">Période de Validité</div>
+                <span
+                  style={{
+                    fontSize: 'var(--text-2xs)',
+                    fontWeight: 700,
+                    color: expired ? 'var(--coral)' : 'var(--sage-dark)',
+                  }}
+                >
+                  {expired ? 'Cycle Expiré' : `${daysTillExpiry ?? 0} jour(s) restant(s)`}
+                </span>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.9rem' }}>
                 <div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--coffee-mid)' }}>Date de création</div>
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: 'var(--espresso)', marginTop: '0.15rem' }}>
+                  <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Ouverture
+                  </div>
+                  <div style={{ fontWeight: 700, fontSize: 'var(--text-sm)', color: 'var(--espresso)', marginTop: '0.15rem' }}>
                     {fmtDate(card.start_date)}
                   </div>
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--coffee-mid)' }}>Date d’expiration</div>
-                  <div style={{ fontWeight: 700, fontSize: '0.9rem', color: expired ? 'var(--coral)' : 'var(--espresso)', marginTop: '0.15rem' }}>
+                  <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                    Expiration
+                  </div>
+                  <div style={{ fontWeight: 700, fontSize: 'var(--text-sm)', color: expired ? 'var(--coral)' : 'var(--espresso)', marginTop: '0.15rem' }}>
                     {fmtDate(card.expiration_date)}
                   </div>
                 </div>
-              </div>
-
-              <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: '0.78rem', marginBottom: '0.35rem' }}>
-                <span style={{ color: 'var(--coffee-mid)' }}>Temps restant</span>
-                <strong style={{ color: expired ? 'var(--coral)' : 'var(--sage)' }}>
-                  {expired ? 'Cycle expiré' : `${daysTillExpiry ?? 0} jour(s)`}
-                </strong>
               </div>
 
               <div style={{ height: '6px', borderRadius: '999px', background: 'var(--crema-subtle)', overflow: 'hidden' }}>
@@ -475,31 +531,64 @@ export default function ClientCard({ token, initialData }: { token: string; init
                     borderRadius: '999px',
                     width: `${expired ? 100 : Math.max(4, Math.min(100, (((30 - (daysTillExpiry ?? 0)) / 30) * 100)))}%`,
                     background: expired ? 'var(--coral)' : 'var(--sage)',
+                    transition: 'width 0.4s ease',
                   }}
                 />
               </div>
             </div>
 
             {/* ── QR Code de la carte ── */}
-            <div className="ui-card" style={{ marginBottom: '1.25rem', padding: '1.25rem', textAlign: 'center' }}>
-              <div style={{ fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', letterSpacing: '0.08em', marginBottom: '0.75rem' }}>
-                Votre QR code personnel
-              </div>
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.75rem' }}>
+            <div className="ui-card" style={{ padding: '1.4rem', textAlign: 'center' }}>
+              <div className="section-label">Identification en Caisse</div>
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-md)', fontWeight: 700, color: 'var(--espresso)', margin: '0 0 1rem' }}>
+                Votre QR Code Client
+              </h3>
+
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.85rem' }}>
                 {cardUrl ? (
-                  <img
-                    src={`https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(cardUrl)}`}
-                    alt="QR code de votre carte de fidélité"
-                    width={180}
-                    height={180}
-                    style={{ borderRadius: '12px', border: '1.5px solid var(--crema-border)', background: '#FFFFFF', padding: '8px' }}
-                  />
+                  <div
+                    style={{
+                      padding: '12px',
+                      background: '#FFFFFF',
+                      borderRadius: 'var(--r-lg)',
+                      border: '1.5px solid var(--crema-border)',
+                      boxShadow: 'var(--shadow-sm)',
+                    }}
+                  >
+                    <img
+                      src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(cardUrl)}`}
+                      alt="QR code de votre carte de fidélité"
+                      width={200}
+                      height={200}
+                      style={{ borderRadius: '8px', display: 'block' }}
+                    />
+                  </div>
                 ) : (
-                  <div style={{ width: 180, height: 180, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--coffee-mid)' }}>…</div>
+                  <div style={{ width: 200, height: 200, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'var(--coffee-mid)' }}>
+                    Chargement…
+                  </div>
                 )}
               </div>
-              <p style={{ fontSize: '0.78rem', color: 'var(--coffee-mid)', margin: 0, lineHeight: 1.4 }}>
-                Présentez ce QR code en caisse pour que votre barista valide vos consommations.
+
+              <div
+                style={{
+                  display: 'inline-block',
+                  background: 'var(--crema-subtle)',
+                  padding: '4px 12px',
+                  borderRadius: 'var(--r-pill)',
+                  border: '1px solid var(--crema-border)',
+                  fontSize: 'var(--text-xs)',
+                  fontFamily: 'monospace',
+                  fontWeight: 700,
+                  color: 'var(--espresso)',
+                  marginBottom: '0.5rem',
+                }}
+              >
+                {card.card_number}
+              </div>
+
+              <p style={{ fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)', margin: 0, lineHeight: 1.45 }}>
+                Présentez ce QR code à chaque passage pour enregistrer votre boisson.
               </p>
             </div>
 
@@ -508,48 +597,47 @@ export default function ClientCard({ token, initialData }: { token: string; init
               className="ui-card"
               onClick={() => setView('menu')}
               style={{
-                marginBottom: '1.25rem',
-                padding: '1.1rem 1.25rem',
+                padding: '1.15rem 1.35rem',
                 cursor: 'pointer',
-                background: 'linear-gradient(135deg, #FAF7F2 0%, #F3ECE1 100%)',
+                background: 'linear-gradient(135deg, #FAF8F5 0%, #F4EFEA 100%)',
                 border: '1.5px solid var(--crema-border)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 boxShadow: 'var(--shadow-sm)',
-                transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+                transition: 'all 0.2s ease',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.9rem' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div
                   style={{
-                    width: '44px',
-                    height: '44px',
-                    borderRadius: '12px',
+                    width: '46px',
+                    height: '46px',
+                    borderRadius: '14px',
                     background: 'var(--espresso)',
                     color: 'var(--gold)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    boxShadow: '0 4px 10px rgba(44, 30, 22, 0.2)',
+                    boxShadow: '0 4px 12px rgba(44, 30, 22, 0.2)',
                   }}
                 >
-                  <BookOpenIcon size={22} />
+                  <BookOpenIcon size={24} />
                 </div>
                 <div>
-                  <div style={{ fontWeight: 800, fontSize: '0.94rem', color: 'var(--espresso)' }}>
-                    Consulter le Menu Bieny
+                  <div style={{ fontWeight: 800, fontSize: 'var(--text-base)', color: 'var(--espresso)' }}>
+                    Découvrir la Carte Bieny
                   </div>
-                  <div style={{ fontSize: '0.78rem', color: 'var(--coffee-mid)', marginTop: '0.15rem' }}>
-                    Boissons chaudes, fraîches & douceurs
+                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)', marginTop: '0.15rem' }}>
+                    Boissons d'exception & douceurs fraîches
                   </div>
                 </div>
               </div>
 
               <div
                 style={{
-                  width: '32px',
-                  height: '32px',
+                  width: '34px',
+                  height: '34px',
                   borderRadius: '50%',
                   background: 'var(--crema-surface)',
                   display: 'flex',
@@ -557,7 +645,8 @@ export default function ClientCard({ token, initialData }: { token: string; init
                   justifyContent: 'center',
                   border: '1px solid var(--crema-border)',
                   color: 'var(--espresso)',
-                  fontSize: '0.9rem',
+                  fontSize: '1rem',
+                  boxShadow: 'var(--shadow-xs)',
                 }}
               >
                 →
@@ -565,14 +654,29 @@ export default function ClientCard({ token, initialData }: { token: string; init
             </div>
 
             {/* ── How it works ── */}
-            <div className="ui-card" style={{ background: 'var(--crema-subtle)', padding: '1.25rem' }}>
-              <div style={{ fontWeight: 800, fontSize: '0.86rem', color: 'var(--espresso)', marginBottom: '0.6rem' }}>
-                ☕ Comment fonctionne votre carte ?
+            <div className="ui-card ui-card--subtle" style={{ padding: '1.35rem' }}>
+              <div style={{ fontWeight: 800, fontSize: 'var(--text-sm)', color: 'var(--espresso)', marginBottom: '0.85rem' }}>
+                ☕ Fonctionnement du Programme Bieny
               </div>
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', fontSize: '0.82rem', color: 'var(--espresso)', lineHeight: 1.45 }}>
-                <div>1. Donnez votre numéro <strong>{card.card_number}</strong> à chaque commande en caisse.</div>
-                <div>2. Chaque café consommé ajoute <strong>1 tampon</strong>.</div>
-                <div>3. Au <strong>9ème café</strong>, vous bénéficiez immédiatement de <strong>30% de réduction</strong> !</div>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: 'var(--text-sm)', color: 'var(--espresso)', lineHeight: 1.5 }}>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                  <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--espresso)', color: '#FAF8F5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.72rem', fontWeight: 800, flexShrink: 0 }}>
+                    1
+                  </span>
+                  <span>Donnez votre numéro <strong>{card.card_number}</strong> ou montrez votre QR en caisse.</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                  <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--espresso)', color: '#FAF8F5', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.72rem', fontWeight: 800, flexShrink: 0 }}>
+                    2
+                  </span>
+                  <span>Chaque café validé ajoute automatiquement <strong>1 tampon</strong> à votre carte.</span>
+                </div>
+                <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
+                  <span style={{ width: '22px', height: '22px', borderRadius: '50%', background: 'var(--gold)', color: 'var(--espresso)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.72rem', fontWeight: 800, flexShrink: 0 }}>
+                    3
+                  </span>
+                  <span>Au <strong>9ème café</strong>, débloquez <strong>30% de réduction</strong> immédiate !</span>
+                </div>
               </div>
             </div>
           </div>
@@ -580,31 +684,26 @@ export default function ClientCard({ token, initialData }: { token: string; init
 
         {/* VIEW 2: RECOMPENSES */}
         {view === 'reward' && (
-          <div>
-            <h2
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: '1.35rem',
-                fontWeight: 700,
-                color: 'var(--espresso)',
-                marginBottom: '1rem',
-              }}
-            >
-              Vos Récompenses & Remises
-            </h2>
+          <div className="animate-in">
+            <div className="section-header">
+              <div className="section-label">Vos Avantages</div>
+              <h2 className="section-title">
+                Récompenses & Privilèges
+              </h2>
+            </div>
 
             {data.rewards.length === 0 ? (
-              <div className="ui-card" style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
-                <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>🎫</div>
-                <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--espresso)' }}>
-                  Aucune récompense pour le moment
+              <div className="empty-state">
+                <div className="empty-state__icon">🎫</div>
+                <div className="empty-state__title">
+                  Aucune remise active
                 </div>
-                <p style={{ fontSize: '0.82rem', color: 'var(--coffee-mid)', marginTop: '0.25rem' }}>
-                  Plus que {total - done} consommation{total - done > 1 ? 's' : ''} pour débloquer votre réduction de 30% !
+                <p className="empty-state__desc">
+                  Plus que {total - done} café{total - done > 1 ? 's' : ''} à savourer pour débloquer votre réduction de 30% !
                 </p>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
                 {data.rewards.map((r) => {
                   const isDateExpired = new Date(r.expires_at).getTime() <= Date.now();
                   const isAvailable = r.status === 'available' && !isDateExpired;
@@ -615,46 +714,47 @@ export default function ClientCard({ token, initialData }: { token: string; init
                       key={r.id}
                       className="ui-card"
                       style={{
-                        padding: '1.25rem',
-                        background: isAvailable ? 'var(--sage-light)' : 'var(--crema-surface)',
+                        padding: '1.35rem',
+                        background: isAvailable ? 'linear-gradient(135deg, #EEF7F1 0%, #FAF8F5 100%)' : 'var(--crema-surface)',
                         border: `1.5px solid ${isAvailable ? 'var(--sage)' : 'var(--crema-border)'}`,
+                        boxShadow: isAvailable ? '0 6px 20px var(--sage-glow)' : 'var(--shadow-xs)',
                         display: 'flex',
                         justifyContent: 'space-between',
                         alignItems: 'center',
                       }}
                     >
                       <div>
-                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.25rem' }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.35rem' }}>
                           <span
                             className={`ui-badge ${
                               isAvailable ? 'ui-badge--sage' : isUsed ? 'ui-badge--neutral' : 'ui-badge--coral'
                             }`}
                           >
-                            {isAvailable ? 'Prête à utiliser' : isUsed ? 'Consommée' : 'Expirée'}
+                            {isAvailable ? 'Prête à l’usage' : isUsed ? 'Utilisée' : 'Expirée'}
                           </span>
                         </div>
 
                         <div
                           style={{
                             fontFamily: 'var(--font-serif)',
-                            fontSize: '2rem',
-                            fontWeight: 700,
-                            color: isAvailable ? 'var(--sage)' : 'var(--espresso)',
+                            fontSize: 'var(--text-3xl)',
+                            fontWeight: 800,
+                            color: isAvailable ? 'var(--sage-dark)' : 'var(--espresso)',
                             lineHeight: 1.1,
                           }}
                         >
                           -{r.discount_percentage}%
                         </div>
 
-                        <div style={{ fontSize: '0.76rem', color: 'var(--coffee-mid)', marginTop: '0.35rem' }}>
+                        <div style={{ fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)', marginTop: '0.4rem' }}>
                           {isUsed
-                            ? `Utilisée le ${fmtDateTime(r.used_at)}`
+                            ? `Consommée le ${fmtDateTime(r.used_at)}`
                             : `Valable jusqu'au ${fmtDateTime(r.expires_at)}`}
                         </div>
                       </div>
 
-                      <div style={{ fontSize: '2.4rem' }}>
-                        {isAvailable ? '🎫' : isUsed ? '☕' : '⌛'}
+                      <div style={{ fontSize: '2.5rem' }}>
+                        {isAvailable ? '🎁' : isUsed ? '☕' : '⌛'}
                       </div>
                     </div>
                   );
@@ -666,31 +766,26 @@ export default function ClientCard({ token, initialData }: { token: string; init
 
         {/* VIEW 3: HISTORIQUE */}
         {view === 'history' && (
-          <div>
-            <h2
-              style={{
-                fontFamily: 'var(--font-serif)',
-                fontSize: '1.35rem',
-                fontWeight: 700,
-                color: 'var(--espresso)',
-                marginBottom: '1rem',
-              }}
-            >
-              Historique des passages ({data.history.length})
-            </h2>
+          <div className="animate-in">
+            <div className="section-header">
+              <div className="section-label">Journal d'activité</div>
+              <h2 className="section-title">
+                Historique des Passages ({data.history.length})
+              </h2>
+            </div>
 
             {data.history.length === 0 ? (
-              <div className="ui-card" style={{ textAlign: 'center', padding: '3rem 1.5rem' }}>
-                <div style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>📜</div>
-                <div style={{ fontWeight: 700, fontSize: '1rem', color: 'var(--espresso)' }}>
+              <div className="empty-state">
+                <div className="empty-state__icon">📜</div>
+                <div className="empty-state__title">
                   Aucun passage enregistré
                 </div>
-                <p style={{ fontSize: '0.82rem', color: 'var(--coffee-mid)', marginTop: '0.25rem' }}>
-                  Vos consommations validées par le serveur apparaîtront ici en direct.
+                <p className="empty-state__desc">
+                  Vos consommations validées par le barista s'afficheront ici en direct.
                 </p>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
                 {data.history.map((h) => {
                   const dateObj = new Date(h.created_at);
                   const dateStr = new Intl.DateTimeFormat('fr-FR', {
@@ -709,20 +804,33 @@ export default function ClientCard({ token, initialData }: { token: string; init
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',
-                        padding: '0.85rem 1rem',
-                        borderRadius: 'var(--r-sm)',
+                        padding: '0.95rem 1.15rem',
+                        borderRadius: 'var(--r-md)',
                         background: 'var(--crema-surface)',
                         border: '1px solid var(--crema-border)',
                         boxShadow: 'var(--shadow-xs)',
                       }}
                     >
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                        <span style={{ fontSize: '1.15rem' }}>☕</span>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.85rem' }}>
+                        <div
+                          style={{
+                            width: '36px',
+                            height: '36px',
+                            borderRadius: '10px',
+                            background: 'var(--crema-subtle)',
+                            display: 'flex',
+                            alignItems: 'center',
+                            justifyContent: 'center',
+                            color: 'var(--espresso)',
+                          }}
+                        >
+                          <CoffeeIcon size={18} />
+                        </div>
                         <div>
-                          <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--espresso)' }}>
+                          <div style={{ fontWeight: 700, fontSize: 'var(--text-base)', color: 'var(--espresso)' }}>
                             {dateStr}
                           </div>
-                          <code style={{ fontSize: '0.72rem', color: 'var(--coffee-mid)', fontFamily: 'monospace' }}>
+                          <code style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', fontFamily: 'monospace' }}>
                             {h.transaction_reference}
                           </code>
                         </div>
@@ -740,25 +848,16 @@ export default function ClientCard({ token, initialData }: { token: string; init
             )}
           </div>
         )}
+
         {/* VIEW 4: MENU */}
         {view === 'menu' && (
-          <div className="animate-in" style={{ paddingBottom: '1rem' }}>
+          <div className="animate-in" style={{ paddingBottom: '0.5rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
               <div>
-                <h2
-                  style={{
-                    fontFamily: 'var(--font-serif)',
-                    fontSize: '1.4rem',
-                    fontWeight: 700,
-                    color: 'var(--espresso)',
-                    lineHeight: 1.2,
-                  }}
-                >
-                  Notre Menu Gourmand
+                <div className="section-label">Carte Gourmande</div>
+                <h2 className="section-title">
+                  Notre Menu
                 </h2>
-                <div style={{ fontSize: '0.8rem', color: 'var(--coffee-mid)', marginTop: '0.2rem' }}>
-                  Cafés, boissons signature & pâtisseries fraîches
-                </div>
               </div>
 
               <a
@@ -767,14 +866,15 @@ export default function ClientCard({ token, initialData }: { token: string; init
                 rel="noopener noreferrer"
                 className="touch-btn touch-btn--outline"
                 style={{
-                  minHeight: '36px',
-                  padding: '6px 12px',
-                  fontSize: '0.76rem',
+                  minHeight: '38px',
+                  padding: '6px 14px',
+                  fontSize: 'var(--text-xs)',
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '6px',
-                  borderRadius: '999px',
+                  borderRadius: 'var(--r-pill)',
                   background: 'var(--crema-surface)',
+                  boxShadow: 'var(--shadow-xs)',
                 }}
               >
                 <span>Plein écran</span>
@@ -788,11 +888,11 @@ export default function ClientCard({ token, initialData }: { token: string; init
               style={{
                 padding: '0',
                 overflow: 'hidden',
-                borderRadius: 'var(--r-lg)',
+                borderRadius: 'var(--r-xl)',
                 border: '1.5px solid var(--crema-border)',
                 background: '#FFFFFF',
                 boxShadow: 'var(--shadow-md)',
-                height: 'calc(100dvh - 195px)',
+                height: 'calc(100dvh - 200px)',
                 minHeight: '520px',
                 position: 'relative',
               }}

@@ -31,24 +31,24 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
     <>
       {/* ─── Top App Bar ─── */}
       <header className="top-app-bar">
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <img
             src="/logo_houssem.jpeg"
             alt="Bieny Coffeeshop"
             style={{
-              width: '36px',
-              height: '36px',
-              borderRadius: '10px',
+              width: '38px',
+              height: '38px',
+              borderRadius: '11px',
               objectFit: 'cover',
-              boxShadow: '0 2px 8px rgba(24, 16, 10, 0.18)',
-              border: '1.5px solid rgba(212, 160, 84, 0.3)',
+              boxShadow: '0 2px 8px rgba(24, 16, 10, 0.16)',
+              border: '1.5px solid rgba(212, 160, 84, 0.4)',
             }}
           />
           <div>
             <div
               style={{
                 fontFamily: 'var(--font-serif)',
-                fontSize: '1.05rem',
+                fontSize: 'var(--text-md)',
                 fontWeight: 700,
                 color: 'var(--espresso)',
                 lineHeight: 1.15,
@@ -59,14 +59,14 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
             </div>
             <div
               style={{
-                fontSize: '0.65rem',
-                color: 'var(--coffee-mid)',
-                fontWeight: 700,
-                letterSpacing: '0.04em',
+                fontSize: 'var(--text-2xs)',
+                color: 'var(--gold-dark)',
+                fontWeight: 800,
+                letterSpacing: '0.08em',
                 textTransform: 'uppercase',
               }}
             >
-              Fidélité
+              Espace Fidélité
             </div>
           </div>
         </div>
@@ -78,23 +78,23 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
             style={{
               display: 'flex',
               alignItems: 'center',
-              gap: '5px',
-              padding: '3px 8px',
-              borderRadius: '999px',
+              gap: '6px',
+              padding: '4px 9px',
+              borderRadius: 'var(--r-pill)',
               background: 'var(--sage-light)',
               border: '1px solid var(--sage-border)',
-              fontSize: '0.7rem',
+              fontSize: 'var(--text-2xs)',
               fontWeight: 700,
-              color: 'var(--sage)',
+              color: 'var(--sage-dark)',
             }}
           >
             <span
               style={{
-                width: '6px',
-                height: '6px',
+                width: '7px',
+                height: '7px',
                 borderRadius: '50%',
                 background: 'var(--sage)',
-                boxShadow: '0 0 6px var(--sage)',
+                animation: 'pulseDot 2s infinite',
                 display: 'inline-block',
               }}
             />
@@ -103,33 +103,34 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
 
           {/* User profile & logout */}
           {employee && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
               <div
                 title={employee.email}
                 style={{
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '5px',
-                  padding: '2px 8px 2px 3px',
-                  borderRadius: '999px',
-                  background: 'var(--crema-subtle)',
+                  gap: '6px',
+                  padding: '3px 8px 3px 3px',
+                  borderRadius: 'var(--r-pill)',
+                  background: 'var(--crema-surface)',
                   border: '1px solid var(--crema-border)',
-                  fontSize: '0.75rem',
+                  fontSize: 'var(--text-xs)',
                   fontWeight: 600,
                   color: 'var(--espresso)',
                 }}
               >
                 <span
                   style={{
-                    width: '24px',
-                    height: '24px',
+                    width: '26px',
+                    height: '26px',
                     borderRadius: '50%',
-                    background: 'var(--espresso)',
-                    color: '#FAF9F6',
+                    background: 'linear-gradient(135deg, var(--espresso) 0%, var(--coffee-dark) 100%)',
+                    color: '#FAF8F5',
+                    border: '1px solid var(--gold)',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
-                    fontSize: '0.7rem',
+                    fontSize: '0.72rem',
                     fontWeight: 800,
                   }}
                 >
@@ -148,7 +149,7 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
                   style={{
                     width: '32px',
                     height: '32px',
-                    borderRadius: '999px',
+                    borderRadius: 'var(--r-pill)',
                     border: '1px solid var(--crema-border)',
                     background: 'var(--crema-surface)',
                     display: 'flex',
@@ -156,7 +157,7 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
                     justifyContent: 'center',
                     cursor: 'pointer',
                     color: 'var(--coffee-mid)',
-                    transition: 'all 0.15s ease',
+                    transition: 'all 0.18s ease',
                   }}
                 >
                   <LogoutIcon size={16} />
@@ -199,17 +200,17 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
             <div
               className="bottom-tab__icon-wrap bottom-tab__raised-btn"
               style={{
-                width: '46px',
-                height: '46px',
+                width: '48px',
+                height: '48px',
                 borderRadius: '50%',
-                background: 'linear-gradient(135deg, var(--espresso) 0%, #301B0E 100%)',
-                color: '#FAF9F6',
-                boxShadow: '0 6px 18px rgba(24, 16, 10, 0.35)',
+                background: 'linear-gradient(135deg, #382419 0%, #1A0F08 100%)',
+                color: '#FAF8F5',
+                boxShadow: '0 8px 20px rgba(24, 16, 10, 0.38), 0 0 0 1px rgba(212, 160, 84, 0.4)',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
-                transform: 'translateY(-8px)',
-                border: '2px solid #FAF7F2',
+                transform: 'translateY(-9px)',
+                border: '3px solid #FAF8F5',
               }}
             >
               <PlusIcon size={22} color="#FFFFFF" />
@@ -226,16 +227,16 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
             <>
               <a
                 href="/admin?tab=notifications"
-                className="bottom-tab"
+                className={`bottom-tab ${pathname.includes('notifications') ? 'bottom-tab--active' : ''}`}
               >
                 <div className="bottom-tab__icon-wrap">
-                  <span style={{ fontSize: '1.1rem' }}>📣</span>
+                  <span style={{ fontSize: '1.15rem' }}>📣</span>
                 </div>
                 <span className="bottom-tab__label">Notifs</span>
               </a>
               <a
                 href="/admin"
-                className={`bottom-tab ${isAdmin ? 'bottom-tab--active' : ''}`}
+                className={`bottom-tab ${isAdmin && !pathname.includes('notifications') ? 'bottom-tab--active' : ''}`}
               >
                 <div className="bottom-tab__icon-wrap">
                   <SettingsIcon size={20} />

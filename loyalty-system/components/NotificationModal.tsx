@@ -58,17 +58,53 @@ export function NotificationModal() {
   const getBadgeInfo = () => {
     switch (activeNotif.type) {
       case 'marketing':
-        return { icon: '✨', tag: 'Offre Spéciale', bg: '#FDF6E2', color: '#B37D14' };
+        return {
+          icon: '✨',
+          tag: 'Offre Spéciale',
+          bg: 'var(--notif-marketing-bg)',
+          color: 'var(--notif-marketing-text)',
+          border: 'var(--notif-marketing-bdr)',
+        };
       case 'reward':
-        return { icon: '🎁', tag: 'Récompense Débloquée', bg: '#EAF4EE', color: '#3A6B4E' };
+        return {
+          icon: '🎁',
+          tag: 'Récompense Débloquée',
+          bg: 'var(--notif-reward-bg)',
+          color: 'var(--notif-reward-text)',
+          border: 'var(--notif-reward-bdr)',
+        };
       case 'reminder':
-        return { icon: '⏰', tag: 'Rappel Fidélité', bg: '#F9ECE5', color: '#9E4B28' };
+        return {
+          icon: '⏰',
+          tag: 'Rappel Fidélité',
+          bg: 'var(--notif-reminder-bg)',
+          color: 'var(--notif-reminder-text)',
+          border: 'var(--notif-reminder-bdr)',
+        };
       case 'greetings':
-        return { icon: '👋', tag: 'Message Bieny', bg: '#EBF4F6', color: '#2C6E7E' };
+        return {
+          icon: '👋',
+          tag: 'Message Bieny',
+          bg: 'var(--notif-greetings-bg)',
+          color: 'var(--notif-greetings-text)',
+          border: 'var(--notif-greetings-bdr)',
+        };
       case 'announcement':
-        return { icon: '📢', tag: 'Nouveauté', bg: '#F3EEFB', color: '#68459B' };
+        return {
+          icon: '📢',
+          tag: 'Nouveauté',
+          bg: 'var(--notif-announce-bg)',
+          color: 'var(--notif-announce-text)',
+          border: 'var(--notif-announce-bdr)',
+        };
       default:
-        return { icon: '☕', tag: 'Bieny Coffeeshop', bg: '#F4ECE4', color: '#5C3826' };
+        return {
+          icon: '☕',
+          tag: 'Bieny Coffeeshop',
+          bg: 'var(--crema-subtle)',
+          color: 'var(--espresso)',
+          border: 'var(--crema-border)',
+        };
     }
   };
 
@@ -91,9 +127,9 @@ export function NotificationModal() {
       style={{
         position: 'fixed',
         inset: 0,
-        backgroundColor: 'rgba(24, 16, 10, 0.7)',
-        backdropFilter: 'blur(8px)',
-        WebkitBackdropFilter: 'blur(8px)',
+        backgroundColor: 'rgba(24, 16, 10, 0.72)',
+        backdropFilter: 'blur(10px)',
+        WebkitBackdropFilter: 'blur(10px)',
         zIndex: 9999,
         display: 'flex',
         alignItems: 'center',
@@ -107,30 +143,58 @@ export function NotificationModal() {
         className="ui-card"
         style={{
           width: '100%',
-          maxWidth: '390px',
-          padding: '1.75rem 1.5rem',
-          borderRadius: '24px',
-          background: 'linear-gradient(180deg, #FFFFFF 0%, #FAF9F6 100%)',
-          boxShadow: '0 24px 48px rgba(24, 16, 10, 0.28)',
+          maxWidth: '400px',
+          padding: '2rem 1.6rem 1.6rem',
+          borderRadius: 'var(--r-xl)',
+          background: 'linear-gradient(180deg, #FFFFFF 0%, #FAF8F5 100%)',
+          boxShadow: 'var(--shadow-xl)',
+          border: '1.5px solid var(--crema-border)',
           position: 'relative',
           textAlign: 'center',
-          animation: 'scaleUp 0.25s ease-out',
+          animation: 'scaleUp 0.28s var(--ease-spring)',
           maxHeight: '90vh',
           overflowY: 'auto',
         }}
         onClick={(e) => e.stopPropagation()}
       >
+        {/* Close button */}
+        <button
+          type="button"
+          onClick={() => setActiveNotif(null)}
+          aria-label="Fermer"
+          style={{
+            position: 'absolute',
+            top: '14px',
+            right: '14px',
+            width: '32px',
+            height: '32px',
+            borderRadius: '50%',
+            background: 'var(--crema-subtle)',
+            border: '1px solid var(--crema-border)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            fontSize: '1.1rem',
+            color: 'var(--coffee-mid)',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+          }}
+        >
+          ×
+        </button>
+
         {/* Brand Header */}
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
           <img
             src="/logo_houssem.jpeg"
-            alt="Bieny Logo"
+            alt="Bieny Coffeeshop"
             style={{
-              width: '46px',
-              height: '46px',
-              borderRadius: '14px',
+              width: '50px',
+              height: '50px',
+              borderRadius: '16px',
               objectFit: 'cover',
-              boxShadow: '0 4px 12px rgba(24, 16, 10, 0.15)',
+              boxShadow: '0 4px 14px rgba(24, 16, 10, 0.15)',
+              border: '2px solid rgba(212, 160, 84, 0.4)',
             }}
           />
         </div>
@@ -140,23 +204,32 @@ export function NotificationModal() {
           style={{
             display: 'inline-flex',
             alignItems: 'center',
-            gap: '0.4rem',
-            padding: '0.35rem 0.85rem',
-            borderRadius: '999px',
+            gap: '0.45rem',
+            padding: '0.35rem 0.95rem',
+            borderRadius: 'var(--r-pill)',
             backgroundColor: badge.bg,
             color: badge.color,
-            marginBottom: '0.85rem',
+            border: `1px solid ${badge.border}`,
+            marginBottom: '1rem',
           }}
         >
-          <span style={{ fontSize: '0.95rem' }}>{badge.icon}</span>
-          <span style={{ fontSize: '0.72rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+          <span style={{ fontSize: '1rem' }}>{badge.icon}</span>
+          <span style={{ fontSize: 'var(--text-2xs)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.06em' }}>
             {badge.tag}
           </span>
         </div>
 
         {/* Optional Campaign Media Image */}
         {activeNotif.image_url && (
-          <div style={{ marginBottom: '1rem', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 14px rgba(24, 16, 10, 0.12)' }}>
+          <div
+            style={{
+              marginBottom: '1.15rem',
+              borderRadius: 'var(--r-md)',
+              overflow: 'hidden',
+              boxShadow: 'var(--shadow-sm)',
+              border: '1px solid var(--crema-border)',
+            }}
+          >
             <img
               src={activeNotif.image_url}
               alt="Illustration notification"
@@ -170,9 +243,9 @@ export function NotificationModal() {
         <h3
           style={{
             fontFamily: 'var(--font-serif)',
-            fontSize: '1.35rem',
+            fontSize: 'var(--text-xl)',
             fontWeight: 700,
-            color: 'var(--espresso, #18100A)',
+            color: 'var(--espresso)',
             margin: '0 0 0.65rem',
             lineHeight: 1.25,
           }}
@@ -183,9 +256,9 @@ export function NotificationModal() {
         {/* Message body */}
         <p
           style={{
-            fontSize: '0.92rem',
-            lineHeight: 1.55,
-            color: 'var(--coffee-dark, #3A2E28)',
+            fontSize: 'var(--text-base)',
+            lineHeight: 1.6,
+            color: 'var(--coffee-dark)',
             margin: '0 0 1.5rem',
             whiteSpace: 'pre-line',
           }}
@@ -196,14 +269,13 @@ export function NotificationModal() {
         {/* Action Button */}
         <button
           type="button"
-          className="btn btn-primary"
+          className="touch-btn touch-btn--gold"
           style={{
             width: '100%',
-            padding: '0.85rem 1rem',
-            borderRadius: '16px',
-            fontSize: '0.92rem',
-            fontWeight: 700,
-            boxShadow: '0 6px 16px rgba(143, 175, 154, 0.4)',
+            padding: '0.9rem 1.25rem',
+            borderRadius: 'var(--r-md)',
+            fontSize: 'var(--text-base)',
+            fontWeight: 800,
             cursor: 'pointer',
           }}
           onClick={handleAction}

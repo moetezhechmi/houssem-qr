@@ -24,7 +24,7 @@ export default async function ServeurDashboard() {
       label: 'Clients',
       value: stats.total_clients,
       icon: <UserIcon size={20} color="var(--espresso)" />,
-      sub: 'Base totale',
+      sub: 'Base totale enregistrée',
       color: 'var(--espresso)',
       bg: 'var(--crema-subtle)',
       border: 'var(--crema-border)',
@@ -33,9 +33,9 @@ export default async function ServeurDashboard() {
     {
       label: 'Cartes Actives',
       value: stats.active_cards,
-      icon: <CoffeeIcon size={20} color="var(--sage)" />,
+      icon: <CoffeeIcon size={20} color="var(--sage-dark)" />,
       sub: 'Cycles en cours',
-      color: 'var(--sage)',
+      color: 'var(--sage-dark)',
       bg: 'var(--sage-light)',
       border: 'var(--sage-border)',
       href: isAdmin ? '/admin?tab=cards' : '/serveur/customers',
@@ -53,21 +53,21 @@ export default async function ServeurDashboard() {
     {
       label: 'Récompenses',
       value: stats.pending_rewards,
-      icon: <GiftIcon size={20} color="#B88135" />,
-      sub: 'Remises de 30%',
-      color: '#B88135',
-      bg: 'rgba(212, 160, 84, 0.15)',
+      icon: <GiftIcon size={20} color="var(--gold-dark)" />,
+      sub: 'Bons de -30% prêts',
+      color: 'var(--gold-dark)',
+      bg: 'rgba(212, 160, 84, 0.14)',
       border: 'rgba(212, 160, 84, 0.35)',
       href: isAdmin ? '/admin?tab=rewards' : '/serveur/customers',
     },
     {
       label: 'Utilisées',
       value: stats.used_rewards,
-      icon: <CheckIcon size={20} color="#2A5C43" />,
-      sub: 'Bons appliqués',
-      color: '#2A5C43',
-      bg: 'rgba(62, 123, 92, 0.12)',
-      border: 'rgba(62, 123, 92, 0.28)',
+      icon: <CheckIcon size={20} color="var(--sage-dark)" />,
+      sub: 'Remises appliquées avec succès',
+      color: 'var(--sage-dark)',
+      bg: 'var(--sage-light)',
+      border: 'var(--sage-border)',
       href: isAdmin ? '/admin?tab=rewards' : '/serveur/customers',
     },
   ];
@@ -86,7 +86,7 @@ export default async function ServeurDashboard() {
       <div
         className="ui-card ui-card--espresso"
         style={{
-          padding: '1.75rem 1.5rem',
+          padding: '1.85rem 1.6rem',
           marginBottom: '1.25rem',
           position: 'relative',
           overflow: 'hidden',
@@ -95,12 +95,12 @@ export default async function ServeurDashboard() {
         <div
           style={{
             position: 'absolute',
-            top: '-40%',
-            right: '-10%',
-            width: '260px',
-            height: '260px',
+            top: '-35%',
+            right: '-12%',
+            width: '280px',
+            height: '280px',
             borderRadius: '50%',
-            background: 'radial-gradient(circle, var(--gold-glow) 0%, transparent 70%)',
+            background: 'radial-gradient(circle, var(--gold-glow) 0%, transparent 68%)',
             pointerEvents: 'none',
           }}
         />
@@ -108,12 +108,12 @@ export default async function ServeurDashboard() {
         <div style={{ position: 'relative', zIndex: 2 }}>
           <div
             style={{
-              fontSize: '0.72rem',
+              fontSize: 'var(--text-2xs)',
               letterSpacing: '0.12em',
               textTransform: 'uppercase',
               color: 'var(--gold)',
               fontWeight: 800,
-              marginBottom: '0.35rem',
+              marginBottom: '0.4rem',
             }}
           >
             📅 {todayStr}
@@ -122,10 +122,11 @@ export default async function ServeurDashboard() {
           <h1
             style={{
               fontFamily: 'var(--font-serif)',
-              fontSize: '1.85rem',
+              fontSize: 'var(--text-2xl)',
               fontWeight: 700,
-              margin: '0 0 0.35rem',
+              margin: '0 0 0.4rem',
               lineHeight: 1.2,
+              color: '#FAF8F5',
             }}
           >
             Bonjour, {employee.name || 'Barista'} ☕
@@ -133,17 +134,17 @@ export default async function ServeurDashboard() {
 
           <p
             style={{
-              fontSize: '0.88rem',
+              fontSize: 'var(--text-sm)',
               color: 'var(--crema-border)',
-              margin: '0 0 1.25rem',
-              lineHeight: 1.45,
+              margin: '0 0 1.35rem',
+              lineHeight: 1.5,
             }}
           >
-            Attribuez des tampons de fidélité et appliquez les remises de vos clients en quelques secondes.
+            Gérez vos clients fidèles, attribuez leurs tampons et appliquez leurs remises en toute simplicité.
           </p>
 
-          {/* Quick Action Touch Targets (Mobile-Friendly) */}
-          <div style={{ display: 'flex', gap: '0.65rem', flexWrap: 'wrap' }}>
+          {/* Quick Action Touch Targets */}
+          <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
             <a
               href="/serveur/customers"
               className="touch-btn touch-btn--gold"
@@ -160,7 +161,7 @@ export default async function ServeurDashboard() {
                 flex: '1 1 140px',
                 background: 'rgba(255, 255, 255, 0.12)',
                 border: '1px solid rgba(255, 255, 255, 0.22)',
-                color: '#FAF9F6',
+                color: '#FAF8F5',
                 textDecoration: 'none',
                 gap: '8px',
               }}
@@ -177,7 +178,7 @@ export default async function ServeurDashboard() {
         style={{
           display: 'grid',
           gridTemplateColumns: 'repeat(2, 1fr)',
-          gap: '0.75rem',
+          gap: '0.85rem',
           marginBottom: '1.25rem',
         }}
       >
@@ -185,26 +186,22 @@ export default async function ServeurDashboard() {
           <a
             key={c.label}
             href={c.href}
-            className="ui-card"
+            className="stat-card"
             style={{
-              padding: '1rem',
               border: `1.5px solid ${c.border}`,
-              display: 'flex',
-              flexDirection: 'column',
-              justifyContent: 'space-between',
               gridColumn: idx === 4 ? 'span 2' : 'auto',
               textDecoration: 'none',
               color: 'inherit',
               cursor: 'pointer',
-              transition: 'transform 0.15s ease, box-shadow 0.15s ease',
+              padding: '1.15rem 1rem',
             }}
           >
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.5rem' }}>
               <span
                 style={{
-                  width: '34px',
-                  height: '34px',
-                  borderRadius: '10px',
+                  width: '36px',
+                  height: '36px',
+                  borderRadius: '11px',
                   background: c.bg,
                   display: 'flex',
                   alignItems: 'center',
@@ -215,7 +212,7 @@ export default async function ServeurDashboard() {
               </span>
               <span
                 style={{
-                  fontSize: '0.65rem',
+                  fontSize: 'var(--text-2xs)',
                   fontWeight: 800,
                   textTransform: 'uppercase',
                   color: c.color,
@@ -230,16 +227,16 @@ export default async function ServeurDashboard() {
               <div
                 style={{
                   fontFamily: 'var(--font-serif)',
-                  fontSize: '1.75rem',
+                  fontSize: 'var(--text-2xl)',
                   fontWeight: 700,
                   color: c.color,
                   lineHeight: 1,
-                  marginBottom: '0.2rem',
+                  marginBottom: '0.25rem',
                 }}
               >
                 {c.value}
               </div>
-              <div style={{ fontSize: '0.68rem', color: 'var(--coffee-mid)', lineHeight: 1.25 }}>
+              <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', lineHeight: 1.3 }}>
                 {c.sub}
               </div>
             </div>
@@ -249,16 +246,15 @@ export default async function ServeurDashboard() {
 
       {/* ─── Règles Actives (Badges horizontaux) ─── */}
       <div
-        className="ui-card"
+        className="ui-card ui-card--subtle"
         style={{
-          background: 'var(--crema-subtle)',
-          padding: '1rem 1.25rem',
+          padding: '1.15rem 1.25rem',
           marginBottom: '1.25rem',
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.65rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '0.75rem' }}>
           <CoffeeIcon size={18} color="var(--espresso)" />
-          <span style={{ fontWeight: 800, fontSize: '0.85rem', color: 'var(--espresso)' }}>
+          <span style={{ fontWeight: 800, fontSize: 'var(--text-sm)', color: 'var(--espresso)' }}>
             Règles du Programme Bieny
           </span>
         </div>
@@ -278,7 +274,6 @@ export default async function ServeurDashboard() {
           </span>
         </div>
       </div>
-
     </main>
   );
 }

@@ -97,15 +97,45 @@ export function AdminNotifications() {
   const getTypeMeta = (t: NotificationType) => {
     switch (t) {
       case 'marketing':
-        return { label: 'Offre Spéciale', icon: '✨', bg: '#FDF6E2', color: '#B37D14' };
+        return {
+          label: 'Offre Spéciale',
+          icon: '✨',
+          bg: 'var(--notif-marketing-bg)',
+          color: 'var(--notif-marketing-text)',
+          border: 'var(--notif-marketing-bdr)',
+        };
       case 'greetings':
-        return { label: 'Message & Salutations', icon: '👋', bg: '#EBF4F6', color: '#2C6E7E' };
+        return {
+          label: 'Message & Accueil',
+          icon: '👋',
+          bg: 'var(--notif-greetings-bg)',
+          color: 'var(--notif-greetings-text)',
+          border: 'var(--notif-greetings-bdr)',
+        };
       case 'reminder':
-        return { label: 'Rappel Fidélité', icon: '⏰', bg: '#F9ECE5', color: '#9E4B28' };
+        return {
+          label: 'Rappel Fidélité',
+          icon: '⏰',
+          bg: 'var(--notif-reminder-bg)',
+          color: 'var(--notif-reminder-text)',
+          border: 'var(--notif-reminder-bdr)',
+        };
       case 'reward':
-        return { label: 'Récompense', icon: '🎁', bg: '#EAF4EE', color: '#3A6B4E' };
+        return {
+          label: 'Récompense',
+          icon: '🎁',
+          bg: 'var(--notif-reward-bg)',
+          color: 'var(--notif-reward-text)',
+          border: 'var(--notif-reward-bdr)',
+        };
       case 'announcement':
-        return { label: 'Nouveauté & Annonce', icon: '📢', bg: '#F3EEFB', color: '#68459B' };
+        return {
+          label: 'Nouveauté & Carte',
+          icon: '📢',
+          bg: 'var(--notif-announce-bg)',
+          color: 'var(--notif-announce-text)',
+          border: 'var(--notif-announce-bdr)',
+        };
     }
   };
 
@@ -114,50 +144,90 @@ export function AdminNotifications() {
   return (
     <div className="animate-in">
       {/* ─── Stats KPI ─── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(150px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
-        <div className="ui-card" style={{ padding: '1.15rem' }}>
-          <div style={{ fontSize: '1.4rem', marginBottom: '0.2rem' }}>📲</div>
-          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.85rem', fontWeight: 700, color: 'var(--espresso)', lineHeight: 1 }}>{subCount}</div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--coffee-mid)', fontWeight: 700, textTransform: 'uppercase', marginTop: '0.3rem' }}>Abonnés Push</div>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
+        <div className="stat-card">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Abonnés Push
+            </span>
+            <span style={{ fontSize: '1.25rem' }}>📲</span>
+          </div>
+          <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-2xl)', fontWeight: 700, color: 'var(--espresso)' }}>
+            {subCount}
+          </div>
+          <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--sage-dark)' }}>Clients réceptifs</div>
         </div>
-        <div className="ui-card" style={{ padding: '1.15rem' }}>
-          <div style={{ fontSize: '1.4rem', marginBottom: '0.2rem' }}>📣</div>
-          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.85rem', fontWeight: 700, color: 'var(--sage)', lineHeight: 1 }}>{campaigns.length}</div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--coffee-mid)', fontWeight: 700, textTransform: 'uppercase', marginTop: '0.3rem' }}>Campagnes</div>
+
+        <div className="stat-card">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Campagnes
+            </span>
+            <span style={{ fontSize: '1.25rem' }}>📣</span>
+          </div>
+          <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-2xl)', fontWeight: 700, color: 'var(--sage-dark)' }}>
+            {campaigns.length}
+          </div>
+          <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)' }}>Créées au total</div>
         </div>
-        <div className="ui-card" style={{ padding: '1.15rem' }}>
-          <div style={{ fontSize: '1.4rem', marginBottom: '0.2rem' }}>📜</div>
-          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.85rem', fontWeight: 700, color: 'var(--gold)', lineHeight: 1 }}>{history.length}</div>
-          <div style={{ fontSize: '0.72rem', color: 'var(--coffee-mid)', fontWeight: 700, textTransform: 'uppercase', marginTop: '0.3rem' }}>Envois</div>
+
+        <div className="stat-card">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+            <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
+              Notifications
+            </span>
+            <span style={{ fontSize: '1.25rem' }}>⚡</span>
+          </div>
+          <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-2xl)', fontWeight: 700, color: 'var(--gold-dark)' }}>
+            {history.length}
+          </div>
+          <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)' }}>Envois envoyés</div>
         </div>
       </div>
 
       {/* ─── Studio Création + Live Preview Modal ─── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))', gap: '1.25rem', marginBottom: '1.25rem' }}>
+      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
         {/* Formulaire */}
         <div className="ui-card" style={{ padding: '1.5rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 700, color: 'var(--espresso)', margin: 0 }}>
-              Créer une Notification Pop-up
-            </h3>
-            <span style={{ fontSize: '0.72rem', padding: '0.2rem 0.5rem', borderRadius: '6px', background: 'var(--sage-light)', color: 'var(--sage)', fontWeight: 600 }}>
-              PWA & Push
+            <div>
+              <div className="section-label">Studio Push</div>
+              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--espresso)', margin: 0 }}>
+                Créer un Pop-up Interactif
+              </h3>
+            </div>
+            <span className="ui-badge ui-badge--sage">
+              Live PWA
             </span>
           </div>
 
           {msg && (
-            <div style={{ background: msg.ok ? 'var(--sage-light)' : 'var(--coral-light)', border: `1px solid ${msg.ok ? 'var(--sage-border)' : 'var(--coral-border)'}`, borderRadius: 'var(--r-sm)', padding: '0.75rem 1rem', marginBottom: '1rem', fontSize: '0.84rem', color: msg.ok ? 'var(--sage)' : 'var(--coral)' }}>
-              {msg.ok ? '✅' : '⚠️'} {msg.text}
+            <div
+              style={{
+                background: msg.ok ? 'var(--sage-light)' : 'var(--coral-light)',
+                border: `1px solid ${msg.ok ? 'var(--sage-border)' : 'var(--coral-border)'}`,
+                borderRadius: 'var(--r-sm)',
+                padding: '0.75rem 1rem',
+                marginBottom: '1rem',
+                fontSize: 'var(--text-sm)',
+                color: msg.ok ? 'var(--sage-dark)' : 'var(--coral)',
+                display: 'flex',
+                alignItems: 'center',
+                gap: '8px',
+              }}
+            >
+              <span>{msg.ok ? '✅' : '⚠️'}</span>
+              <span>{msg.text}</span>
             </div>
           )}
 
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.95rem' }}>
             {/* Type de notification */}
             <div>
-              <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--coffee-dark)', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
-                Thème / Catégorie du Pop-up
+              <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
+                Thème & Catégorie
               </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(130px, 1fr))', gap: '0.4rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))', gap: '0.45rem' }}>
                 {(['marketing', 'greetings', 'reminder', 'reward', 'announcement'] as NotificationType[]).map((t) => {
                   const m = getTypeMeta(t);
                   const isSel = type === t;
@@ -167,21 +237,22 @@ export function AdminNotifications() {
                       type="button"
                       onClick={() => setType(t)}
                       style={{
-                        padding: '0.5rem 0.6rem',
-                        borderRadius: '10px',
+                        padding: '0.55rem 0.65rem',
+                        borderRadius: 'var(--r-sm)',
                         border: isSel ? '2px solid var(--espresso)' : '1px solid var(--crema-border)',
-                        background: isSel ? 'var(--crema-bg)' : '#fff',
-                        fontSize: '0.78rem',
+                        background: isSel ? 'var(--crema-subtle)' : 'var(--crema-surface)',
+                        fontSize: 'var(--text-xs)',
                         fontWeight: isSel ? 700 : 500,
                         color: 'var(--espresso)',
                         display: 'flex',
                         alignItems: 'center',
-                        gap: '0.4rem',
+                        gap: '0.45rem',
                         cursor: 'pointer',
                         textAlign: 'left',
+                        transition: 'all 0.15s ease',
                       }}
                     >
-                      <span>{m.icon}</span>
+                      <span style={{ fontSize: '1rem' }}>{m.icon}</span>
                       <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.label}</span>
                     </button>
                   );
@@ -191,68 +262,115 @@ export function AdminNotifications() {
 
             {/* Titre */}
             <div>
-              <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--coffee-dark)', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
-                Titre accrocheur
+              <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
+                Titre de la notification
               </label>
               <input
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
                 placeholder="Ex : Joyeux vendredi ! ☕ / -20% sur les Cookies"
-                style={{ width: '100%', padding: '0.7rem', borderRadius: 'var(--r-sm)', border: '1.5px solid var(--crema-border)', background: 'var(--crema-bg)', fontSize: '0.9rem' }}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 0.85rem',
+                  borderRadius: 'var(--r-sm)',
+                  border: '1.5px solid var(--crema-border)',
+                  background: 'var(--crema-bg)',
+                  fontSize: 'var(--text-base)',
+                  color: 'var(--espresso)',
+                  outline: 'none',
+                }}
               />
             </div>
 
             {/* Message */}
             <div>
-              <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--coffee-dark)', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+              <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
                 Message détaillé (contenu du pop-up)
               </label>
               <textarea
                 value={message}
                 onChange={(e) => setMessage(e.target.value)}
-                placeholder="Écrivez le message qui apparaîtra dans la notification et dans la modale plein écran du client..."
+                placeholder="Rédigez l'annonce qui sera présentée dans le modal plein écran du client..."
                 rows={3}
-                style={{ width: '100%', padding: '0.7rem', borderRadius: 'var(--r-sm)', border: '1.5px solid var(--crema-border)', background: 'var(--crema-bg)', fontSize: '0.9rem', resize: 'vertical' }}
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 0.85rem',
+                  borderRadius: 'var(--r-sm)',
+                  border: '1.5px solid var(--crema-border)',
+                  background: 'var(--crema-bg)',
+                  fontSize: 'var(--text-base)',
+                  color: 'var(--espresso)',
+                  resize: 'vertical',
+                  outline: 'none',
+                  lineHeight: 1.5,
+                }}
               />
             </div>
 
             {/* Image d'illustration */}
             <div>
-              <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--coffee-dark)', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
-                Image d'illustration (optionnelle)
+              <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
+                Image d'illustration (URL optionnelle)
               </label>
               <input
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="Ex : https://... ou /images/cookie_pistachio.jpg"
-                style={{ width: '100%', padding: '0.7rem', borderRadius: 'var(--r-sm)', border: '1.5px solid var(--crema-border)', background: 'var(--crema-bg)', fontSize: '0.9rem' }}
+                placeholder="https://... ou URL d'image"
+                style={{
+                  width: '100%',
+                  padding: '0.75rem 0.85rem',
+                  borderRadius: 'var(--r-sm)',
+                  border: '1.5px solid var(--crema-border)',
+                  background: 'var(--crema-bg)',
+                  fontSize: 'var(--text-sm)',
+                  color: 'var(--espresso)',
+                  outline: 'none',
+                }}
               />
             </div>
 
             {/* Action du bouton */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--coffee-dark)', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
                   Texte du Bouton
                 </label>
                 <input
                   value={btnText}
                   onChange={(e) => setBtnText(e.target.value)}
-                  placeholder="Ex : Découvrir & Profiter"
-                  style={{ width: '100%', padding: '0.7rem', borderRadius: 'var(--r-sm)', border: '1.5px solid var(--crema-border)', background: 'var(--crema-bg)', fontSize: '0.85rem' }}
+                  placeholder="Découvrir & Profiter"
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 0.85rem',
+                    borderRadius: 'var(--r-sm)',
+                    border: '1.5px solid var(--crema-border)',
+                    background: 'var(--crema-bg)',
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--espresso)',
+                    outline: 'none',
+                  }}
                 />
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--coffee-dark)', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
                   Action au Clic
                 </label>
                 <select
                   value={btnAction}
                   onChange={(e) => setBtnAction(e.target.value)}
-                  style={{ width: '100%', padding: '0.7rem', borderRadius: 'var(--r-sm)', border: '1.5px solid var(--crema-border)', background: 'var(--crema-bg)', fontSize: '0.85rem' }}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 0.85rem',
+                    borderRadius: 'var(--r-sm)',
+                    border: '1.5px solid var(--crema-border)',
+                    background: 'var(--crema-bg)',
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--espresso)',
+                    outline: 'none',
+                  }}
                 >
-                  <option value="close">Fermer la fenêtre</option>
+                  <option value="close">Fermer la modale</option>
                   <option value="menu">Ouvrir le Menu Bieny</option>
                   <option value="reward">Voir les Récompenses</option>
                 </select>
@@ -260,31 +378,70 @@ export function AdminNotifications() {
             </div>
 
             {/* Cible & Programmation */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--coffee-dark)', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
                   Destinataires
                 </label>
-                <select value={target} onChange={(e) => setTarget(e.target.value)} style={{ width: '100%', padding: '0.7rem', borderRadius: 'var(--r-sm)', border: '1.5px solid var(--crema-border)', background: 'var(--crema-bg)', fontSize: '0.85rem' }}>
+                <select
+                  value={target}
+                  onChange={(e) => setTarget(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 0.85rem',
+                    borderRadius: 'var(--r-sm)',
+                    border: '1.5px solid var(--crema-border)',
+                    background: 'var(--crema-bg)',
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--espresso)',
+                    outline: 'none',
+                  }}
+                >
                   <option value="all">Tous les abonnés</option>
-                  <option value="marketing">Abonnés marketing uniquement</option>
+                  <option value="marketing">Abonnés marketing</option>
                 </select>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.76rem', fontWeight: 700, color: 'var(--coffee-dark)', textTransform: 'uppercase', marginBottom: '0.35rem' }}>
+                <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
                   Planifier (optionnel)
                 </label>
-                <input type="datetime-local" value={scheduled} onChange={(e) => setScheduled(e.target.value)} style={{ width: '100%', padding: '0.7rem', borderRadius: 'var(--r-sm)', border: '1.5px solid var(--crema-border)', background: 'var(--crema-bg)', fontSize: '0.85rem' }} />
+                <input
+                  type="datetime-local"
+                  value={scheduled}
+                  onChange={(e) => setScheduled(e.target.value)}
+                  style={{
+                    width: '100%',
+                    padding: '0.75rem 0.85rem',
+                    borderRadius: 'var(--r-sm)',
+                    border: '1.5px solid var(--crema-border)',
+                    background: 'var(--crema-bg)',
+                    fontSize: 'var(--text-sm)',
+                    color: 'var(--espresso)',
+                    outline: 'none',
+                  }}
+                />
               </div>
             </div>
 
             {/* Boutons d'action */}
-            <div style={{ display: 'flex', gap: '0.5rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-              <button type="button" className="touch-btn touch-btn--outline" disabled={busy} onClick={() => createCampaign(false)} style={{ minHeight: '42px', fontSize: '0.85rem' }}>
-                Programmer
+            <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
+              <button
+                type="button"
+                className="touch-btn touch-btn--outline"
+                disabled={busy}
+                onClick={() => createCampaign(false)}
+                style={{ minHeight: '44px', fontSize: 'var(--text-sm)' }}
+              >
+                Planifier
               </button>
-              <button type="button" className="touch-btn touch-btn--primary" disabled={busy} onClick={() => createCampaign(true)} style={{ minHeight: '42px', fontSize: '0.85rem' }}>
+              <button
+                type="button"
+                className="touch-btn touch-btn--primary"
+                disabled={busy}
+                onClick={() => createCampaign(true)}
+                style={{ minHeight: '44px', fontSize: 'var(--text-sm)' }}
+              >
                 {busy ? 'Envoi en cours…' : '🚀 Envoyer le Pop-up'}
               </button>
             </div>
@@ -293,36 +450,56 @@ export function AdminNotifications() {
 
         {/* ─── Aperçu en Direct (Ce que le client voit) ─── */}
         <div className="ui-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 700, color: 'var(--espresso)', margin: 0 }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--espresso)', margin: 0 }}>
               👁️ Aperçu Pop-up Client
             </h3>
-            <span style={{ fontSize: '0.72rem', color: 'var(--coffee-mid)' }}>Temps réel</span>
+            <span className="ui-badge ui-badge--neutral">
+              Temps réel
+            </span>
           </div>
 
-          <p style={{ fontSize: '0.82rem', color: 'var(--coffee-mid)', margin: '0 0 1.25rem' }}>
-            Voici exactement la fenêtre interactive qui apparaîtra sur l'écran du client lorsqu'il cliquera sur la notification :
+          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--coffee-mid)', margin: '0 0 1.25rem', lineHeight: 1.4 }}>
+            Voici la modale haute fidélité que le client verra en cliquant sur la push notification :
           </p>
 
-          <div style={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'rgba(24, 16, 10, 0.04)', borderRadius: '20px', padding: '1.5rem' }}>
+          <div
+            style={{
+              flex: 1,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: 'radial-gradient(circle at center, #F4EFEA 0%, #EAE2D5 100%)',
+              borderRadius: 'var(--r-lg)',
+              padding: '1.5rem 1rem',
+              border: '1px solid var(--crema-border)',
+            }}
+          >
             <div
               style={{
                 width: '100%',
-                maxWidth: '320px',
-                padding: '1.5rem',
-                borderRadius: '24px',
+                maxWidth: '310px',
+                padding: '1.5rem 1.25rem',
+                borderRadius: 'var(--r-xl)',
                 background: '#FFFFFF',
-                boxShadow: '0 16px 36px rgba(24, 16, 10, 0.18)',
+                boxShadow: 'var(--shadow-lg)',
                 textAlign: 'center',
-                border: '1px solid var(--crema-border)',
+                border: '1.5px solid var(--crema-border)',
               }}
             >
               {/* Logo Bieny */}
-              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.85rem' }}>
+              <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.75rem' }}>
                 <img
                   src="/logo_houssem.jpeg"
-                  alt="Bieny Logo"
-                  style={{ width: '42px', height: '42px', borderRadius: '12px', objectFit: 'cover', boxShadow: '0 3px 8px rgba(24, 16, 10, 0.12)' }}
+                  alt="Bieny Coffeeshop"
+                  style={{
+                    width: '44px',
+                    height: '44px',
+                    borderRadius: '14px',
+                    objectFit: 'cover',
+                    boxShadow: '0 3px 8px rgba(24, 16, 10, 0.12)',
+                    border: '1.5px solid rgba(212, 160, 84, 0.35)',
+                  }}
                 />
               </div>
 
@@ -332,46 +509,52 @@ export function AdminNotifications() {
                   display: 'inline-flex',
                   alignItems: 'center',
                   gap: '0.35rem',
-                  padding: '0.3rem 0.75rem',
-                  borderRadius: '999px',
+                  padding: '0.3rem 0.8rem',
+                  borderRadius: 'var(--r-pill)',
                   backgroundColor: previewMeta.bg,
                   color: previewMeta.color,
-                  marginBottom: '0.75rem',
+                  border: `1px solid ${previewMeta.border}`,
+                  marginBottom: '0.85rem',
                 }}
               >
-                <span style={{ fontSize: '0.85rem' }}>{previewMeta.icon}</span>
-                <span style={{ fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.04em' }}>
+                <span style={{ fontSize: '0.9rem' }}>{previewMeta.icon}</span>
+                <span style={{ fontSize: 'var(--text-2xs)', fontWeight: 800, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                   {previewMeta.label}
                 </span>
               </div>
 
               {/* Preview image */}
               {imageUrl.trim() && (
-                <div style={{ marginBottom: '0.85rem', borderRadius: '12px', overflow: 'hidden', boxShadow: '0 2px 8px rgba(24,16,10,0.1)' }}>
-                  <img src={imageUrl.trim()} alt="Illustration" style={{ width: '100%', maxHeight: '120px', objectFit: 'cover', display: 'block' }} onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+                <div style={{ marginBottom: '0.85rem', borderRadius: '12px', overflow: 'hidden', boxShadow: 'var(--shadow-xs)' }}>
+                  <img
+                    src={imageUrl.trim()}
+                    alt="Illustration"
+                    style={{ width: '100%', maxHeight: '120px', objectFit: 'cover', display: 'block' }}
+                    onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                  />
                 </div>
               )}
 
               {/* Title */}
-              <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.15rem', fontWeight: 700, color: 'var(--espresso)', margin: '0 0 0.5rem', lineHeight: 1.25 }}>
+              <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-md)', fontWeight: 700, color: 'var(--espresso)', margin: '0 0 0.5rem', lineHeight: 1.25 }}>
                 {title.trim() || 'Titre de la notification'}
               </h4>
 
               {/* Message */}
-              <p style={{ fontSize: '0.85rem', lineHeight: 1.45, color: 'var(--coffee-dark)', margin: '0 0 1.25rem', whiteSpace: 'pre-line' }}>
-                {message.trim() || 'Votre texte d’offre, de rappel ou de bienvenue apparaîtra ici avec une typographie soignée.'}
+              <p style={{ fontSize: 'var(--text-xs)', lineHeight: 1.5, color: 'var(--coffee-dark)', margin: '0 0 1.25rem', whiteSpace: 'pre-line' }}>
+                {message.trim() || 'Votre texte d’offre, de rappel ou de bienvenue apparaîtra ici avec une typographie élégante et lisible.'}
               </p>
 
               {/* Action Button */}
               <div
                 style={{
-                  background: 'var(--sage)',
-                  color: '#fff',
-                  padding: '0.7rem 1rem',
-                  borderRadius: '14px',
-                  fontSize: '0.85rem',
-                  fontWeight: 700,
-                  boxShadow: '0 4px 12px rgba(143, 175, 154, 0.35)',
+                  background: 'var(--gold-gradient)',
+                  color: 'var(--espresso-dark)',
+                  padding: '0.75rem 1rem',
+                  borderRadius: 'var(--r-md)',
+                  fontSize: 'var(--text-sm)',
+                  fontWeight: 800,
+                  boxShadow: '0 4px 14px var(--gold-glow)',
                 }}
               >
                 {btnText.trim() || 'Découvrir & Profiter'}
@@ -383,18 +566,42 @@ export function AdminNotifications() {
 
       {/* ─── Historique des envois ─── */}
       <div className="ui-card" style={{ padding: '1.5rem' }}>
-        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.2rem', fontWeight: 700, color: 'var(--espresso)', margin: '0 0 1rem' }}>Historique des envois</h3>
+        <div className="section-label">Journal</div>
+        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--espresso)', margin: '0 0 1rem' }}>
+          Historique des campagnes push
+        </h3>
         {history.length === 0 ? (
-          <div style={{ textAlign: 'center', padding: '2rem 1rem', color: 'var(--coffee-mid)' }}>Aucun envoi pour le moment.</div>
+          <div className="empty-state" style={{ padding: '2rem 1rem' }}>
+            <div className="empty-state__icon">📜</div>
+            <div className="empty-state__title">Aucun envoi pour le moment</div>
+            <div className="empty-state__desc">Vos notifications envoyées apparaîtront ici avec leur date et statut de diffusion.</div>
+          </div>
         ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
             {history.slice(0, 30).map((h: any) => (
-              <div key={h.id} style={{ display: 'flex', justifyContent: 'space-between', padding: '0.75rem 1rem', borderRadius: 'var(--r-md)', background: 'var(--crema-bg)', border: '1px solid var(--crema-border)', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <div
+                key={h.id}
+                style={{
+                  display: 'flex',
+                  justifyContent: 'space-between',
+                  alignItems: 'center',
+                  padding: '0.85rem 1.15rem',
+                  borderRadius: 'var(--r-md)',
+                  background: 'var(--crema-surface)',
+                  border: '1px solid var(--crema-border)',
+                  boxShadow: 'var(--shadow-xs)',
+                  gap: '0.75rem',
+                  flexWrap: 'wrap',
+                }}
+              >
                 <div>
-                  <div style={{ fontWeight: 700, fontSize: '0.88rem', color: 'var(--espresso)' }}>{h.title}</div>
-                  <div style={{ fontSize: '0.74rem', color: 'var(--coffee-mid)' }}>{h.type} · {h.status}</div>
+                  <div style={{ fontWeight: 700, fontSize: 'var(--text-base)', color: 'var(--espresso)' }}>{h.title}</div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
+                    <span className="ui-badge ui-badge--neutral" style={{ fontSize: '0.65rem' }}>{h.type}</span>
+                    <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)' }}>· {h.status}</span>
+                  </div>
                 </div>
-                <div style={{ fontSize: '0.76rem', color: 'var(--coffee-mid)', textAlign: 'right' }}>
+                <div style={{ fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)', textAlign: 'right' }}>
                   {new Date(h.sent_at).toLocaleString('fr-FR')}
                 </div>
               </div>
