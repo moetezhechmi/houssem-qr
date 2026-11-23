@@ -59,8 +59,13 @@ export function AdminSections({
   const [empMsg, setEmpMsg] = useState<{ text: string; ok: boolean } | null>(null);
   const [busyEmp, setBusyEmp] = useState(false);
 
-  // Settings State
-  const [settings, setSettings] = useState({
+  // Settings State (using strings or numbers so inputs can be cleared cleanly on mobile)
+  const [settings, setSettings] = useState<{
+    required_consumptions: number | string;
+    discount_percentage: number | string;
+    card_validity_days: number | string;
+    reward_validity_days: number | string;
+  }>({
     required_consumptions: initialSettings?.required_consumptions ?? 9,
     discount_percentage: initialSettings?.discount_percentage ?? 30,
     card_validity_days: initialSettings?.card_validity_days ?? 30,
@@ -141,17 +146,24 @@ export function AdminSections({
     setBusySettings(true);
     setSettingsMsg(null);
     try {
+      const payload = {
+        required_consumptions: Number(settings.required_consumptions) || 9,
+        discount_percentage: Number(settings.discount_percentage) || 30,
+        card_validity_days: Number(settings.card_validity_days) || 30,
+        reward_validity_days: Number(settings.reward_validity_days) || 7,
+      };
       const res = await fetch('/api/server/settings', {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(settings),
+        body: JSON.stringify(payload),
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
         setSettingsMsg({
-          text: `Paramètres enregistrés (${settings.required_consumptions} consos = ${settings.discount_percentage}%)`,
+          text: `Paramètres enregistrés (${payload.required_consumptions} consos = ${payload.discount_percentage}%)`,
           ok: true,
         });
+        setSettings(payload);
       } else {
         setSettingsMsg({ text: data?.error?.message ?? 'Erreur lors de la sauvegarde', ok: false });
       }
@@ -694,65 +706,133 @@ export function AdminSections({
               </div>
             )}
 
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '1rem', marginBottom: '1.5rem' }}>
               <div>
-                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', marginBottom: '0.35rem' }}>
+                <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', letterSpacing: '0.05em', marginBottom: '0.4rem' }}>
                   Consommations nécessaires
                 </label>
                 <input
-                  type="number"
-                  min={1}
-                  max={20}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={settings.required_consumptions}
-                  onChange={(e) => setSettings({ ...settings, required_consumptions: parseInt(e.target.value) || 0 })}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--r-sm)', border: '1.5px solid var(--crema-border)', background: 'var(--crema-bg)', fontWeight: 700, fontSize: '1rem' }}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    setSettings({ ...settings, required_consumptions: val });
+                  }}
+                  placeholder="9"
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem 1rem',
+                    borderRadius: 'var(--r-md)',
+                    border: '1.5px solid var(--crema-border)',
+                    background: 'var(--crema-surface)',
+                    fontWeight: 700,
+                    fontSize: 'var(--text-lg)',
+                    color: 'var(--espresso)',
+                    outline: 'none',
+                    boxShadow: 'var(--shadow-xs)',
+                  }}
                 />
-                <span style={{ fontSize: '0.7rem', color: 'var(--coffee-mid)' }}>Par défaut : 9</span>
+                <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', marginTop: '0.25rem', display: 'block' }}>
+                  Par défaut : 9 cafés
+                </span>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', marginBottom: '0.35rem' }}>
-                  Pourcentage de réduction
+                <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', letterSpacing: '0.05em', marginBottom: '0.4rem' }}>
+                  Pourcentage de réduction (%)
                 </label>
                 <input
-                  type="number"
-                  min={1}
-                  max={100}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={settings.discount_percentage}
-                  onChange={(e) => setSettings({ ...settings, discount_percentage: parseInt(e.target.value) || 0 })}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--r-sm)', border: '1.5px solid var(--crema-border)', background: 'var(--crema-bg)', fontWeight: 700, fontSize: '1rem' }}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    setSettings({ ...settings, discount_percentage: val });
+                  }}
+                  placeholder="30"
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem 1rem',
+                    borderRadius: 'var(--r-md)',
+                    border: '1.5px solid var(--crema-border)',
+                    background: 'var(--crema-surface)',
+                    fontWeight: 700,
+                    fontSize: 'var(--text-lg)',
+                    color: 'var(--espresso)',
+                    outline: 'none',
+                    boxShadow: 'var(--shadow-xs)',
+                  }}
                 />
-                <span style={{ fontSize: '0.7rem', color: 'var(--coffee-mid)' }}>Par défaut : 30%</span>
+                <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', marginTop: '0.25rem', display: 'block' }}>
+                  Par défaut : 30%
+                </span>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', marginBottom: '0.35rem' }}>
+                <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', letterSpacing: '0.05em', marginBottom: '0.4rem' }}>
                   Validité de la carte (jours)
                 </label>
                 <input
-                  type="number"
-                  min={1}
-                  max={365}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={settings.card_validity_days}
-                  onChange={(e) => setSettings({ ...settings, card_validity_days: parseInt(e.target.value) || 0 })}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--r-sm)', border: '1.5px solid var(--crema-border)', background: 'var(--crema-bg)', fontWeight: 700, fontSize: '1rem' }}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    setSettings({ ...settings, card_validity_days: val });
+                  }}
+                  placeholder="30"
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem 1rem',
+                    borderRadius: 'var(--r-md)',
+                    border: '1.5px solid var(--crema-border)',
+                    background: 'var(--crema-surface)',
+                    fontWeight: 700,
+                    fontSize: 'var(--text-lg)',
+                    color: 'var(--espresso)',
+                    outline: 'none',
+                    boxShadow: 'var(--shadow-xs)',
+                  }}
                 />
-                <span style={{ fontSize: '0.7rem', color: 'var(--coffee-mid)' }}>Par défaut : 30 jours</span>
+                <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', marginTop: '0.25rem', display: 'block' }}>
+                  Par défaut : 30 jours
+                </span>
               </div>
 
               <div>
-                <label style={{ display: 'block', fontSize: '0.72rem', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', marginBottom: '0.35rem' }}>
+                <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', letterSpacing: '0.05em', marginBottom: '0.4rem' }}>
                   Validité récompense (jours)
                 </label>
                 <input
-                  type="number"
-                  min={1}
-                  max={90}
+                  type="text"
+                  inputMode="numeric"
+                  pattern="[0-9]*"
                   value={settings.reward_validity_days}
-                  onChange={(e) => setSettings({ ...settings, reward_validity_days: parseInt(e.target.value) || 0 })}
-                  style={{ width: '100%', padding: '0.75rem', borderRadius: 'var(--r-sm)', border: '1.5px solid var(--crema-border)', background: 'var(--crema-bg)', fontWeight: 700, fontSize: '1rem' }}
+                  onChange={(e) => {
+                    const val = e.target.value.replace(/\D/g, '');
+                    setSettings({ ...settings, reward_validity_days: val });
+                  }}
+                  placeholder="7"
+                  style={{
+                    width: '100%',
+                    padding: '0.85rem 1rem',
+                    borderRadius: 'var(--r-md)',
+                    border: '1.5px solid var(--crema-border)',
+                    background: 'var(--crema-surface)',
+                    fontWeight: 700,
+                    fontSize: 'var(--text-lg)',
+                    color: 'var(--espresso)',
+                    outline: 'none',
+                    boxShadow: 'var(--shadow-xs)',
+                  }}
                 />
-                <span style={{ fontSize: '0.7rem', color: 'var(--coffee-mid)' }}>Par défaut : 7 jours</span>
+                <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', marginTop: '0.25rem', display: 'block' }}>
+                  Par défaut : 7 jours
+                </span>
               </div>
             </div>
 
