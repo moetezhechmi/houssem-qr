@@ -223,15 +223,26 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
           </a>
 
           {employee?.role === 'admin' ? (
-            <a
-              href="/admin"
-              className={`bottom-tab ${isAdmin ? 'bottom-tab--active' : ''}`}
-            >
-              <div className="bottom-tab__icon-wrap">
-                <SettingsIcon size={20} />
-              </div>
-              <span className="bottom-tab__label">Admin</span>
-            </a>
+            <>
+              <a
+                href="/admin?tab=notifications"
+                className="bottom-tab"
+              >
+                <div className="bottom-tab__icon-wrap">
+                  <span style={{ fontSize: '1.1rem' }}>📣</span>
+                </div>
+                <span className="bottom-tab__label">Notifs</span>
+              </a>
+              <a
+                href="/admin"
+                className={`bottom-tab ${isAdmin ? 'bottom-tab--active' : ''}`}
+              >
+                <div className="bottom-tab__icon-wrap">
+                  <SettingsIcon size={20} />
+                </div>
+                <span className="bottom-tab__label">Admin</span>
+              </a>
+            </>
           ) : (
             <a
               href="/serveur"

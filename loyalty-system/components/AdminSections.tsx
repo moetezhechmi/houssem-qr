@@ -769,40 +769,6 @@ export function AdminSections({
         )}
       </section>
 
-      {/* ── Bottom Navigation (mobile only) ── */}
-      <nav className="admin-bottom-bar" aria-label="Navigation admin mobile">
-        {[
-          { id: 'overview', label: "Vue", icon: '📊' },
-          { id: 'customers', label: 'Clients', icon: '👥' },
-          { id: 'notifications', label: 'Notifs', icon: '📣' },
-          { id: 'settings', label: 'Paramètres', icon: '⚙️' },
-        ].map((item) => {
-          const isActive = activeTab === item.id;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setActiveTab(item.id as SectionId)}
-              className={`admin-bottom-item ${isActive ? 'admin-bottom-item--active' : ''}`}
-            >
-              <span style={{ fontSize: '1.2rem' }}>{item.icon}</span>
-              <span>{item.label}</span>
-            </button>
-          );
-        })}
-        <button
-          type="button"
-          onClick={() => {
-            const el = document.querySelector('.admin-nav-shell');
-            if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-          }}
-          className="admin-bottom-item"
-        >
-          <span style={{ fontSize: '1.2rem' }}>☰</span>
-          <span>Menu</span>
-        </button>
-      </nav>
-
       <style jsx>{`
         .admin-nav-shell {
           width: 100%;
@@ -847,52 +813,7 @@ export function AdminSections({
           color: #FAF9F6;
         }
 
-        /* ── Bottom bar (mobile) ── */
-        .admin-bottom-bar {
-          position: fixed;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          z-index: 90;
-          display: flex;
-          justify-content: space-around;
-          align-items: center;
-          padding: 6px 4px calc(8px + env(safe-area-inset-bottom, 0px));
-          background: rgba(250, 249, 246, 0.96);
-          backdrop-filter: blur(20px) saturate(180%);
-          -webkit-backdrop-filter: blur(20px) saturate(180%);
-          border-top: 1px solid var(--crema-border);
-          box-shadow: 0 -4px 16px rgba(24, 16, 10, 0.08);
-        }
-        .admin-bottom-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 2px;
-          padding: 4px 8px;
-          border: none;
-          background: transparent;
-          color: var(--coffee-mid);
-          font-size: 0.62rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-          cursor: pointer;
-          border-radius: 10px;
-          transition: color 0.15s ease, background 0.15s ease;
-        }
-        .admin-bottom-item--active {
-          color: var(--espresso);
-          background: var(--crema-subtle);
-        }
-        .admin-bottom-item span:first-child {
-          font-size: 1.15rem;
-        }
-
         @media (min-width: 860px) {
-          .admin-bottom-bar {
-            display: none !important;
-          }
           .admin-container {
             grid-template-columns: 240px 1fr !important;
           }
