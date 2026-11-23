@@ -48,7 +48,7 @@ export function QrScannerFab() {
           scanLoop();
         } else {
           setStatus('error');
-          setError("Scanner QR non supporté par ce navigateur. Collez le lien manuellement.");
+          setError("Sur iPhone / Safari, vous pouvez scanner le QR code directement avec l'appareil photo de votre téléphone, il vous redirigera automatiquement !");
         }
       } catch (e: any) {
         setStatus('error');
@@ -97,6 +97,16 @@ export function QrScannerFab() {
   const handleValue = async (value: string) => {
     stop();
     setStatus('resolving');
+
+    // 1. Détection directe si c'est déjà une URL /serveur/customers/[id]
+    const directCust = value.match(/\/serveur\/customers\/([a-zA-Z0-9-]+)/);
+    if (directCust && directCust[1]) {
+      setOpen(false);
+      router.push(`/serveur/customers/${directCust[1]}`);
+      return;
+    }
+
+    // 2. Détection du token client /client/[token]
     const token = extractToken(value);
     if (!token) {
       setStatus('error');

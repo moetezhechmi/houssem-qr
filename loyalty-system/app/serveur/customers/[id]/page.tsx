@@ -15,7 +15,7 @@ import {
 export default async function ServeurCustomerFiche({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const employee = await getEmployee('server');
-  if (!employee) redirect('/serveur/login');
+  if (!employee) redirect(`/serveur/login?redirect=${encodeURIComponent(`/serveur/customers/${id}`)}`);
 
   const [fiche, shareLink] = await Promise.all([
     getFiche(id),

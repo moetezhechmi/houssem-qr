@@ -29,7 +29,8 @@ export default function LoginPage() {
       });
 
       if (res.ok) {
-        window.location.href = '/serveur';
+        const dest = new URLSearchParams(window.location.search).get('redirect') || '/serveur';
+        window.location.href = dest;
         return;
       }
 

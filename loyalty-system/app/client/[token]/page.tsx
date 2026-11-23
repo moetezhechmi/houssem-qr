@@ -1,8 +1,18 @@
+import { redirect } from 'next/navigation';
+import { getEmployee } from '@/lib/auth-guard';
 import { fetchClientCard } from '@/lib/client-card';
 import ClientCard from '@/components/ClientCard';
 
-export default async function ClientPage({ params }: { params: Promise<{ token: string }> }) {
+export default async function ClientPage({
+  params,
+  searchParams,
+}: {
+  params: Promise<{ token: string }>;
+  searchParams?: Promise<{ view_as?: string }>;
+}) {
   const { token } = await params;
+  const { view_as } = (await searchParams) ?? {};
+
   const res = await fetchClientCard(token);
   const card = res.ok && res.data ? res.data : null;
 
@@ -33,6 +43,16 @@ export default async function ClientPage({ params }: { params: Promise<{ token: 
         </div>
       </main>
     );
+  }
+
+  // ── Redirection Barista / Admin ──
+  // Si le QR code est scanné par un barista ou admin connecté sur son téléphone,
+  // le rediriger directement vers la fiche de gestion du client pour enregistrer le café ou appliquer la remise
+  if (view_as !== 'client') {
+    const employee = await getEmployee('server');
+    if (employee && card.customer?.id) {
+      redirect(`/serveur/customers/${card.customer.id}`);
+    }
   }
 
   return (
