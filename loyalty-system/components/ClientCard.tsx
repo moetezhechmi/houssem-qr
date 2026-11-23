@@ -593,30 +593,6 @@ export default function ClientCard({ token, initialData }: { token: string; init
               <p style={{ fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)', margin: 0, lineHeight: 1.45 }}>
                 Présentez ce QR code à chaque passage pour enregistrer votre boisson.
               </p>
-
-              {/* Barista fast-track shortcut */}
-              <div style={{ marginTop: '0.85rem', paddingTop: '0.75rem', borderTop: '1px dashed var(--crema-border)' }}>
-                <a
-                  href={`/serveur/customers/${data.customer.id}`}
-                  style={{
-                    display: 'inline-flex',
-                    alignItems: 'center',
-                    gap: '6px',
-                    padding: '5px 12px',
-                    borderRadius: 'var(--r-pill)',
-                    background: 'var(--crema-subtle)',
-                    border: '1px solid var(--crema-border)',
-                    fontSize: 'var(--text-2xs)',
-                    color: 'var(--coffee-mid)',
-                    fontWeight: 700,
-                    textDecoration: 'none',
-                    transition: 'all 0.15s ease',
-                  }}
-                >
-                  <span>☕ Espace Barista : Ouvrir la fiche</span>
-                  <span>→</span>
-                </a>
-              </div>
             </div>
 
             {/* ── Quick Menu Banner Shortcut ── */}
