@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { fmtDate, fmtDateTime } from '@/lib/format';
 import { AdminNotifications } from './AdminNotifications';
 
@@ -38,10 +38,17 @@ export function AdminSections({
   employees: initialEmployees,
   initialTab,
 }: AdminSectionsProps) {
-  const validTabs: SectionId[] = ['overview','customers','employees','cards','rewards','history','stats','settings'];
+  const validTabs: SectionId[] = ['overview','customers','employees','cards','rewards','history','stats','settings','notifications'];
   const startTab = (validTabs.includes(initialTab as SectionId) ? initialTab : 'overview') as SectionId;
   const [activeTab, setActiveTab] = useState<SectionId>(startTab);
   const [showMore, setShowMore] = useState(false);
+
+  // Sync activeTab when initialTab prop changes
+  useEffect(() => {
+    if (initialTab && validTabs.includes(initialTab as SectionId)) {
+      setActiveTab(initialTab as SectionId);
+    }
+  }, [initialTab]);
 
   // Employee Management State
   const [employees, setEmployees] = useState(initialEmployees);
@@ -164,8 +171,8 @@ export function AdminSections({
       }}
       className="admin-container"
     >
-      {/* ── Desktop Sidebar (hidden on mobile) ── */}
-      <aside className="admin-nav-shell admin-nav-desktop">
+      {/* ── Admin Navigation (Sidebar on Desktop, Horizontal Pill Bar on Mobile) ── */}
+      <aside className="admin-nav-shell">
         <div className="admin-nav-list">
           {menuItems.map((item) => {
             const isActive = activeTab === item.id;
@@ -176,8 +183,8 @@ export function AdminSections({
                 onClick={() => setActiveTab(item.id)}
                 className={`admin-nav-item ${isActive ? 'admin-nav-item--active' : ''}`}
               >
-                <span style={{ fontSize: '1.15rem' }}>{item.icon}</span>
-                <span style={{ flex: 1, textAlign: 'left' }}>{item.label}</span>
+                <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
+                <span>{item.label}</span>
                 {item.count !== undefined && (
                   <span className="admin-nav-count">{item.count}</span>
                 )}
@@ -186,101 +193,6 @@ export function AdminSections({
           })}
         </div>
       </aside>
-
-      {/* ── Mobile "More" sheet ── */}
-      {showMore && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            zIndex: 200,
-            background: 'rgba(0,0,0,0.5)',
-            backdropFilter: 'blur(4px)',
-            display: 'flex',
-            alignItems: 'flex-end',
-          }}
-          onClick={() => setShowMore(false)}
-        >
-          <div
-            style={{
-              width: '100%',
-              background: '#FFFFFF',
-              borderRadius: '20px 20px 0 0',
-              padding: '1.25rem',
-              maxHeight: '70vh',
-              overflowY: 'auto',
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div style={{ width: '40px', height: '4px', background: 'var(--crema-border)', borderRadius: '999px', margin: '0 auto 1rem' }} />
-            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 700, color: 'var(--espresso)', margin: '0 0 0.75rem' }}>
-              Toutes les sections
-            </h3>
-            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
-              {menuItems.map((item) => {
-                const isActive = activeTab === item.id;
-                return (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => { setActiveTab(item.id); setShowMore(false); }}
-                    style={{
-                      display: 'flex',
-                      alignItems: 'center',
-                      gap: '8px',
-                      padding: '0.75rem',
-                      borderRadius: 'var(--r-md)',
-                      border: `1.5px solid ${isActive ? 'var(--espresso)' : 'var(--crema-border)'}`,
-                      background: isActive ? 'var(--espresso)' : 'var(--crema-surface)',
-                      color: isActive ? '#FAF9F6' : 'var(--espresso)',
-                      fontWeight: 700,
-                      fontSize: '0.84rem',
-                      cursor: 'pointer',
-                    }}
-                  >
-                    <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
-                    <span style={{ flex: 1, textAlign: 'left' }}>{item.label}</span>
-                    {item.count !== undefined && (
-                      <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>{item.count}</span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Mobile Bottom Navigation ── */}
-      <nav className="admin-mobile-bottom-bar" aria-label="Navigation admin mobile">
-        {[
-          { id: 'overview', label: "Vue", icon: '📊' },
-          { id: 'customers', label: 'Clients', icon: '👥' },
-          { id: 'notifications', label: 'Notifs', icon: '📣' },
-          { id: 'settings', label: 'Paramètres', icon: '⚙️' },
-        ].map((item) => {
-          const isActive = activeTab === item.id;
-          return (
-            <button
-              key={item.id}
-              type="button"
-              onClick={() => setActiveTab(item.id as SectionId)}
-              className={`admin-mobile-bottom-item ${isActive ? 'admin-mobile-bottom-item--active' : ''}`}
-            >
-              <span>{item.icon}</span>
-              <span>{item.label}</span>
-            </button>
-          );
-        })}
-        <button
-          type="button"
-          onClick={() => setShowMore(true)}
-          className="admin-mobile-bottom-item"
-        >
-          <span>☰</span>
-          <span>Menu</span>
-        </button>
-      </nav>
 
       {/* ── Active Section Content ── */}
       <section style={{ minWidth: 0 }}>
@@ -868,58 +780,7 @@ export function AdminSections({
       <style jsx>{`
         .admin-nav-shell {
           width: 100%;
-        }
-        /* Hide horizontal scroller on mobile; use bottom bar instead */
-        @media (max-width: 859px) {
-          .admin-nav-desktop {
-            display: none !important;
-          }
-        }
-        /* Mobile bottom bar */
-        .admin-mobile-bottom-bar {
-          position: fixed;
-          bottom: 0;
-          left: 0;
-          right: 0;
-          z-index: 90;
-          display: flex;
-          justify-content: space-around;
-          align-items: center;
-          padding: 6px 4px calc(8px + env(safe-area-inset-bottom, 0px));
-          background: rgba(250, 249, 246, 0.97);
-          backdrop-filter: blur(20px) saturate(180%);
-          -webkit-backdrop-filter: blur(20px) saturate(180%);
-          border-top: 1px solid var(--crema-border);
-          box-shadow: 0 -4px 16px rgba(24, 16, 10, 0.08);
-        }
-        .admin-mobile-bottom-item {
-          display: flex;
-          flex-direction: column;
-          align-items: center;
-          gap: 2px;
-          padding: 4px 10px;
-          border: none;
-          background: transparent;
-          color: var(--coffee-mid);
-          font-size: 0.6rem;
-          font-weight: 700;
-          text-transform: uppercase;
-          letter-spacing: 0.04em;
-          cursor: pointer;
-          border-radius: 10px;
-          transition: color 0.15s ease, background 0.15s ease;
-        }
-        .admin-mobile-bottom-item--active {
-          color: var(--espresso);
-          background: var(--crema-subtle);
-        }
-        .admin-mobile-bottom-item span:first-child {
-          font-size: 1.15rem;
-        }
-        @media (min-width: 860px) {
-          .admin-mobile-bottom-bar {
-            display: none !important;
-          }
+          margin-bottom: 0.75rem;
         }
         .admin-nav-list {
           display: flex;
@@ -929,25 +790,26 @@ export function AdminSections({
           -webkit-overflow-scrolling: touch;
         }
         .admin-nav-item {
-          display: flex;
+          display: inline-flex;
           align-items: center;
-          gap: 8px;
+          gap: 6px;
           padding: 8px 14px;
-          border-radius: var(--r-md);
+          border-radius: var(--r-pill);
           background: var(--crema-surface);
           border: 1.5px solid var(--crema-border);
           color: var(--coffee-mid);
           font-weight: 700;
-          font-size: 0.84rem;
+          font-size: 0.82rem;
           white-space: nowrap;
           cursor: pointer;
           transition: all 0.15s ease;
+          box-shadow: var(--shadow-xs);
         }
         .admin-nav-item--active {
           background: var(--espresso);
-          color: #FAF9F6;
+          color: #FAF8F5;
           border-color: var(--espresso);
-          box-shadow: 0 4px 12px rgba(24, 16, 10, 0.2);
+          box-shadow: 0 4px 12px rgba(44, 30, 22, 0.25);
         }
         .admin-nav-count {
           padding: 2px 7px;
@@ -958,7 +820,7 @@ export function AdminSections({
         }
         .admin-nav-item--active .admin-nav-count {
           background: rgba(255, 255, 255, 0.2);
-          color: #FAF9F6;
+          color: #FAF8F5;
         }
 
         @media (min-width: 860px) {
@@ -971,6 +833,7 @@ export function AdminSections({
           }
           .admin-nav-item {
             width: 100% !important;
+            border-radius: var(--r-md) !important;
             padding: 10px 14px !important;
           }
         }

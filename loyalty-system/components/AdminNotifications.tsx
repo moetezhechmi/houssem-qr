@@ -5,10 +5,71 @@ import { createClient } from '@supabase/supabase-js';
 
 type NotificationType = 'marketing' | 'greetings' | 'reminder' | 'reward' | 'announcement';
 
+interface Preset {
+  label: string;
+  icon: string;
+  type: NotificationType;
+  title: string;
+  message: string;
+  btnText: string;
+  btnAction: string;
+}
+
+const PRESETS: Preset[] = [
+  {
+    label: 'Remise 30%',
+    icon: '🎁',
+    type: 'reward',
+    title: 'Votre réduction de -30% vous attend ! 🎁',
+    message: 'Félicitations pour votre fidélité ! Présentez votre carte en caisse pour bénéficier de 30% de remise immédiate sur votre commande.',
+    btnText: 'Voir mes Récompenses',
+    btnAction: 'reward',
+  },
+  {
+    label: 'Joyeux Vendredi',
+    icon: '☕',
+    type: 'greetings',
+    title: 'Joyeux Vendredi chez Bieny ! ☕',
+    message: 'Le week-end commence maintenant ! Venez savourer votre boisson signature préférée et faire le plein d’énergie.',
+    btnText: 'Consulter le Menu',
+    btnAction: 'menu',
+  },
+  {
+    label: 'Offre Spéciale',
+    icon: '✨',
+    type: 'marketing',
+    title: 'Offre Spéciale du Jour ✨',
+    message: 'Offre exclusive aujourd’hui chez Bieny Coffeeshop ! Venez déguster nos douceurs artisanales et cafés de spécialité.',
+    btnText: 'Découvrir & Profiter',
+    btnAction: 'close',
+  },
+  {
+    label: 'Rappel Carte',
+    icon: '⏰',
+    type: 'reminder',
+    title: 'Votre carte expire bientôt ⏰',
+    message: 'Il ne vous reste que quelques jours pour compléter vos 9 tampons et débloquer vos 30% de réduction immédiate !',
+    btnText: 'Ouvrir ma Carte',
+    btnAction: 'close',
+  },
+  {
+    label: 'Nouveauté Carte',
+    icon: '📢',
+    type: 'announcement',
+    title: 'Nouveautés Gourmandes chez Bieny ! 📢',
+    message: 'Découvrez nos nouvelles boissons fraîches et pâtisseries du jour disponibles dès maintenant en coffeeshop.',
+    btnText: 'Découvrir la Carte',
+    btnAction: 'menu',
+  },
+];
+
 export function AdminNotifications() {
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [subCount, setSubCount] = useState(0);
+
+  // Mobile active tab: 'form' | 'preview' | 'history'
+  const [mobileTab, setMobileTab] = useState<'form' | 'preview' | 'history'>('form');
 
   // Form state
   const [title, setTitle] = useState('');
@@ -19,6 +80,7 @@ export function AdminNotifications() {
   const [btnAction, setBtnAction] = useState('close'); // 'close' | 'menu' | 'reward'
   const [target, setTarget] = useState('all');
   const [scheduled, setScheduled] = useState('');
+  const [showAdvanced, setShowAdvanced] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
 
@@ -55,8 +117,19 @@ export function AdminNotifications() {
     };
   }, []);
 
+  const applyPreset = (p: Preset) => {
+    setType(p.type);
+    setTitle(p.title);
+    setMessage(p.message);
+    setBtnText(p.btnText);
+    setBtnAction(p.btnAction);
+  };
+
   const createCampaign = async (immediate: boolean) => {
-    if (!title.trim() || !message.trim()) return;
+    if (!title.trim() || !message.trim()) {
+      setMsg({ text: 'Veuillez saisir au minimum un titre et un message.', ok: false });
+      return;
+    }
     setBusy(true);
     setMsg(null);
     try {
@@ -78,7 +151,12 @@ export function AdminNotifications() {
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
-        setMsg({ text: immediate ? 'Notification envoyée avec succès !' : 'Notification programmée !', ok: true });
+        setMsg({
+          text: immediate
+            ? `Notification envoyée avec succès à ${subCount} abonné(s) !`
+            : 'Notification programmée avec succès !',
+          ok: true,
+        });
         setTitle('');
         setMessage('');
         setImageUrl('');
@@ -130,7 +208,7 @@ export function AdminNotifications() {
         };
       case 'announcement':
         return {
-          label: 'Nouveauté & Carte',
+          label: 'Nouveauté Carte',
           icon: '📢',
           bg: 'var(--notif-announce-bg)',
           color: 'var(--notif-announce-text)',
@@ -142,363 +220,633 @@ export function AdminNotifications() {
   const previewMeta = getTypeMeta(type);
 
   return (
-    <div className="animate-in">
-      {/* ─── Stats KPI ─── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(160px, 1fr))', gap: '0.85rem', marginBottom: '1.25rem' }}>
-        <div className="stat-card">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Abonnés Push
-            </span>
-            <span style={{ fontSize: '1.25rem' }}>📲</span>
-          </div>
-          <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-2xl)', fontWeight: 700, color: 'var(--espresso)' }}>
-            {subCount}
-          </div>
-          <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--sage-dark)' }}>Clients réceptifs</div>
+    <div className="animate-in" style={{ paddingBottom: '1rem' }}>
+      {/* ─── Top Studio Bar : Titre & Statut Abonnés ─── */}
+      <div
+        style={{
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          flexWrap: 'wrap',
+          gap: '0.75rem',
+          marginBottom: '1rem',
+          paddingBottom: '0.75rem',
+          borderBottom: '1px solid var(--crema-border)',
+        }}
+      >
+        <div>
+          <div className="section-label">Studio Marketing & PWA</div>
+          <h2
+            style={{
+              fontFamily: 'var(--font-serif)',
+              fontSize: '1.45rem',
+              fontWeight: 700,
+              color: 'var(--espresso)',
+              margin: 0,
+              lineHeight: 1.2,
+            }}
+          >
+            Créer une Notification Pop-up
+          </h2>
         </div>
 
-        <div className="stat-card">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Campagnes
-            </span>
-            <span style={{ fontSize: '1.25rem' }}>📣</span>
-          </div>
-          <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-2xl)', fontWeight: 700, color: 'var(--sage-dark)' }}>
-            {campaigns.length}
-          </div>
-          <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)' }}>Créées au total</div>
-        </div>
-
-        <div className="stat-card">
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.05em' }}>
-              Notifications
-            </span>
-            <span style={{ fontSize: '1.25rem' }}>⚡</span>
-          </div>
-          <div style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-2xl)', fontWeight: 700, color: 'var(--gold-dark)' }}>
-            {history.length}
-          </div>
-          <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)' }}>Envois envoyés</div>
+        {/* Badge Abonnés Actifs */}
+        <div
+          style={{
+            display: 'inline-flex',
+            alignItems: 'center',
+            gap: '8px',
+            padding: '6px 14px',
+            borderRadius: 'var(--r-pill)',
+            background: 'var(--crema-surface)',
+            border: '1.5px solid var(--crema-border)',
+            boxShadow: 'var(--shadow-xs)',
+          }}
+        >
+          <span
+            style={{
+              width: '8px',
+              height: '8px',
+              borderRadius: '50%',
+              background: subCount > 0 ? 'var(--sage)' : 'var(--coffee-mid)',
+              boxShadow: subCount > 0 ? '0 0 8px var(--sage)' : 'none',
+              display: 'inline-block',
+            }}
+          />
+          <span style={{ fontSize: 'var(--text-xs)', fontWeight: 800, color: 'var(--espresso)' }}>
+            {subCount} client{subCount > 1 ? 's' : ''} abonné{subCount > 1 ? 's' : ''}
+          </span>
         </div>
       </div>
 
-      {/* ─── Studio Création + Live Preview Modal ─── */}
-      <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(340px, 1fr))', gap: '1.25rem', marginBottom: '1.5rem' }}>
-        {/* Formulaire */}
-        <div className="ui-card" style={{ padding: '1.5rem' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-            <div>
-              <div className="section-label">Studio Push</div>
-              <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--espresso)', margin: 0 }}>
-                Créer un Pop-up Interactif
-              </h3>
-            </div>
-            <span className="ui-badge ui-badge--sage">
-              Live PWA
-            </span>
-          </div>
+      {/* ─── Mobile Segmented Switcher (évite le défilement vertical) ─── */}
+      <div
+        className="notif-mobile-switcher"
+        style={{
+          display: 'flex',
+          background: 'var(--crema-subtle)',
+          padding: '4px',
+          borderRadius: 'var(--r-md)',
+          marginBottom: '1.15rem',
+          border: '1px solid var(--crema-border)',
+        }}
+      >
+        <button
+          type="button"
+          onClick={() => setMobileTab('form')}
+          style={{
+            flex: 1,
+            padding: '8px 12px',
+            borderRadius: 'var(--r-sm)',
+            fontSize: 'var(--text-xs)',
+            fontWeight: 700,
+            border: 'none',
+            background: mobileTab === 'form' ? 'var(--espresso)' : 'transparent',
+            color: mobileTab === 'form' ? '#FAF8F5' : 'var(--coffee-mid)',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+            boxShadow: mobileTab === 'form' ? 'var(--shadow-xs)' : 'none',
+          }}
+        >
+          ✍️ Créer le Pop-up
+        </button>
 
-          {msg && (
+        <button
+          type="button"
+          onClick={() => setMobileTab('preview')}
+          style={{
+            flex: 1,
+            padding: '8px 12px',
+            borderRadius: 'var(--r-sm)',
+            fontSize: 'var(--text-xs)',
+            fontWeight: 700,
+            border: 'none',
+            background: mobileTab === 'preview' ? 'var(--espresso)' : 'transparent',
+            color: mobileTab === 'preview' ? '#FAF8F5' : 'var(--coffee-mid)',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+            boxShadow: mobileTab === 'preview' ? 'var(--shadow-xs)' : 'none',
+          }}
+        >
+          👁️ Aperçu Client
+        </button>
+
+        <button
+          type="button"
+          onClick={() => setMobileTab('history')}
+          style={{
+            flex: 1,
+            padding: '8px 12px',
+            borderRadius: 'var(--r-sm)',
+            fontSize: 'var(--text-xs)',
+            fontWeight: 700,
+            border: 'none',
+            background: mobileTab === 'history' ? 'var(--espresso)' : 'transparent',
+            color: mobileTab === 'history' ? '#FAF8F5' : 'var(--coffee-mid)',
+            cursor: 'pointer',
+            transition: 'all 0.15s ease',
+            boxShadow: mobileTab === 'history' ? 'var(--shadow-xs)' : 'none',
+          }}
+        >
+          📜 Historique ({history.length})
+        </button>
+      </div>
+
+      {/* ─── Feedback Toast Message ─── */}
+      {msg && (
+        <div
+          style={{
+            background: msg.ok ? 'var(--sage-light)' : 'var(--coral-light)',
+            border: `1.5px solid ${msg.ok ? 'var(--sage-border)' : 'var(--coral-border)'}`,
+            borderRadius: 'var(--r-md)',
+            padding: '0.85rem 1.15rem',
+            marginBottom: '1.15rem',
+            fontSize: 'var(--text-sm)',
+            fontWeight: 600,
+            color: msg.ok ? 'var(--sage-dark)' : 'var(--coral)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: '10px',
+            boxShadow: 'var(--shadow-xs)',
+          }}
+        >
+          <span style={{ fontSize: '1.25rem' }}>{msg.ok ? '🎉' : '⚠️'}</span>
+          <span>{msg.text}</span>
+        </div>
+      )}
+
+      {/* ─── Main Two-Column Container (Desktop Side-by-Side / Mobile Tabbed) ─── */}
+      <div className="notif-grid-layout">
+        {/* COLONNE GAUCHE : FORMULAIRE DE CRÉATION */}
+        <div className={`notif-col-form ${mobileTab === 'form' ? 'active-mobile' : ''}`}>
+          {/* ── Modèles Rapides (1-Tap Presets) ── */}
+          <div style={{ marginBottom: '1.15rem' }}>
             <div
               style={{
-                background: msg.ok ? 'var(--sage-light)' : 'var(--coral-light)',
-                border: `1px solid ${msg.ok ? 'var(--sage-border)' : 'var(--coral-border)'}`,
-                borderRadius: 'var(--r-sm)',
-                padding: '0.75rem 1rem',
-                marginBottom: '1rem',
-                fontSize: 'var(--text-sm)',
-                color: msg.ok ? 'var(--sage-dark)' : 'var(--coral)',
-                display: 'flex',
-                alignItems: 'center',
-                gap: '8px',
+                fontSize: 'var(--text-2xs)',
+                fontWeight: 800,
+                color: 'var(--coffee-mid)',
+                textTransform: 'uppercase',
+                letterSpacing: '0.06em',
+                marginBottom: '0.5rem',
               }}
             >
-              <span>{msg.ok ? '✅' : '⚠️'}</span>
-              <span>{msg.text}</span>
-            </div>
-          )}
-
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.95rem' }}>
-            {/* Type de notification */}
-            <div>
-              <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
-                Thème & Catégorie
-              </label>
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(135px, 1fr))', gap: '0.45rem' }}>
-                {(['marketing', 'greetings', 'reminder', 'reward', 'announcement'] as NotificationType[]).map((t) => {
-                  const m = getTypeMeta(t);
-                  const isSel = type === t;
-                  return (
-                    <button
-                      key={t}
-                      type="button"
-                      onClick={() => setType(t)}
-                      style={{
-                        padding: '0.55rem 0.65rem',
-                        borderRadius: 'var(--r-sm)',
-                        border: isSel ? '2px solid var(--espresso)' : '1px solid var(--crema-border)',
-                        background: isSel ? 'var(--crema-subtle)' : 'var(--crema-surface)',
-                        fontSize: 'var(--text-xs)',
-                        fontWeight: isSel ? 700 : 500,
-                        color: 'var(--espresso)',
-                        display: 'flex',
-                        alignItems: 'center',
-                        gap: '0.45rem',
-                        cursor: 'pointer',
-                        textAlign: 'left',
-                        transition: 'all 0.15s ease',
-                      }}
-                    >
-                      <span style={{ fontSize: '1rem' }}>{m.icon}</span>
-                      <span style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{m.label}</span>
-                    </button>
-                  );
-                })}
-              </div>
+              ⚡ Modèles rapides (cliquez pour remplir en 1 tap) :
             </div>
 
-            {/* Titre */}
-            <div>
-              <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
-                Titre de la notification
-              </label>
-              <input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Ex : Joyeux vendredi ! ☕ / -20% sur les Cookies"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 0.85rem',
-                  borderRadius: 'var(--r-sm)',
-                  border: '1.5px solid var(--crema-border)',
-                  background: 'var(--crema-bg)',
-                  fontSize: 'var(--text-base)',
-                  color: 'var(--espresso)',
-                  outline: 'none',
-                }}
-              />
+            <div
+              style={{
+                display: 'flex',
+                gap: '6px',
+                overflowX: 'auto',
+                paddingBottom: '4px',
+                WebkitOverflowScrolling: 'touch',
+              }}
+            >
+              {PRESETS.map((p) => (
+                <button
+                  key={p.label}
+                  type="button"
+                  onClick={() => applyPreset(p)}
+                  style={{
+                    display: 'inline-flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                    padding: '6px 12px',
+                    borderRadius: 'var(--r-pill)',
+                    background: 'var(--crema-surface)',
+                    border: '1.5px solid var(--crema-border)',
+                    fontSize: 'var(--text-xs)',
+                    fontWeight: 700,
+                    color: 'var(--espresso)',
+                    whiteSpace: 'nowrap',
+                    cursor: 'pointer',
+                    boxShadow: 'var(--shadow-xs)',
+                    transition: 'all 0.15s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--gold)';
+                    e.currentTarget.style.transform = 'translateY(-1px)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.currentTarget.style.borderColor = 'var(--crema-border)';
+                    e.currentTarget.style.transform = 'translateY(0)';
+                  }}
+                >
+                  <span>{p.icon}</span>
+                  <span>{p.label}</span>
+                </button>
+              ))}
             </div>
+          </div>
 
-            {/* Message */}
-            <div>
-              <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
-                Message détaillé (contenu du pop-up)
-              </label>
-              <textarea
-                value={message}
-                onChange={(e) => setMessage(e.target.value)}
-                placeholder="Rédigez l'annonce qui sera présentée dans le modal plein écran du client..."
-                rows={3}
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 0.85rem',
-                  borderRadius: 'var(--r-sm)',
-                  border: '1.5px solid var(--crema-border)',
-                  background: 'var(--crema-bg)',
-                  fontSize: 'var(--text-base)',
-                  color: 'var(--espresso)',
-                  resize: 'vertical',
-                  outline: 'none',
-                  lineHeight: 1.5,
-                }}
-              />
-            </div>
-
-            {/* Image d'illustration */}
-            <div>
-              <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
-                Image d'illustration (URL optionnelle)
-              </label>
-              <input
-                value={imageUrl}
-                onChange={(e) => setImageUrl(e.target.value)}
-                placeholder="https://... ou URL d'image"
-                style={{
-                  width: '100%',
-                  padding: '0.75rem 0.85rem',
-                  borderRadius: 'var(--r-sm)',
-                  border: '1.5px solid var(--crema-border)',
-                  background: 'var(--crema-bg)',
-                  fontSize: 'var(--text-sm)',
-                  color: 'var(--espresso)',
-                  outline: 'none',
-                }}
-              />
-            </div>
-
-            {/* Action du bouton */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
+          {/* ── Carte du Formulaire ── */}
+          <div
+            className="ui-card"
+            style={{
+              padding: '1.35rem',
+              border: '1.5px solid var(--crema-border)',
+            }}
+          >
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+              {/* Choix de la catégorie */}
               <div>
-                <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
-                  Texte du Bouton
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: 'var(--text-2xs)',
+                    fontWeight: 800,
+                    color: 'var(--coffee-mid)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    marginBottom: '0.45rem',
+                  }}
+                >
+                  Type de Pop-up
+                </label>
+                <div
+                  style={{
+                    display: 'grid',
+                    gridTemplateColumns: 'repeat(auto-fit, minmax(105px, 1fr))',
+                    gap: '6px',
+                  }}
+                >
+                  {(['marketing', 'reward', 'reminder', 'greetings', 'announcement'] as NotificationType[]).map((t) => {
+                    const m = getTypeMeta(t);
+                    const isSel = type === t;
+                    return (
+                      <button
+                        key={t}
+                        type="button"
+                        onClick={() => setType(t)}
+                        style={{
+                          padding: '0.55rem 0.5rem',
+                          borderRadius: 'var(--r-sm)',
+                          border: isSel ? '2px solid var(--espresso)' : '1px solid var(--crema-border)',
+                          background: isSel ? 'var(--crema-subtle)' : 'var(--crema-surface)',
+                          fontSize: 'var(--text-xs)',
+                          fontWeight: isSel ? 800 : 600,
+                          color: 'var(--espresso)',
+                          display: 'flex',
+                          alignItems: 'center',
+                          justifyContent: 'center',
+                          gap: '5px',
+                          cursor: 'pointer',
+                          transition: 'all 0.15s ease',
+                          boxShadow: isSel ? 'var(--shadow-xs)' : 'none',
+                        }}
+                      >
+                        <span style={{ fontSize: '0.95rem' }}>{m.icon}</span>
+                        <span>{m.label.split(' ')[0]}</span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Titre */}
+              <div>
+                <label
+                  style={{
+                    display: 'block',
+                    fontSize: 'var(--text-2xs)',
+                    fontWeight: 800,
+                    color: 'var(--coffee-mid)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    marginBottom: '0.35rem',
+                  }}
+                >
+                  Titre du Pop-up
                 </label>
                 <input
-                  value={btnText}
-                  onChange={(e) => setBtnText(e.target.value)}
-                  placeholder="Découvrir & Profiter"
+                  value={title}
+                  onChange={(e) => setTitle(e.target.value)}
+                  placeholder="Ex : Joyeux vendredi ! ☕ / -30% sur vos cafés"
                   style={{
                     width: '100%',
-                    padding: '0.75rem 0.85rem',
+                    padding: '0.75rem 0.9rem',
                     borderRadius: 'var(--r-sm)',
                     border: '1.5px solid var(--crema-border)',
-                    background: 'var(--crema-bg)',
-                    fontSize: 'var(--text-sm)',
+                    background: 'var(--crema-surface)',
+                    fontSize: 'var(--text-base)',
                     color: 'var(--espresso)',
+                    fontWeight: 600,
                     outline: 'none',
+                    transition: 'border-color 0.15s ease',
                   }}
+                  onFocus={(e) => (e.target.style.borderColor = 'var(--gold)')}
+                  onBlur={(e) => (e.target.style.borderColor = 'var(--crema-border)')}
                 />
               </div>
 
+              {/* Message */}
               <div>
-                <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
-                  Action au Clic
-                </label>
-                <select
-                  value={btnAction}
-                  onChange={(e) => setBtnAction(e.target.value)}
+                <label
                   style={{
-                    width: '100%',
-                    padding: '0.75rem 0.85rem',
-                    borderRadius: 'var(--r-sm)',
-                    border: '1.5px solid var(--crema-border)',
-                    background: 'var(--crema-bg)',
-                    fontSize: 'var(--text-sm)',
-                    color: 'var(--espresso)',
-                    outline: 'none',
+                    display: 'block',
+                    fontSize: 'var(--text-2xs)',
+                    fontWeight: 800,
+                    color: 'var(--coffee-mid)',
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.06em',
+                    marginBottom: '0.35rem',
                   }}
                 >
-                  <option value="close">Fermer la modale</option>
-                  <option value="menu">Ouvrir le Menu Bieny</option>
-                  <option value="reward">Voir les Récompenses</option>
-                </select>
-              </div>
-            </div>
-
-            {/* Cible & Programmation */}
-            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
-              <div>
-                <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
-                  Destinataires
+                  Message explicatif
                 </label>
-                <select
-                  value={target}
-                  onChange={(e) => setTarget(e.target.value)}
+                <textarea
+                  value={message}
+                  onChange={(e) => setMessage(e.target.value)}
+                  placeholder="Rédigez l'annonce qui apparaîtra au clic sur la notification..."
+                  rows={3}
                   style={{
                     width: '100%',
-                    padding: '0.75rem 0.85rem',
+                    padding: '0.75rem 0.9rem',
                     borderRadius: 'var(--r-sm)',
                     border: '1.5px solid var(--crema-border)',
-                    background: 'var(--crema-bg)',
-                    fontSize: 'var(--text-sm)',
+                    background: 'var(--crema-surface)',
+                    fontSize: 'var(--text-base)',
                     color: 'var(--espresso)',
+                    lineHeight: 1.45,
+                    resize: 'vertical',
                     outline: 'none',
+                    transition: 'border-color 0.15s ease',
                   }}
-                >
-                  <option value="all">Tous les abonnés</option>
-                  <option value="marketing">Abonnés marketing</option>
-                </select>
-              </div>
-
-              <div>
-                <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.4rem' }}>
-                  Planifier (optionnel)
-                </label>
-                <input
-                  type="datetime-local"
-                  value={scheduled}
-                  onChange={(e) => setScheduled(e.target.value)}
-                  style={{
-                    width: '100%',
-                    padding: '0.75rem 0.85rem',
-                    borderRadius: 'var(--r-sm)',
-                    border: '1.5px solid var(--crema-border)',
-                    background: 'var(--crema-bg)',
-                    fontSize: 'var(--text-sm)',
-                    color: 'var(--espresso)',
-                    outline: 'none',
-                  }}
+                  onFocus={(e) => (e.target.style.borderColor = 'var(--gold)')}
+                  onBlur={(e) => (e.target.style.borderColor = 'var(--crema-border)')}
                 />
               </div>
-            </div>
 
-            {/* Boutons d'action */}
-            <div style={{ display: 'flex', gap: '0.65rem', justifyContent: 'flex-end', marginTop: '0.5rem' }}>
-              <button
-                type="button"
-                className="touch-btn touch-btn--outline"
-                disabled={busy}
-                onClick={() => createCampaign(false)}
-                style={{ minHeight: '44px', fontSize: 'var(--text-sm)' }}
-              >
-                Planifier
-              </button>
-              <button
-                type="button"
-                className="touch-btn touch-btn--primary"
-                disabled={busy}
-                onClick={() => createCampaign(true)}
-                style={{ minHeight: '44px', fontSize: 'var(--text-sm)' }}
-              >
-                {busy ? 'Envoi en cours…' : '🚀 Envoyer le Pop-up'}
-              </button>
+              {/* Bouton d'action client */}
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.65rem' }}>
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: 'var(--text-2xs)',
+                      fontWeight: 800,
+                      color: 'var(--coffee-mid)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                      marginBottom: '0.35rem',
+                    }}
+                  >
+                    Libellé Bouton
+                  </label>
+                  <input
+                    value={btnText}
+                    onChange={(e) => setBtnText(e.target.value)}
+                    placeholder="Découvrir & Profiter"
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem 0.8rem',
+                      borderRadius: 'var(--r-sm)',
+                      border: '1.5px solid var(--crema-border)',
+                      background: 'var(--crema-surface)',
+                      fontSize: 'var(--text-xs)',
+                      fontWeight: 600,
+                      color: 'var(--espresso)',
+                      outline: 'none',
+                    }}
+                  />
+                </div>
+
+                <div>
+                  <label
+                    style={{
+                      display: 'block',
+                      fontSize: 'var(--text-2xs)',
+                      fontWeight: 800,
+                      color: 'var(--coffee-mid)',
+                      textTransform: 'uppercase',
+                      letterSpacing: '0.06em',
+                      marginBottom: '0.35rem',
+                    }}
+                  >
+                    Action au Clic
+                  </label>
+                  <select
+                    value={btnAction}
+                    onChange={(e) => setBtnAction(e.target.value)}
+                    style={{
+                      width: '100%',
+                      padding: '0.7rem 0.8rem',
+                      borderRadius: 'var(--r-sm)',
+                      border: '1.5px solid var(--crema-border)',
+                      background: 'var(--crema-surface)',
+                      fontSize: 'var(--text-xs)',
+                      fontWeight: 600,
+                      color: 'var(--espresso)',
+                      outline: 'none',
+                    }}
+                  >
+                    <option value="close">Fermer la modale</option>
+                    <option value="menu">Ouvrir le Menu Bieny</option>
+                    <option value="reward">Voir les Récompenses</option>
+                  </select>
+                </div>
+              </div>
+
+              {/* Toggle Options Avancées (Image, Planification) */}
+              <div>
+                <button
+                  type="button"
+                  onClick={() => setShowAdvanced(!showAdvanced)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    padding: '4px 0',
+                    fontSize: 'var(--text-xs)',
+                    fontWeight: 700,
+                    color: 'var(--coffee-mid)',
+                    cursor: 'pointer',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '6px',
+                  }}
+                >
+                  <span>{showAdvanced ? '▾ Masquer les options avancées' : '▸ Plus d’options (Image, Date...)'}</span>
+                </button>
+
+                {showAdvanced && (
+                  <div
+                    style={{
+                      marginTop: '0.75rem',
+                      padding: '0.85rem',
+                      borderRadius: 'var(--r-sm)',
+                      background: 'var(--crema-subtle)',
+                      border: '1px solid var(--crema-border)',
+                      display: 'flex',
+                      flexDirection: 'column',
+                      gap: '0.75rem',
+                    }}
+                  >
+                    <div>
+                      <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', marginBottom: '0.25rem' }}>
+                        Image d'illustration (URL optionnelle)
+                      </label>
+                      <input
+                        value={imageUrl}
+                        onChange={(e) => setImageUrl(e.target.value)}
+                        placeholder="https://..."
+                        style={{
+                          width: '100%',
+                          padding: '0.65rem 0.75rem',
+                          borderRadius: 'var(--r-sm)',
+                          border: '1px solid var(--crema-border)',
+                          background: '#FFFFFF',
+                          fontSize: 'var(--text-xs)',
+                          outline: 'none',
+                        }}
+                      />
+                    </div>
+
+                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                      <div>
+                        <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', marginBottom: '0.25rem' }}>
+                          Destinataires
+                        </label>
+                        <select
+                          value={target}
+                          onChange={(e) => setTarget(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '0.65rem 0.75rem',
+                            borderRadius: 'var(--r-sm)',
+                            border: '1px solid var(--crema-border)',
+                            background: '#FFFFFF',
+                            fontSize: 'var(--text-xs)',
+                            outline: 'none',
+                          }}
+                        >
+                          <option value="all">Tous ({subCount})</option>
+                          <option value="marketing">Marketing seul</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', marginBottom: '0.25rem' }}>
+                          Planifier (optionnel)
+                        </label>
+                        <input
+                          type="datetime-local"
+                          value={scheduled}
+                          onChange={(e) => setScheduled(e.target.value)}
+                          style={{
+                            width: '100%',
+                            padding: '0.65rem 0.75rem',
+                            borderRadius: 'var(--r-sm)',
+                            border: '1px solid var(--crema-border)',
+                            background: '#FFFFFF',
+                            fontSize: 'var(--text-xs)',
+                            outline: 'none',
+                          }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* ── Grand Bouton d'Envoi Principal ── */}
+              <div style={{ marginTop: '0.25rem' }}>
+                <button
+                  type="button"
+                  className="touch-btn touch-btn--gold"
+                  disabled={busy || !title.trim() || !message.trim()}
+                  onClick={() => createCampaign(true)}
+                  style={{
+                    width: '100%',
+                    padding: '0.95rem 1.25rem',
+                    borderRadius: 'var(--r-md)',
+                    fontSize: 'var(--text-base)',
+                    fontWeight: 800,
+                    letterSpacing: '0.02em',
+                    boxShadow: '0 6px 20px var(--gold-glow)',
+                    cursor: busy || !title.trim() ? 'not-allowed' : 'pointer',
+                  }}
+                >
+                  {busy ? 'Envoi en cours…' : `🚀 Envoyer à tous les clients (${subCount})`}
+                </button>
+
+                {scheduled && (
+                  <button
+                    type="button"
+                    className="touch-btn touch-btn--outline"
+                    disabled={busy}
+                    onClick={() => createCampaign(false)}
+                    style={{
+                      width: '100%',
+                      marginTop: '0.5rem',
+                      minHeight: '42px',
+                      fontSize: 'var(--text-sm)',
+                    }}
+                  >
+                    Planifier pour la date choisie
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        {/* ─── Aperçu en Direct (Ce que le client voit) ─── */}
-        <div className="ui-card" style={{ padding: '1.5rem', display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '0.75rem' }}>
-            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--espresso)', margin: 0 }}>
-              👁️ Aperçu Pop-up Client
-            </h3>
-            <span className="ui-badge ui-badge--neutral">
-              Temps réel
-            </span>
-          </div>
-
-          <p style={{ fontSize: 'var(--text-sm)', color: 'var(--coffee-mid)', margin: '0 0 1.25rem', lineHeight: 1.4 }}>
-            Voici la modale haute fidélité que le client verra en cliquant sur la push notification :
-          </p>
-
+        {/* COLONNE DROITE : APERÇU EN DIRECT DU POP-UP */}
+        <div className={`notif-col-preview ${mobileTab === 'preview' ? 'active-mobile' : ''}`}>
           <div
+            className="ui-card"
             style={{
-              flex: 1,
+              padding: '1.5rem',
               display: 'flex',
+              flexDirection: 'column',
               alignItems: 'center',
-              justifyContent: 'center',
-              background: 'radial-gradient(circle at center, #F4EFEA 0%, #EAE2D5 100%)',
-              borderRadius: 'var(--r-lg)',
-              padding: '1.5rem 1rem',
-              border: '1px solid var(--crema-border)',
+              border: '1.5px solid var(--crema-border)',
+              background: 'radial-gradient(circle at center, #FAF8F5 0%, #F4EFEA 100%)',
             }}
           >
             <div
               style={{
                 width: '100%',
-                maxWidth: '310px',
-                padding: '1.5rem 1.25rem',
-                borderRadius: 'var(--r-xl)',
-                background: '#FFFFFF',
-                boxShadow: 'var(--shadow-lg)',
-                textAlign: 'center',
-                border: '1.5px solid var(--crema-border)',
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: '1rem',
               }}
             >
-              {/* Logo Bieny */}
+              <div style={{ fontSize: 'var(--text-xs)', fontWeight: 800, textTransform: 'uppercase', color: 'var(--coffee-mid)', letterSpacing: '0.06em' }}>
+                Aperçu Écran Client
+              </div>
+              <span className="ui-badge ui-badge--sage">
+                Rendu réel
+              </span>
+            </div>
+
+            {/* Simplicité du Pop-up Mobile */}
+            <div
+              style={{
+                width: '100%',
+                maxWidth: '310px',
+                padding: '1.6rem 1.35rem',
+                borderRadius: 'var(--r-xl)',
+                background: '#FFFFFF',
+                boxShadow: 'var(--shadow-xl)',
+                textAlign: 'center',
+                border: '1.5px solid var(--crema-border)',
+                position: 'relative',
+              }}
+            >
+              {/* Logo */}
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.75rem' }}>
                 <img
                   src="/logo_houssem.jpeg"
                   alt="Bieny Coffeeshop"
                   style={{
-                    width: '44px',
-                    height: '44px',
+                    width: '46px',
+                    height: '46px',
                     borderRadius: '14px',
                     objectFit: 'cover',
-                    boxShadow: '0 3px 8px rgba(24, 16, 10, 0.12)',
-                    border: '1.5px solid rgba(212, 160, 84, 0.35)',
+                    boxShadow: '0 3px 8px rgba(24, 16, 10, 0.14)',
+                    border: '1.5px solid rgba(212, 160, 84, 0.4)',
                   }}
                 />
               </div>
@@ -508,8 +856,8 @@ export function AdminNotifications() {
                 style={{
                   display: 'inline-flex',
                   alignItems: 'center',
-                  gap: '0.35rem',
-                  padding: '0.3rem 0.8rem',
+                  gap: '5px',
+                  padding: '0.3rem 0.85rem',
                   borderRadius: 'var(--r-pill)',
                   backgroundColor: previewMeta.bg,
                   color: previewMeta.color,
@@ -523,34 +871,51 @@ export function AdminNotifications() {
                 </span>
               </div>
 
-              {/* Preview image */}
+              {/* Image d'illustration si renseignée */}
               {imageUrl.trim() && (
                 <div style={{ marginBottom: '0.85rem', borderRadius: '12px', overflow: 'hidden', boxShadow: 'var(--shadow-xs)' }}>
                   <img
                     src={imageUrl.trim()}
                     alt="Illustration"
-                    style={{ width: '100%', maxHeight: '120px', objectFit: 'cover', display: 'block' }}
+                    style={{ width: '100%', maxHeight: '130px', objectFit: 'cover', display: 'block' }}
                     onError={(e) => { e.currentTarget.style.display = 'none'; }}
                   />
                 </div>
               )}
 
-              {/* Title */}
-              <h4 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-md)', fontWeight: 700, color: 'var(--espresso)', margin: '0 0 0.5rem', lineHeight: 1.25 }}>
-                {title.trim() || 'Titre de la notification'}
+              {/* Titre */}
+              <h4
+                style={{
+                  fontFamily: 'var(--font-serif)',
+                  fontSize: 'var(--text-md)',
+                  fontWeight: 700,
+                  color: 'var(--espresso)',
+                  margin: '0 0 0.5rem',
+                  lineHeight: 1.25,
+                }}
+              >
+                {title.trim() || 'Titre de votre notification'}
               </h4>
 
               {/* Message */}
-              <p style={{ fontSize: 'var(--text-xs)', lineHeight: 1.5, color: 'var(--coffee-dark)', margin: '0 0 1.25rem', whiteSpace: 'pre-line' }}>
-                {message.trim() || 'Votre texte d’offre, de rappel ou de bienvenue apparaîtra ici avec une typographie élégante et lisible.'}
+              <p
+                style={{
+                  fontSize: 'var(--text-xs)',
+                  lineHeight: 1.5,
+                  color: 'var(--coffee-dark)',
+                  margin: '0 0 1.25rem',
+                  whiteSpace: 'pre-line',
+                }}
+              >
+                {message.trim() || 'Le texte explicatif apparaîtra ici avec une typographie lisible et soignée.'}
               </p>
 
-              {/* Action Button */}
+              {/* Bouton de la modale */}
               <div
                 style={{
                   background: 'var(--gold-gradient)',
                   color: 'var(--espresso-dark)',
-                  padding: '0.75rem 1rem',
+                  padding: '0.8rem 1rem',
                   borderRadius: 'var(--r-md)',
                   fontSize: 'var(--text-sm)',
                   fontWeight: 800,
@@ -562,53 +927,91 @@ export function AdminNotifications() {
             </div>
           </div>
         </div>
+
+        {/* SECTION HISTORIQUE */}
+        <div className={`notif-col-history ${mobileTab === 'history' ? 'active-mobile' : ''}`}>
+          <div className="ui-card" style={{ padding: '1.35rem', border: '1.5px solid var(--crema-border)' }}>
+            <div className="section-label">Journal d'envoi</div>
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-md)', fontWeight: 700, color: 'var(--espresso)', margin: '0 0 1rem' }}>
+              Dernières notifications diffusées ({history.length})
+            </h3>
+
+            {history.length === 0 ? (
+              <div className="empty-state" style={{ padding: '1.75rem 1rem' }}>
+                <div className="empty-state__icon">📜</div>
+                <div className="empty-state__title">Aucun envoi pour le moment</div>
+                <div className="empty-state__desc">Les notifications envoyées apparaîtront ici avec leur heure et statut.</div>
+              </div>
+            ) : (
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                {history.slice(0, 20).map((h: any) => (
+                  <div
+                    key={h.id}
+                    style={{
+                      display: 'flex',
+                      justifyContent: 'space-between',
+                      alignItems: 'center',
+                      padding: '0.85rem 1rem',
+                      borderRadius: 'var(--r-md)',
+                      background: 'var(--crema-surface)',
+                      border: '1px solid var(--crema-border)',
+                      gap: '0.75rem',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <div>
+                      <div style={{ fontWeight: 700, fontSize: 'var(--text-sm)', color: 'var(--espresso)' }}>{h.title}</div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                        <span className="ui-badge ui-badge--neutral" style={{ fontSize: '0.65rem' }}>{h.type}</span>
+                        <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)' }}>· {h.status}</span>
+                      </div>
+                    </div>
+                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)', textAlign: 'right' }}>
+                      {new Date(h.sent_at).toLocaleString('fr-FR')}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        </div>
       </div>
 
-      {/* ─── Historique des envois ─── */}
-      <div className="ui-card" style={{ padding: '1.5rem' }}>
-        <div className="section-label">Journal</div>
-        <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-lg)', fontWeight: 700, color: 'var(--espresso)', margin: '0 0 1rem' }}>
-          Historique des campagnes push
-        </h3>
-        {history.length === 0 ? (
-          <div className="empty-state" style={{ padding: '2rem 1rem' }}>
-            <div className="empty-state__icon">📜</div>
-            <div className="empty-state__title">Aucun envoi pour le moment</div>
-            <div className="empty-state__desc">Vos notifications envoyées apparaîtront ici avec leur date et statut de diffusion.</div>
-          </div>
-        ) : (
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-            {history.slice(0, 30).map((h: any) => (
-              <div
-                key={h.id}
-                style={{
-                  display: 'flex',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
-                  padding: '0.85rem 1.15rem',
-                  borderRadius: 'var(--r-md)',
-                  background: 'var(--crema-surface)',
-                  border: '1px solid var(--crema-border)',
-                  boxShadow: 'var(--shadow-xs)',
-                  gap: '0.75rem',
-                  flexWrap: 'wrap',
-                }}
-              >
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: 'var(--text-base)', color: 'var(--espresso)' }}>{h.title}</div>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '3px' }}>
-                    <span className="ui-badge ui-badge--neutral" style={{ fontSize: '0.65rem' }}>{h.type}</span>
-                    <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)' }}>· {h.status}</span>
-                  </div>
-                </div>
-                <div style={{ fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)', textAlign: 'right' }}>
-                  {new Date(h.sent_at).toLocaleString('fr-FR')}
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </div>
+      <style jsx>{`
+        /* Responsive Grid: Side-by-side on desktop, single active tab on mobile */
+        @media (max-width: 859px) {
+          .notif-col-form,
+          .notif-col-preview,
+          .notif-col-history {
+            display: none;
+          }
+          .notif-col-form.active-mobile,
+          .notif-col-preview.active-mobile,
+          .notif-col-history.active-mobile {
+            display: block;
+          }
+        }
+
+        @media (min-width: 860px) {
+          .notif-mobile-switcher {
+            display: none !important;
+          }
+          .notif-grid-layout {
+            display: grid;
+            grid-template-columns: 1.15fr 0.85fr;
+            gap: 1.25rem;
+          }
+          .notif-col-form,
+          .notif-col-preview {
+            display: block !important;
+          }
+          .notif-col-history {
+            grid-column: span 2;
+            display: block !important;
+            margin-top: 1.25rem;
+          }
+        }
+      `}</style>
     </div>
   );
 }

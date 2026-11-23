@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect, useState } from 'react';
 import { usePathname } from 'next/navigation';
 import {
   HomeIcon,
@@ -22,6 +23,13 @@ interface ServerAppBarProps {
 
 export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarProps) {
   const pathname = usePathname();
+  const [isNotifTab, setIsNotifTab] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setIsNotifTab(window.location.search.includes('tab=notifications'));
+    }
+  }, [pathname]);
 
   const isHome = pathname === '/serveur';
   const isCustomers = pathname === '/serveur/customers' || (pathname.startsWith('/serveur/customers/') && pathname !== '/serveur/customers');
@@ -227,7 +235,7 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
             <>
               <a
                 href="/admin?tab=notifications"
-                className={`bottom-tab ${pathname.includes('notifications') ? 'bottom-tab--active' : ''}`}
+                className={`bottom-tab ${isNotifTab ? 'bottom-tab--active' : ''}`}
               >
                 <div className="bottom-tab__icon-wrap">
                   <span style={{ fontSize: '1.15rem' }}>📣</span>
@@ -236,7 +244,7 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
               </a>
               <a
                 href="/admin"
-                className={`bottom-tab ${isAdmin && !pathname.includes('notifications') ? 'bottom-tab--active' : ''}`}
+                className={`bottom-tab ${isAdmin && !isNotifTab ? 'bottom-tab--active' : ''}`}
               >
                 <div className="bottom-tab__icon-wrap">
                   <SettingsIcon size={20} />
