@@ -1,4 +1,4 @@
-const CACHE = 'coffee-loyalty-v4';
+const CACHE = 'coffee-loyalty-v5';
 const PRECACHE = ['/', '/logo_houssem.jpeg', '/icon.svg'];
 
 self.addEventListener('install', (event) => {
@@ -22,24 +22,62 @@ self.addEventListener('push', (event) => {
   let data = {};
   try { data = event.data ? event.data.json() : {}; } catch { data = { body: event.data ? event.data.text() : '' }; }
   const title = data.title || 'Bieny Coffeeshop';
+  const bodyText = data.body || data.message || '';
+  const notifUrl = data.url || (data.data && data.data.url) || '/';
   const options = {
-    body: data.body || data.message || '',
+    body: bodyText,
     icon: data.icon || '/logo_houssem.jpeg',
     badge: '/logo_houssem.jpeg',
-    data: { url: data.url || (data.data && data.data.url) || '/' },
+    data: {
+      url: notifUrl,
+      title: title,
+      body: bodyText,
+      type: data.type || 'generic',
+      timestamp: Date.now(),
+    },
   };
   event.waitUntil(self.registration.showNotification(title, options));
 });
 
 self.addEventListener('notificationclick', (event) => {
   event.notification.close();
-  const url = event.notification?.data?.url || '/';
+  const notifData = event.notification?.data || {};
+  const baseTargetUrl = notifData.url || '/';
+
+  // Construct target URL with notification details in hash/params so app catches it immediately
+  const parsedUrl = new URL(baseTargetUrl, self.location.origin);
+  const notifPayload = {
+    title: notifData.title || event.notification.title || 'Bieny Coffeeshop',
+    body: notifData.body || event.notification.body || '',
+    type: notifData.type || 'generic',
+    timestamp: Date.now(),
+  };
+  parsedUrl.searchParams.set('notif_open', '1');
+  parsedUrl.searchParams.set('notif_data', encodeURIComponent(JSON.stringify(notifPayload)));
+  const finalUrl = parsedUrl.toString();
+
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((list) => {
+      // Broadcast to any open windows
       for (const c of list) {
-        if (c.url.includes(url) && 'focus' in c) return c.focus();
+        c.postMessage({
+          type: 'BIENY_NOTIFICATION_CLICK',
+          payload: notifPayload,
+        });
       }
-      if (clients.openWindow) return clients.openWindow(url);
+
+      // Try to focus existing client window
+      for (const c of list) {
+        if ('focus' in c) {
+          c.focus();
+          if ('navigate' in c) {
+            return c.navigate(finalUrl);
+          }
+          return;
+        }
+      }
+      // If no window open, open new window
+      if (clients.openWindow) return clients.openWindow(finalUrl);
     })
   );
 });

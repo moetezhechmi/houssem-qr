@@ -14,8 +14,14 @@ export default function Page() {
         if (m) token = decodeURIComponent(m[1]);
       } catch {}
     }
-    if (token) router.replace(`/client/${token}`);
-    else router.replace('/serveur');
+
+    // Preserve any search parameters (e.g. ?notif_open=1&notif_data=...)
+    const currentParams = window.location.search || '';
+    if (token) {
+      router.replace(`/client/${token}${currentParams}`);
+    } else {
+      router.replace(`/serveur${currentParams}`);
+    }
   }, [router]);
   return null;
 }

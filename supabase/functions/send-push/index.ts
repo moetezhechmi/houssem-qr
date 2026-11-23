@@ -67,7 +67,13 @@ Deno.serve(async (req) => {
     body: message,
     icon,
     badge: icon,
-    data: { url }
+    type,
+    data: {
+      url,
+      title,
+      body: message,
+      type,
+    }
   });
 
   // Parallel sending with Promise.allSettled (fast & lightweight for free tier CPU)

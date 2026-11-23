@@ -5,6 +5,7 @@ import { createClient, type RealtimeChannel } from '@supabase/supabase-js';
 import { fetchClientCard } from '@/lib/client-card';
 import { PwaInstallPrompt } from './PwaInstallPrompt';
 import { ClientPushOptIn } from './ClientPushOptIn';
+import { NotificationModal } from './NotificationModal';
 import { fmtDate, fmtDateTime, daysUntil } from '@/lib/format';
 import {
   CoffeeIcon,
@@ -869,6 +870,9 @@ export default function ClientCard({ token, initialData }: { token: string; init
           <span className="bottom-tab__label">Historique</span>
         </button>
       </nav>
+
+      {/* ─── Push Notification Click Popup Modal ─── */}
+      <NotificationModal />
     </div>
   );
 }
