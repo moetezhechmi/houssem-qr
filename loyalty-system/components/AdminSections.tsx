@@ -41,7 +41,6 @@ export function AdminSections({
   const validTabs: SectionId[] = ['overview','customers','employees','cards','rewards','history','stats','settings','notifications'];
   const startTab = (validTabs.includes(initialTab as SectionId) ? initialTab : 'overview') as SectionId;
   const [activeTab, setActiveTab] = useState<SectionId>(startTab);
-  const [showMore, setShowMore] = useState(false);
   const [opsPage, setOpsPage] = useState(1);
   const OPS_PER_PAGE = 15;
 
@@ -209,7 +208,7 @@ export function AdminSections({
       </aside>
 
       {/* ── Active Section Content ── */}
-      <section style={{ minWidth: 0 }}>
+      <section key={activeTab} style={{ minWidth: 0 }} className="animate-in">
         {/* SECTION 1: VUE D'ENSEMBLE */}
         {activeTab === 'overview' && (
           <div className="animate-in">
@@ -908,6 +907,11 @@ export function AdminSections({
         .admin-nav-shell {
           width: 100%;
           margin-bottom: 0.75rem;
+        }
+        @media (max-width: 859px) {
+          .admin-nav-shell {
+            display: none !important;
+          }
         }
         .admin-nav-list {
           display: flex;
