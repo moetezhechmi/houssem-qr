@@ -42,6 +42,8 @@ export function AdminSections({
   const startTab = (validTabs.includes(initialTab as SectionId) ? initialTab : 'overview') as SectionId;
   const [activeTab, setActiveTab] = useState<SectionId>(startTab);
   const [showMore, setShowMore] = useState(false);
+  const [opsPage, setOpsPage] = useState(1);
+  const OPS_PER_PAGE = 15;
 
   // Sync activeTab when initialTab prop changes
   useEffect(() => {
@@ -612,43 +614,88 @@ export function AdminSections({
                 <div style={{ fontWeight: 700, color: 'var(--espresso)', marginBottom: '0.2rem' }}>Aucune opération</div>
               </div>
             ) : (
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
-              {ops.map((op: any) => (
-                <div
-                  key={op.id}
-                  style={{
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'space-between',
-                    padding: '0.85rem 1rem',
-                    borderRadius: 'var(--r-md)',
-                    background: 'var(--crema-bg)',
-                    border: '1px solid var(--crema-border)',
-                    gap: '0.75rem',
-                    flexWrap: 'wrap',
-                  }}
-                >
-                  <div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                      <span className="ui-badge ui-badge--neutral">{op.action}</span>
-                      <strong style={{ fontSize: '0.86rem', color: 'var(--espresso)' }}>{op.entity_type}</strong>
-                    </div>
-                    {op.details && (
-                      <div style={{ fontSize: '0.74rem', color: 'var(--coffee-mid)', marginTop: '0.2rem' }}>
-                        {op.details.card_number && <span>Carte : <code>{op.details.card_number}</code> · </span>}
-                        {op.details.current_consumptions && <span>Progression : {op.details.current_consumptions}/9 · </span>}
-                        {op.details.discount_percentage && <span>Remise : {op.details.discount_percentage}%</span>}
+            <>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.6rem' }}>
+                {ops.slice((opsPage - 1) * OPS_PER_PAGE, opsPage * OPS_PER_PAGE).map((op: any) => (
+                  <div
+                    key={op.id}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'space-between',
+                      padding: '0.85rem 1rem',
+                      borderRadius: 'var(--r-md)',
+                      background: 'var(--crema-bg)',
+                      border: '1px solid var(--crema-border)',
+                      gap: '0.75rem',
+                      flexWrap: 'wrap',
+                    }}
+                  >
+                    <div>
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                        <span className="ui-badge ui-badge--neutral">{op.action}</span>
+                        <strong style={{ fontSize: '0.86rem', color: 'var(--espresso)' }}>{op.entity_type}</strong>
                       </div>
-                    )}
-                  </div>
+                      {op.details && (
+                        <div style={{ fontSize: '0.74rem', color: 'var(--coffee-mid)', marginTop: '0.2rem' }}>
+                          {op.details.card_number && <span>Carte : <code>{op.details.card_number}</code> · </span>}
+                          {op.details.current_consumptions && <span>Progression : {op.details.current_consumptions}/9 · </span>}
+                          {op.details.discount_percentage && <span>Remise : {op.details.discount_percentage}%</span>}
+                        </div>
+                      )}
+                    </div>
 
-                  <div style={{ textAlign: 'right', fontSize: '0.76rem', color: 'var(--coffee-mid)' }}>
-                    <div>{fmtDateTime(op.created_at)}</div>
-                    <div>{op.employee_name || 'Système'}</div>
+                    <div style={{ textAlign: 'right', fontSize: '0.76rem', color: 'var(--coffee-mid)' }}>
+                      <div>{fmtDateTime(op.created_at)}</div>
+                      <div>{op.employee_name || 'Système'}</div>
+                    </div>
                   </div>
+                ))}
+              </div>
+
+              {/* Pagination Controls */}
+              {ops.length > OPS_PER_PAGE && (
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1.25rem', paddingTop: '0.85rem', borderTop: '1px solid var(--crema-border)' }}>
+                  <button
+                    type="button"
+                    disabled={opsPage === 1}
+                    onClick={() => setOpsPage((p) => Math.max(1, p - 1))}
+                    style={{
+                      padding: '0.45rem 0.95rem',
+                      borderRadius: 'var(--r-full)',
+                      border: '1px solid var(--crema-border)',
+                      background: opsPage === 1 ? 'var(--crema-bg)' : 'var(--white)',
+                      color: opsPage === 1 ? 'var(--coffee-light)' : 'var(--espresso)',
+                      cursor: opsPage === 1 ? 'not-allowed' : 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                    }}
+                  >
+                    ← Précédent
+                  </button>
+                  <span style={{ fontSize: '0.8rem', color: 'var(--coffee-mid)', fontWeight: 600 }}>
+                    Page {opsPage} / {Math.ceil(ops.length / OPS_PER_PAGE)}
+                  </span>
+                  <button
+                    type="button"
+                    disabled={opsPage >= Math.ceil(ops.length / OPS_PER_PAGE)}
+                    onClick={() => setOpsPage((p) => p + 1)}
+                    style={{
+                      padding: '0.45rem 0.95rem',
+                      borderRadius: 'var(--r-full)',
+                      border: '1px solid var(--crema-border)',
+                      background: opsPage >= Math.ceil(ops.length / OPS_PER_PAGE) ? 'var(--crema-bg)' : 'var(--white)',
+                      color: opsPage >= Math.ceil(ops.length / OPS_PER_PAGE) ? 'var(--coffee-light)' : 'var(--espresso)',
+                      cursor: opsPage >= Math.ceil(ops.length / OPS_PER_PAGE) ? 'not-allowed' : 'pointer',
+                      fontSize: '0.8rem',
+                      fontWeight: 600,
+                    }}
+                  >
+                    Suivant →
+                  </button>
                 </div>
-              ))}
-            </div>
+              )}
+            </>
             )}
           </div>
         )}

@@ -83,6 +83,8 @@ export function AdminNotifications() {
   const [showAdvanced, setShowAdvanced] = useState(false);
   const [busy, setBusy] = useState(false);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
+  const [historyPage, setHistoryPage] = useState<number>(1);
+  const HISTORY_PER_PAGE = 10;
 
   const load = async () => {
     try {
@@ -943,35 +945,80 @@ export function AdminNotifications() {
                 <div className="empty-state__desc">Les notifications envoyées apparaîtront ici avec leur heure et statut.</div>
               </div>
             ) : (
-              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
-                {history.slice(0, 20).map((h: any) => (
-                  <div
-                    key={h.id}
-                    style={{
-                      display: 'flex',
-                      justifyContent: 'space-between',
-                      alignItems: 'center',
-                      padding: '0.85rem 1rem',
-                      borderRadius: 'var(--r-md)',
-                      background: 'var(--crema-surface)',
-                      border: '1px solid var(--crema-border)',
-                      gap: '0.75rem',
-                      flexWrap: 'wrap',
-                    }}
-                  >
-                    <div>
-                      <div style={{ fontWeight: 700, fontSize: 'var(--text-sm)', color: 'var(--espresso)' }}>{h.title}</div>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
-                        <span className="ui-badge ui-badge--neutral" style={{ fontSize: '0.65rem' }}>{h.type}</span>
-                        <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)' }}>· {h.status}</span>
+              <>
+                <div style={{ display: 'flex', flexDirection: 'column', gap: '0.65rem' }}>
+                  {history.slice((historyPage - 1) * HISTORY_PER_PAGE, historyPage * HISTORY_PER_PAGE).map((h: any) => (
+                    <div
+                      key={h.id}
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        alignItems: 'center',
+                        padding: '0.85rem 1rem',
+                        borderRadius: 'var(--r-md)',
+                        background: 'var(--crema-surface)',
+                        border: '1px solid var(--crema-border)',
+                        gap: '0.75rem',
+                        flexWrap: 'wrap',
+                      }}
+                    >
+                      <div>
+                        <div style={{ fontWeight: 700, fontSize: 'var(--text-sm)', color: 'var(--espresso)' }}>{h.title}</div>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: '6px', marginTop: '2px' }}>
+                          <span className="ui-badge ui-badge--neutral" style={{ fontSize: '0.65rem' }}>{h.type}</span>
+                          <span style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)' }}>· {h.status}</span>
+                        </div>
+                      </div>
+                      <div style={{ fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)', textAlign: 'right' }}>
+                        {new Date(h.sent_at).toLocaleString('fr-FR')}
                       </div>
                     </div>
-                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)', textAlign: 'right' }}>
-                      {new Date(h.sent_at).toLocaleString('fr-FR')}
-                    </div>
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {history.length > HISTORY_PER_PAGE && (
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginTop: '1rem', paddingTop: '0.75rem', borderTop: '1px solid var(--crema-border)' }}>
+                    <button
+                      type="button"
+                      disabled={historyPage === 1}
+                      onClick={() => setHistoryPage((p) => Math.max(1, p - 1))}
+                      style={{
+                        padding: '0.4rem 0.85rem',
+                        borderRadius: 'var(--r-full)',
+                        border: '1px solid var(--crema-border)',
+                        background: historyPage === 1 ? 'var(--crema-surface)' : 'var(--white)',
+                        color: historyPage === 1 ? 'var(--coffee-light)' : 'var(--espresso)',
+                        cursor: historyPage === 1 ? 'not-allowed' : 'pointer',
+                        fontSize: 'var(--text-xs)',
+                        fontWeight: 600,
+                      }}
+                    >
+                      ← Précédent
+                    </button>
+                    <span style={{ fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)', fontWeight: 600 }}>
+                      Page {historyPage} / {Math.ceil(history.length / HISTORY_PER_PAGE)}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={historyPage >= Math.ceil(history.length / HISTORY_PER_PAGE)}
+                      onClick={() => setHistoryPage((p) => p + 1)}
+                      style={{
+                        padding: '0.4rem 0.85rem',
+                        borderRadius: 'var(--r-full)',
+                        border: '1px solid var(--crema-border)',
+                        background: historyPage >= Math.ceil(history.length / HISTORY_PER_PAGE) ? 'var(--crema-surface)' : 'var(--white)',
+                        color: historyPage >= Math.ceil(history.length / HISTORY_PER_PAGE) ? 'var(--coffee-light)' : 'var(--espresso)',
+                        cursor: historyPage >= Math.ceil(history.length / HISTORY_PER_PAGE) ? 'not-allowed' : 'pointer',
+                        fontSize: 'var(--text-xs)',
+                        fontWeight: 600,
+                      }}
+                    >
+                      Suivant →
+                    </button>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             )}
           </div>
         </div>

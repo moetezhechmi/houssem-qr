@@ -140,27 +140,30 @@ export function PwaInstallPrompt({ token }: { token: string }) {
 
   return (
     <>
-      {/* Floating install button (re-open) */}
       <button
         type="button"
         onClick={() => setShow(true)}
         style={{
           position: 'fixed',
-          bottom: '1rem',
-          left: '1rem',
-          padding: '0.5rem 0.85rem',
+          bottom: '1.25rem',
+          right: '1.25rem',
+          padding: '0.65rem 1.15rem',
           borderRadius: '999px',
           background: 'var(--gold-gradient)',
           color: 'var(--espresso)',
-          border: 'none',
-          fontSize: '0.78rem',
+          border: '1.5px solid rgba(212,175,55,0.4)',
+          fontSize: '0.82rem',
           fontWeight: 700,
           cursor: 'pointer',
           zIndex: 90,
-          boxShadow: '0 4px 14px var(--gold-glow)',
+          boxShadow: '0 8px 24px var(--gold-glow)',
+          display: 'flex',
+          alignItems: 'center',
+          gap: '6px',
         }}
       >
-        📲 Installer ma carte
+        <span style={{ fontSize: '1rem' }}>📲</span>
+        <span>Installer l'application</span>
       </button>
 
       {show && (
