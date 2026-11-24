@@ -41,6 +41,7 @@ export function AdminSections({
   const validTabs: SectionId[] = ['overview','customers','employees','cards','rewards','history','stats','settings','notifications'];
   const startTab = (validTabs.includes(initialTab as SectionId) ? initialTab : 'overview') as SectionId;
   const [activeTab, setActiveTab] = useState<SectionId>(startTab);
+  const [showMore, setShowMore] = useState(false);
   const [opsPage, setOpsPage] = useState(1);
   const OPS_PER_PAGE = 15;
 
@@ -954,7 +955,54 @@ export function AdminSections({
           color: #FAF8F5;
         }
 
+        /* ── Mobile bottom bar ── */
+        .admin-mobile-bottom-bar {
+          position: fixed;
+          bottom: 0;
+          left: 0;
+          right: 0;
+          z-index: 90;
+          display: flex;
+          justify-content: space-around;
+          align-items: center;
+          padding: 6px 4px calc(8px + env(safe-area-inset-bottom, 0px));
+          background: rgba(250, 249, 246, 0.97);
+          backdrop-filter: blur(20px) saturate(180%);
+          -webkit-backdrop-filter: blur(20px) saturate(180%);
+          border-top: 1px solid var(--crema-border);
+          box-shadow: 0 -4px 16px rgba(24, 16, 10, 0.08);
+        }
+        .admin-mobile-bottom-item {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+          gap: 2px;
+          padding: 4px 10px;
+          border: none;
+          background: transparent;
+          color: var(--coffee-mid);
+          font-size: 0.6rem;
+          font-weight: 700;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+          cursor: pointer;
+          border-radius: 10px;
+          transition: color 0.15s ease, background 0.15s ease, transform 0.1s ease;
+        }
+        .admin-mobile-bottom-item:active {
+          transform: scale(0.92);
+        }
+        .admin-mobile-bottom-item--active {
+          color: var(--espresso);
+          background: var(--crema-subtle);
+        }
+        .admin-mobile-bottom-item span:first-child {
+          font-size: 1.15rem;
+        }
         @media (min-width: 860px) {
+          .admin-mobile-bottom-bar {
+            display: none !important;
+          }
           .admin-container {
             grid-template-columns: 240px 1fr !important;
           }
@@ -969,6 +1017,101 @@ export function AdminSections({
           }
         }
       `}</style>
+
+      {/* ── Mobile Bottom Navigation ── */}
+      <nav className="admin-mobile-bottom-bar" aria-label="Navigation admin mobile">
+        {[
+          { id: 'overview', label: "Vue", icon: '📊' },
+          { id: 'customers', label: 'Clients', icon: '👥' },
+          { id: 'notifications', label: 'Notifs', icon: '📣' },
+          { id: 'settings', label: 'Paramètres', icon: '⚙️' },
+        ].map((item) => {
+          const isActive = activeTab === item.id;
+          return (
+            <button
+              key={item.id}
+              type="button"
+              onClick={() => setActiveTab(item.id as SectionId)}
+              className={`admin-mobile-bottom-item ${isActive ? 'admin-mobile-bottom-item--active' : ''}`}
+            >
+              <span>{item.icon}</span>
+              <span>{item.label}</span>
+            </button>
+          );
+        })}
+        <button
+          type="button"
+          onClick={() => setShowMore(true)}
+          className="admin-mobile-bottom-item"
+        >
+          <span>☰</span>
+          <span>Menu</span>
+        </button>
+      </nav>
+
+      {/* ── More sheet ── */}
+      {showMore && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 200,
+            background: 'rgba(0,0,0,0.5)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'flex-end',
+          }}
+          onClick={() => setShowMore(false)}
+        >
+          <div
+            style={{
+              width: '100%',
+              background: '#FFFFFF',
+              borderRadius: '20px 20px 0 0',
+              padding: '1.25rem',
+              maxHeight: '70vh',
+              overflowY: 'auto',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div style={{ width: '40px', height: '4px', background: 'var(--crema-border)', borderRadius: '999px', margin: '0 auto 1rem' }} />
+            <h3 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.1rem', fontWeight: 700, color: 'var(--espresso)', margin: '0 0 0.75rem' }}>
+              Toutes les sections
+            </h3>
+            <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '0.5rem' }}>
+              {menuItems.map((item) => {
+                const isActive = activeTab === item.id;
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => { setActiveTab(item.id); setShowMore(false); }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: '8px',
+                      padding: '0.75rem',
+                      borderRadius: 'var(--r-md)',
+                      border: `1.5px solid ${isActive ? 'var(--espresso)' : 'var(--crema-border)'}`,
+                      background: isActive ? 'var(--espresso)' : 'var(--crema-surface)',
+                      color: isActive ? '#FAF9F6' : 'var(--espresso)',
+                      fontWeight: 700,
+                      fontSize: '0.84rem',
+                      cursor: 'pointer',
+                    }}
+                  >
+                    <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
+                    <span style={{ flex: 1, textAlign: 'left' }}>{item.label}</span>
+                    {item.count !== undefined && (
+                      <span style={{ fontSize: '0.7rem', opacity: 0.7 }}>{item.count}</span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
