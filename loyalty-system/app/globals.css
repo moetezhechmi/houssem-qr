@@ -135,7 +135,7 @@ body {
   line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Espace réservé pour la Bottom App Bar sur mobile */
@@ -184,6 +184,7 @@ input, select, textarea { font: inherit; }
   bottom: 0;
   left: 0;
   right: 0;
+  width: 100%;
   z-index: 90;
   height: calc(var(--bottom-bar-height) + env(safe-area-inset-bottom, 0px));
   padding-bottom: env(safe-area-inset-bottom, 0px);
@@ -557,7 +558,7 @@ input, select, textarea { font: inherit; }
 }
 
 .animate-in {
-  animation: fadeInSlideUp 0.35s var(--ease-out) both;
+  animation: fadeInSlideUp 0.35s var(--ease-out) backwards;
 }
 
 .animate-fade-in {

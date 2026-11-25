@@ -66,7 +66,7 @@ export default async function AdminPage({
     <div className="has-bottom-nav" style={{ minHeight: '100dvh' }}>
       <ServerAppBar employee={displayedAdmin} hideBottomBar />
 
-      <main className="shell shell--wide animate-in">
+      <main className="shell shell--wide">
         {!isNotifTab && (
           <div style={{ marginBottom: '1.25rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
