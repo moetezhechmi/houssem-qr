@@ -9,10 +9,19 @@ export interface NotificationPayload {
   image_url?: string | null;
   btn_text?: string;
   btn_action?: string; // 'close' | 'menu' | 'reward'
+  store_name?: string | null;
+  store_logo?: string | null;
   timestamp?: number;
 }
 
-export function NotificationModal() {
+interface NotificationModalProps {
+  store?: {
+    name?: string | null;
+    logo_url?: string | null;
+  } | null;
+}
+
+export function NotificationModal({ store }: NotificationModalProps = {}) {
   const [activeNotif, setActiveNotif] = useState<NotificationPayload | null>(null);
 
   useEffect(() => {
@@ -55,6 +64,9 @@ export function NotificationModal() {
 
   if (!activeNotif) return null;
 
+  const brandName = activeNotif.store_name || store?.name || 'Notification';
+  const brandLogo = activeNotif.store_logo || store?.logo_url || '/logo_houssem.jpeg';
+
   const getBadgeInfo = () => {
     switch (activeNotif.type) {
       case 'marketing':
@@ -84,7 +96,7 @@ export function NotificationModal() {
       case 'greetings':
         return {
           icon: '👋',
-          tag: 'Message Bieny',
+          tag: store?.name || activeNotif.store_name ? `Message ${brandName}` : 'Message',
           bg: 'var(--notif-greetings-bg)',
           color: 'var(--notif-greetings-text)',
           border: 'var(--notif-greetings-bdr)',
@@ -100,7 +112,7 @@ export function NotificationModal() {
       default:
         return {
           icon: '☕',
-          tag: 'Bieny Coffeeshop',
+          tag: brandName,
           bg: 'var(--crema-subtle)',
           color: 'var(--espresso)',
           border: 'var(--crema-border)',
@@ -184,8 +196,8 @@ export function NotificationModal() {
         {/* Brand Header */}
         <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
           <img
-            src="/logo_houssem.jpeg"
-            alt="Bieny Coffeeshop"
+            src={brandLogo}
+            alt={brandName}
             style={{
               width: '50px',
               height: '50px',

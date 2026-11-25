@@ -36,6 +36,8 @@ self.addEventListener('push', (event) => {
       image_url: data.image_url || (data.data && data.data.image_url) || null,
       btn_text: data.btn_text || (data.data && data.data.btn_text) || 'Découvrir & Profiter',
       btn_action: data.btn_action || (data.data && data.data.btn_action) || 'close',
+      store_name: data.store_name || (data.data && data.data.store_name) || null,
+      store_logo: data.store_logo || (data.data && data.data.store_logo) || null,
       timestamp: Date.now(),
     },
   };
@@ -50,12 +52,14 @@ self.addEventListener('notificationclick', (event) => {
   // Construct target URL with notification details in hash/params so app catches it immediately
   const parsedUrl = new URL(baseTargetUrl, self.location.origin);
   const notifPayload = {
-    title: notifData.title || event.notification.title || 'Bieny Coffeeshop',
+    title: notifData.title || event.notification.title || notifData.store_name || 'Notification',
     body: notifData.body || event.notification.body || '',
     type: notifData.type || 'generic',
     image_url: notifData.image_url || null,
     btn_text: notifData.btn_text || 'Découvrir & Profiter',
     btn_action: notifData.btn_action || 'close',
+    store_name: notifData.store_name || null,
+    store_logo: notifData.store_logo || null,
     timestamp: Date.now(),
   };
   parsedUrl.searchParams.set('notif_open', '1');

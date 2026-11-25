@@ -105,6 +105,8 @@ export async function sendStorePushNotification(params: SendPushParams) {
     image_url: imageUrl || null,
     btn_text: btnText,
     btn_action: btnAction,
+    store_name: storeName,
+    store_logo: storeLogo,
     data: {
       url: '/',
       title: finalTitle,
@@ -113,6 +115,8 @@ export async function sendStorePushNotification(params: SendPushParams) {
       image_url: imageUrl || null,
       btn_text: btnText,
       btn_action: btnAction,
+      store_name: storeName,
+      store_logo: storeLogo,
     },
   });
 

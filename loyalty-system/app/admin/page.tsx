@@ -110,6 +110,8 @@ export default async function AdminPage({
           rewards={rewards}
           employees={employees}
           initialTab={tab}
+          storeName={displayedAdmin.store_name}
+          storeLogo={displayedAdmin.store_logo_url}
         />
       </main>
     </div>

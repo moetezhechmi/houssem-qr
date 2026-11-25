@@ -63,7 +63,13 @@ const PRESETS: Preset[] = [
   },
 ];
 
-export function AdminNotifications() {
+export function AdminNotifications({
+  storeName,
+  storeLogo,
+}: {
+  storeName?: string | null;
+  storeLogo?: string | null;
+} = {}) {
   const [campaigns, setCampaigns] = useState<any[]>([]);
   const [history, setHistory] = useState<any[]>([]);
   const [subCount, setSubCount] = useState(0);
@@ -943,8 +949,8 @@ export function AdminNotifications() {
               {/* Logo */}
               <div style={{ display: 'flex', justifyContent: 'center', marginBottom: '0.75rem' }}>
                 <img
-                  src="/logo_houssem.jpeg"
-                  alt="Bieny Coffeeshop"
+                  src={storeLogo || '/logo_houssem.jpeg'}
+                  alt={storeName || 'Logo'}
                   style={{
                     width: '46px',
                     height: '46px',

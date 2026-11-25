@@ -25,6 +25,8 @@ interface AdminSectionsProps {
   rewards: any[];
   employees: any[];
   initialTab?: string;
+  storeName?: string | null;
+  storeLogo?: string | null;
 }
 
 export function AdminSections({
@@ -37,6 +39,8 @@ export function AdminSections({
   rewards,
   employees: initialEmployees,
   initialTab,
+  storeName,
+  storeLogo,
 }: AdminSectionsProps) {
   const validTabs: SectionId[] = ['overview','customers','employees','cards','rewards','history','stats','settings','notifications'];
   const startTab = (validTabs.includes(initialTab as SectionId) ? initialTab : 'overview') as SectionId;
@@ -899,7 +903,7 @@ export function AdminSections({
         {/* SECTION 9: NOTIFICATIONS */}
         {activeTab === 'notifications' && (
           <div className="animate-in">
-            <AdminNotifications />
+            <AdminNotifications storeName={storeName} storeLogo={storeLogo} />
           </div>
         )}
       </section>

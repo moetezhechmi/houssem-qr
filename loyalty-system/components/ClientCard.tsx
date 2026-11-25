@@ -887,7 +887,7 @@ export default function ClientCard({ token, initialData }: { token: string; init
       </nav>
 
       {/* ─── Push Notification Click Popup Modal ─── */}
-      <NotificationModal />
+      <NotificationModal store={data.store} />
     </div>
   );
 }
