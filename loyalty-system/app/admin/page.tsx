@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { getAdminClient } from '@/lib/supabase';
 import { getEmployee } from '@/lib/auth-guard';
 import {
   getSettings,
@@ -26,6 +27,25 @@ export default async function AdminPage({
   // Si super_admin, peut visualiser un store_id passé en paramètre, sinon restreint à son propre store_id
   const targetStoreId = admin.role === 'super_admin' ? (store_id || admin.store_id) : admin.store_id;
 
+  // Si super_admin inspecte un autre store, charger les infos de ce store
+  let displayedAdmin = admin;
+  if (admin.role === 'super_admin' && targetStoreId && targetStoreId !== admin.store_id) {
+    const { data: targetStore } = await getAdminClient()
+      .from('Stores')
+      .select('name, slug, logo_url')
+      .eq('id', targetStoreId)
+      .maybeSingle();
+    if (targetStore) {
+      displayedAdmin = {
+        ...admin,
+        store_id: targetStoreId,
+        store_name: targetStore.name,
+        store_slug: targetStore.slug,
+        store_logo_url: targetStore.logo_url,
+      };
+    }
+  }
+
   const [settings, corrections, ops, stats, customers, cards, rewards, employees] =
     await Promise.all([
       getSettings(targetStoreId),
@@ -42,7 +62,7 @@ export default async function AdminPage({
 
   return (
     <div className="has-bottom-nav" style={{ minHeight: '100dvh' }}>
-      <ServerAppBar employee={admin} />
+      <ServerAppBar employee={displayedAdmin} />
 
       <main className="shell shell--wide animate-in">
         {!isNotifTab && (

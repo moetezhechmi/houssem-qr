@@ -17,6 +17,9 @@ interface ServerAppBarProps {
     name?: string | null;
     email: string;
     role: string;
+    store_name?: string | null;
+    store_slug?: string | null;
+    store_logo_url?: string | null;
   } | null;
   hideBottomBar?: boolean;
 }
@@ -24,6 +27,9 @@ interface ServerAppBarProps {
 export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarProps) {
   const pathname = usePathname();
   const [isNotifTab, setIsNotifTab] = useState(false);
+
+  const brandName = employee?.store_name || 'Bieny Coffeeshop';
+  const brandLogo = employee?.store_logo_url || '/logo_houssem.jpeg';
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -41,8 +47,8 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
       <header className="top-app-bar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <img
-            src="/logo_houssem.jpeg"
-            alt="Bieny Coffeeshop"
+            src={brandLogo}
+            alt={brandName}
             style={{
               width: '38px',
               height: '38px',
@@ -63,7 +69,7 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
                 letterSpacing: '-0.01em',
               }}
             >
-              Bieny
+              {brandName}
             </div>
             <div
               style={{
@@ -74,7 +80,7 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
                 textTransform: 'uppercase',
               }}
             >
-              Espace Fidélité
+              {isAdmin ? 'Console Admin' : 'Espace Barista'}
             </div>
           </div>
         </div>
