@@ -7,7 +7,21 @@ export async function POST(req: Request, ctx: { params: Promise<{ id: string }> 
   if (!employee) return apiError(401, 'UNAUTHORIZED', 'Non connecté');
   const { id } = await ctx.params;
 
-  const { data, error } = await getAdminClient().rpc('fn_apply_reward', {
+  const admin = getAdminClient();
+
+  if (employee.role !== 'super_admin' && employee.store_id) {
+    const { data: rewardRow } = await admin
+      .from('Rewards')
+      .select('store_id')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (rewardRow && rewardRow.store_id && rewardRow.store_id !== employee.store_id) {
+      return apiError(403, 'FORBIDDEN', 'Cette récompense appartient à un autre établissement');
+    }
+  }
+
+  const { data, error } = await admin.rpc('fn_apply_reward', {
     p_reward_id: id,
     p_employee_id: employee.id,
   });

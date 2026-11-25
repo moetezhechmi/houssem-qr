@@ -17,6 +17,20 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
   }
 
   const adminClient = getAdminClient();
+
+  // Vérifier que l'employé cible appartient au même store (sauf super_admin)
+  if (admin.role !== 'super_admin' && admin.store_id) {
+    const { data: targetEmp } = await adminClient
+      .from('Employees')
+      .select('store_id')
+      .eq('id', id)
+      .maybeSingle();
+
+    if (!targetEmp || targetEmp.store_id !== admin.store_id) {
+      return apiError(403, 'FORBIDDEN', 'Cet employé n’appartient pas à votre établissement');
+    }
+  }
+
   const { data, error } = await adminClient
     .from('Employees')
     .update(update)
@@ -29,6 +43,7 @@ export async function PUT(req: Request, ctx: { params: Promise<{ id: string }> }
   try {
     await adminClient.from('AuditLogs').insert({
       employee_id: admin.id,
+      store_id: admin.store_id || null,
       action: 'update_employee',
       entity_type: 'Employees',
       entity_id: id,
