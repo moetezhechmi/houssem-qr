@@ -722,68 +722,89 @@ export function AdminNotifications() {
                   >
                     <div>
                       <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', marginBottom: '0.35rem' }}>
-                        Image d'illustration
+                        Image d'illustration de la notification
                       </label>
 
-                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
-                        {imageUrl && (
+                      <div
+                        style={{
+                          display: 'flex',
+                          alignItems: 'center',
+                          gap: '0.75rem',
+                          padding: '0.75rem',
+                          borderRadius: 'var(--r-sm)',
+                          border: '1px dashed var(--crema-border)',
+                          background: '#FFFFFF',
+                        }}
+                      >
+                        {imageUrl ? (
                           <img
                             src={imageUrl}
                             alt="Illustration"
-                            style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--crema-border)' }}
+                            style={{ width: '56px', height: '56px', borderRadius: '10px', objectFit: 'cover', border: '1px solid var(--crema-border)', flexShrink: 0 }}
                           />
-                        )}
-
-                        <input
-                          type="file"
-                          accept="image/*"
-                          id="notif-image-upload"
-                          style={{ display: 'none' }}
-                          onChange={handleImageUpload}
-                          disabled={uploadingImage}
-                        />
-                        <label
-                          htmlFor="notif-image-upload"
-                          className="touch-btn touch-btn--secondary"
-                          style={{
-                            minHeight: '34px',
-                            padding: '4px 12px',
-                            fontSize: '0.78rem',
-                            cursor: 'pointer',
-                            display: 'inline-flex',
-                            alignItems: 'center',
-                            gap: '6px',
-                          }}
-                        >
-                          <span>📷</span>
-                          <span>{uploadingImage ? 'Upload...' : imageUrl ? 'Changer l’image' : 'Choisir une image'}</span>
-                        </label>
-
-                        {imageUrl && (
-                          <button
-                            type="button"
-                            onClick={() => setImageUrl('')}
-                            style={{ background: 'none', border: 'none', color: 'var(--coral)', fontSize: '0.78rem', cursor: 'pointer' }}
+                        ) : (
+                          <div
+                            style={{
+                              width: '56px',
+                              height: '56px',
+                              borderRadius: '10px',
+                              background: 'var(--crema-subtle)',
+                              border: '1px solid var(--crema-border)',
+                              display: 'flex',
+                              alignItems: 'center',
+                              justifyContent: 'center',
+                              fontSize: '1.5rem',
+                              flexShrink: 0,
+                            }}
                           >
-                            Supprimer
-                          </button>
+                            🖼️
+                          </div>
                         )}
-                      </div>
 
-                      <input
-                        value={imageUrl}
-                        onChange={(e) => setImageUrl(e.target.value)}
-                        placeholder="Ou collez une URL : https://..."
-                        style={{
-                          width: '100%',
-                          padding: '0.65rem 0.75rem',
-                          borderRadius: 'var(--r-sm)',
-                          border: '1px solid var(--crema-border)',
-                          background: '#FFFFFF',
-                          fontSize: 'var(--text-xs)',
-                          outline: 'none',
-                        }}
-                      />
+                        <div style={{ flex: 1 }}>
+                          <input
+                            type="file"
+                            accept="image/*"
+                            id="notif-image-upload"
+                            style={{ display: 'none' }}
+                            onChange={handleImageUpload}
+                            disabled={uploadingImage}
+                          />
+                          <label
+                            htmlFor="notif-image-upload"
+                            className="touch-btn touch-btn--primary"
+                            style={{
+                              minHeight: '34px',
+                              padding: '5px 14px',
+                              fontSize: '0.8rem',
+                              cursor: 'pointer',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '6px',
+                            }}
+                          >
+                            <span>📷</span>
+                            <span>{uploadingImage ? 'Upload en cours...' : imageUrl ? 'Changer la photo' : 'Importer depuis votre galerie'}</span>
+                          </label>
+
+                          {imageUrl ? (
+                            <div style={{ marginTop: '0.35rem', display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                              <span style={{ fontSize: '0.72rem', color: 'var(--sage-dark)', fontWeight: 700 }}>✓ Image prête</span>
+                              <button
+                                type="button"
+                                onClick={() => setImageUrl('')}
+                                style={{ background: 'none', border: 'none', color: 'var(--coral)', fontSize: '0.72rem', cursor: 'pointer', padding: 0 }}
+                              >
+                                Retirer l'image
+                              </button>
+                            </div>
+                          ) : (
+                            <div style={{ fontSize: '0.72rem', color: 'var(--coffee-mid)', marginTop: '0.25rem' }}>
+                              Sélectionnez une photo depuis votre téléphone ou ordinateur (JPG, PNG)
+                            </div>
+                          )}
+                        </div>
+                      </div>
                     </div>
 
                     <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
