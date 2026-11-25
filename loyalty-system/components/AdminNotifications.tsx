@@ -153,9 +153,10 @@ export function AdminNotifications() {
       });
       const data = await res.json().catch(() => ({}));
       if (res.ok) {
+        const sentCount = data?.sent_count ?? subCount;
         setMsg({
           text: immediate
-            ? `Notification envoyée avec succès à ${subCount} abonné(s) !`
+            ? `Notification envoyée avec succès à ${sentCount} abonné(s) de votre établissement !`
             : 'Notification programmée avec succès !',
           ok: true,
         });

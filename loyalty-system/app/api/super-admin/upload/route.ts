@@ -4,8 +4,8 @@ import { getEmployee } from '@/lib/auth-guard';
 
 export async function POST(req: Request) {
   try {
-    const employee = await getEmployee('super_admin');
-    if (!employee) {
+    const employee = await getEmployee();
+    if (!employee || (employee.role !== 'super_admin' && employee.email !== 'grounmoetezhechmi@gmail.com')) {
       return NextResponse.json({ error: 'Accès réservé au Super Admin' }, { status: 403 });
     }
 

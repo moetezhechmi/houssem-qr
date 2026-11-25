@@ -56,6 +56,12 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
     const file = e.target.files?.[0];
     if (!file) return;
 
+    // Vérifier la taille du fichier (max 5 Mo)
+    if (file.size > 5 * 1024 * 1024) {
+      alert('L’image est trop volumineuse (max 5 Mo).');
+      return;
+    }
+
     setUploadingLogo(true);
     setMsg(null);
 
@@ -69,12 +75,15 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
       });
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || 'Erreur lors de l’upload');
+      if (!res.ok) {
+        throw new Error(data.error || 'Erreur lors de l’upload');
+      }
 
       setLogoUrl(data.url);
-      setMsg({ text: 'Logo uploadé avec succès depuis votre appareil !', ok: true });
+      setMsg({ text: `✓ Logo "${file.name}" uploadé avec succès sur Supabase Storage !`, ok: true });
     } catch (err: any) {
-      setMsg({ text: err.message, ok: false });
+      alert(`Erreur upload: ${err.message}`);
+      setMsg({ text: `Erreur upload : ${err.message}`, ok: false });
     } finally {
       setUploadingLogo(false);
     }
