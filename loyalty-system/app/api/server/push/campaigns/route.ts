@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getAdminClient } from '@/lib/supabase';
 import { apiError, requireEmployeeUser } from '@/lib/api-guard';
-import { invokeEdge } from '@/lib/supabase';
+import { sendStorePushNotification } from '@/lib/push-service';
 
 export async function GET() {
   const adminEmp = await requireEmployeeUser('admin');
@@ -33,22 +33,28 @@ export async function POST(req: Request) {
     image_url: body?.image_url ?? null,
     target: body?.target ?? 'all',
     scheduled_at: body?.scheduled_at ?? null,
-    status: immediate ? 'sending' : 'scheduled',
+    status: immediate ? 'sent' : 'scheduled',
     created_by: employee.id,
     store_id: employee.store_id || null,
   }).select('*').single();
 
   if (error || !camp) return apiError(500, 'CREATE_FAILED', error?.message ?? 'Erreur');
 
+  let sentCount = 0;
   if (immediate) {
-    // fire-and-forget send
-    invokeEdge('send-campaign', {
-      campaign_id: camp.id,
-      store_id: employee.store_id || null,
-      btn_text: body?.btn_text,
-      btn_action: body?.btn_action,
-    }, { key: 'service' }).catch(() => null);
+    // Exécution directe et 100% isolée par storeId sur le serveur Next.js
+    const pushRes = await sendStorePushNotification({
+      storeId: employee.store_id || null,
+      target: body?.target ?? 'all',
+      title,
+      message,
+      imageUrl: body?.image_url ?? null,
+      btnText: body?.btn_text,
+      btnAction: body?.btn_action,
+      campaignId: camp.id,
+    });
+    sentCount = pushRes.sent;
   }
 
-  return NextResponse.json(camp, { status: 201 });
+  return NextResponse.json({ ...camp, sent_count: sentCount }, { status: 201 });
 }
