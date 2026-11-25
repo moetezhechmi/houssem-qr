@@ -9,12 +9,6 @@ export default function LoginPage() {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const fillTestCredentials = () => {
-    setEmail('admin@bieny.test');
-    setPassword('123456');
-    setError('');
-  };
-
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     if (loading) return;
@@ -109,28 +103,32 @@ export default function LoginPage() {
         <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
           <div
             style={{
-              width: '74px',
-              height: '74px',
+              width: '70px',
+              height: '70px',
               margin: '0 auto 1.1rem',
               borderRadius: '22px',
               padding: '3px',
-              background: 'linear-gradient(135deg, #d4a55e, rgba(212, 165, 94, 0.2), #8a664a)',
+              background: 'linear-gradient(135deg, #d4a55e, rgba(212, 165, 94, 0.25), #8a664a)',
               boxShadow: '0 8px 25px rgba(0, 0, 0, 0.45)',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
             }}
           >
-            <img
-              src="/logo_houssem.jpeg"
-              alt="Bieny Coffeeshop"
+            <div
               style={{
                 width: '100%',
                 height: '100%',
                 borderRadius: '19px',
-                objectFit: 'cover',
+                background: 'linear-gradient(135deg, #24160c 0%, #160d07 100%)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '2rem',
               }}
-            />
+            >
+              ☕
+            </div>
           </div>
 
           <div
@@ -150,8 +148,8 @@ export default function LoginPage() {
               marginBottom: '0.6rem',
             }}
           >
-            <span>☕</span>
-            <span>Bieny Coffeeshop</span>
+            <span>✨</span>
+            <span>Plateforme Fidélité</span>
           </div>
 
           <h1
@@ -164,7 +162,7 @@ export default function LoginPage() {
               letterSpacing: '-0.01em',
             }}
           >
-            Espace Barista
+            Espace Professionnel
           </h1>
           <p
             style={{
@@ -174,7 +172,7 @@ export default function LoginPage() {
               lineHeight: 1.45,
             }}
           >
-            Connectez-vous pour valider les consommations et récompenses de vos clients.
+            Connectez-vous pour gérer votre établissement, vos serveurs et vos clients fidèles.
           </p>
         </div>
 
@@ -221,7 +219,7 @@ export default function LoginPage() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="ex: admin@bieny.test"
+                placeholder="ex: contact@votre-etablissement.com"
                 autoComplete="email"
                 required
                 style={{
@@ -385,48 +383,12 @@ export default function LoginPage() {
               </>
             ) : (
               <>
-                <span>Accéder au Poste de Service</span>
+                <span>Se connecter</span>
                 <span style={{ fontSize: '1.1rem' }}>→</span>
               </>
             )}
           </button>
         </form>
-
-        {/* Quick test credentials shortcut */}
-        <div
-          style={{
-            marginTop: '1.5rem',
-            padding: '0.85rem',
-            borderRadius: '12px',
-            background: 'rgba(255, 255, 255, 0.03)',
-            border: '1px dashed rgba(212, 165, 94, 0.2)',
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            gap: '8px',
-          }}
-        >
-          <div style={{ fontSize: '0.76rem', color: '#C4B5A5' }}>
-            <span style={{ color: '#D4A55E', fontWeight: 600 }}>💡 Démo rapide :</span> Remplir identifiants par défaut
-          </div>
-          <button
-            type="button"
-            onClick={fillTestCredentials}
-            style={{
-              background: 'rgba(212, 165, 94, 0.15)',
-              border: '1px solid rgba(212, 165, 94, 0.35)',
-              color: '#FAF9F6',
-              padding: '4px 10px',
-              borderRadius: '8px',
-              fontSize: '0.72rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Remplir
-          </button>
-        </div>
 
         {/* Footer info */}
         <div
