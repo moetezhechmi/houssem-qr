@@ -813,7 +813,7 @@ export function AdminNotifications({
                       </div>
                     </div>
 
-                    <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.5rem' }}>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '0.5rem' }}>
                       <div>
                         <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', marginBottom: '0.25rem' }}>
                           Destinataires

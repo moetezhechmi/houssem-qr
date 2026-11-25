@@ -1,3 +1,4 @@
+import { cache } from 'react';
 import { cookies } from 'next/headers';
 import { redirect } from 'next/navigation';
 import { getAdminClient } from './supabase';
@@ -34,11 +35,8 @@ async function fetchUserFromToken(accessToken: string): Promise<any | null> {
   } catch { return null; }
 }
 
-/**
- * Exige un employé connecté (via cookie sb_access_token + auth.users).
- * Rôles acceptés : 'server', 'admin', ou 'super_admin'.
- */
-export async function getEmployee(requiredRole: 'server' | 'admin' | 'super_admin' = 'server'): Promise<Employee | null> {
+/** Résout et met en cache (par requête HTTP) l'employé actif et son store. */
+const resolveCurrentEmployee = cache(async (): Promise<Employee | null> => {
   const token = await getAccessToken();
   if (!token) return null;
   const user = await fetchUserFromToken(token);
@@ -59,10 +57,6 @@ export async function getEmployee(requiredRole: 'server' | 'admin' | 'super_admi
       employee.store_name = store.name;
       employee.store_slug = store.slug;
       employee.store_logo_url = store.logo_url;
-
-      if (store.status === 'suspended' && employee.role !== 'super_admin' && employee.email !== 'grounmoetezhechmi@gmail.com') {
-        redirect('/store-suspended');
-      }
     }
   }
 
@@ -71,10 +65,29 @@ export async function getEmployee(requiredRole: 'server' | 'admin' | 'super_admi
     return { ...employee, role: 'super_admin' } as Employee;
   }
 
-  if (requiredRole === 'super_admin' && employee.role !== 'super_admin') return null;
+  return employee as Employee;
+});
+
+/**
+ * Exige un employé connecté (via cookie sb_access_token + auth.users).
+ * Rôles acceptés : 'server', 'admin', ou 'super_admin'.
+ */
+export async function getEmployee(requiredRole: 'server' | 'admin' | 'super_admin' = 'server'): Promise<Employee | null> {
+  const employee = await resolveCurrentEmployee();
+  if (!employee) return null;
+
+  if (employee.role === 'super_admin') {
+    return employee;
+  }
+
+  if (employee.store_status === 'suspended') {
+    redirect('/store-suspended');
+  }
+
+  if (requiredRole === 'super_admin') return null;
   if (requiredRole === 'admin' && employee.role !== 'admin') return null;
 
-  return employee as Employee;
+  return employee;
 }
 
 /** Invoque une Edge Function avec le token d'accès de la session actuelle. */

@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 
 interface Store {
   id: string;
@@ -297,30 +298,30 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
           marginBottom: '1.75rem',
         }}
       >
-        <div style={{ padding: '1rem', background: '#fff', borderRadius: '12px', border: '1px solid #EAD8C7' }}>
-          <div style={{ fontSize: '0.72rem', color: '#7E685A', textTransform: 'uppercase', fontWeight: 800 }}>Cafés & Stores</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#3A2618', marginTop: '0.2rem' }}>
+        <div className="ui-card" style={{ padding: '1rem 1.15rem' }}>
+          <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.06em' }}>Cafés & Stores</div>
+          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.7rem', fontWeight: 700, color: 'var(--espresso)', marginTop: '0.25rem' }}>
             {stores.length || stats?.total_stores || 0}
           </div>
         </div>
 
-        <div style={{ padding: '1rem', background: '#fff', borderRadius: '12px', border: '1px solid #EAD8C7' }}>
-          <div style={{ fontSize: '0.72rem', color: '#7E685A', textTransform: 'uppercase', fontWeight: 800 }}>Clients Globaux</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#3A2618', marginTop: '0.2rem' }}>
+        <div className="ui-card" style={{ padding: '1rem 1.15rem' }}>
+          <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.06em' }}>Clients Globaux</div>
+          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.7rem', fontWeight: 700, color: 'var(--espresso)', marginTop: '0.25rem' }}>
             {stats?.total_customers || 0}
           </div>
         </div>
 
-        <div style={{ padding: '1rem', background: '#fff', borderRadius: '12px', border: '1px solid #EAD8C7' }}>
-          <div style={{ fontSize: '0.72rem', color: '#7E685A', textTransform: 'uppercase', fontWeight: 800 }}>Staff & Admins</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#3A2618', marginTop: '0.2rem' }}>
+        <div className="ui-card" style={{ padding: '1rem 1.15rem' }}>
+          <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.06em' }}>Staff & Admins</div>
+          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.7rem', fontWeight: 700, color: 'var(--espresso)', marginTop: '0.25rem' }}>
             {employees.length || stats?.total_employees || 0}
           </div>
         </div>
 
-        <div style={{ padding: '1rem', background: '#fff', borderRadius: '12px', border: '1px solid #EAD8C7' }}>
-          <div style={{ fontSize: '0.72rem', color: '#7E685A', textTransform: 'uppercase', fontWeight: 800 }}>Transactions</div>
-          <div style={{ fontSize: '1.6rem', fontWeight: 800, color: '#3A2618', marginTop: '0.2rem' }}>
+        <div className="ui-card" style={{ padding: '1rem 1.15rem' }}>
+          <div style={{ fontSize: 'var(--text-2xs)', color: 'var(--coffee-mid)', textTransform: 'uppercase', fontWeight: 800, letterSpacing: '0.06em' }}>Transactions</div>
+          <div style={{ fontFamily: 'var(--font-serif)', fontSize: '1.7rem', fontWeight: 700, color: 'var(--espresso)', marginTop: '0.25rem' }}>
             {stats?.total_transactions || 0}
           </div>
         </div>
@@ -338,10 +339,10 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
         }}
       >
         <div>
-          <h2 style={{ fontSize: '1.3rem', fontWeight: 800, color: '#3A2618', margin: 0 }}>
+          <h2 style={{ fontFamily: 'var(--font-serif)', fontSize: '1.4rem', fontWeight: 700, color: 'var(--espresso)', margin: 0 }}>
             Établissements Partenaires
           </h2>
-          <p style={{ margin: '0.2rem 0 0', fontSize: '0.82rem', color: '#7E685A' }}>
+          <p style={{ margin: '0.2rem 0 0', fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)' }}>
             Gestion centralisée, activation d'abonnements et contrôle des accès.
           </p>
         </div>
@@ -349,18 +350,11 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
         <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
           <button
             onClick={() => setIsStorePickerOpen(true)}
+            className="touch-btn touch-btn--outline"
             style={{
-              background: '#fff',
-              color: '#3A2618',
-              border: '1.5px solid #8C4820',
-              padding: '0.55rem 0.9rem',
-              borderRadius: '8px',
-              fontWeight: 700,
+              minHeight: '40px',
+              padding: '0.5rem 0.95rem',
               fontSize: '0.84rem',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
             }}
           >
             <span>🏪</span> Choisir la Vue Magasin
@@ -368,19 +362,11 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
 
           <button
             onClick={() => setIsModalOpen(true)}
+            className="touch-btn touch-btn--primary"
             style={{
-              background: '#8C4820',
-              color: '#fff',
-              border: 'none',
-              padding: '0.55rem 1rem',
-              borderRadius: '8px',
-              fontWeight: 700,
+              minHeight: '40px',
+              padding: '0.5rem 1.05rem',
               fontSize: '0.84rem',
-              cursor: 'pointer',
-              display: 'inline-flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-              boxShadow: '0 2px 6px rgba(140,72,32,0.25)',
             }}
           >
             <span>＋</span> Ajouter un Café
@@ -495,21 +481,18 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
                   </button>
 
                   {/* Accès à la console du café */}
-                  <a
+                  <Link
                     href={`/admin?store_id=${s.id}`}
+                    className="touch-btn touch-btn--outline"
                     style={{
-                      background: '#FAF6F0',
-                      color: '#8C4820',
-                      border: '1px solid #8C4820',
-                      padding: '0.45rem 0.75rem',
-                      borderRadius: '6px',
+                      minHeight: '34px',
+                      padding: '0.4rem 0.75rem',
                       fontSize: '0.78rem',
-                      fontWeight: 700,
                       textDecoration: 'none',
                     }}
                   >
                     Ouvrir Magasin →
-                  </a>
+                  </Link>
                 </div>
               </div>
             );
@@ -650,7 +633,7 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1.25rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '0.75rem', marginBottom: '1.25rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#3A2618', marginBottom: '0.2rem' }}>
                     Téléphone
@@ -756,7 +739,7 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', maxHeight: '60vh', overflowY: 'auto' }}>
               {stores.map((st) => (
-                <a
+                <Link
                   key={st.id}
                   href={`/admin?store_id=${st.id}`}
                   style={{
@@ -764,22 +747,22 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
                     alignItems: 'center',
                     justifyContent: 'space-between',
                     padding: '0.85rem 1rem',
-                    borderRadius: '8px',
-                    border: '1px solid #EAD8C7',
+                    borderRadius: 'var(--r-sm)',
+                    border: '1px solid var(--crema-border)',
                     textDecoration: 'none',
-                    color: '#3A2618',
+                    color: 'var(--espresso)',
                     fontWeight: 700,
-                    background: '#FAF6F0',
+                    background: 'var(--crema-subtle)',
                   }}
                 >
                   <div>
                     <div>{st.name}</div>
-                    <div style={{ fontSize: '0.72rem', color: '#7E685A', fontWeight: 400 }}>
+                    <div style={{ fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)', fontWeight: 400 }}>
                       Slug: {st.slug}
                     </div>
                   </div>
-                  <span style={{ color: '#8C4820', fontSize: '0.85rem' }}>Ouvrir →</span>
-                </a>
+                  <span style={{ color: 'var(--gold-dark)', fontSize: '0.85rem', fontWeight: 700 }}>Ouvrir →</span>
+                </Link>
               ))}
             </div>
           </div>
@@ -922,7 +905,7 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
                 </div>
               </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(170px, 1fr))', gap: '0.75rem', marginBottom: '0.85rem' }}>
                 <div>
                   <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#3A2618', marginBottom: '0.2rem' }}>
                     Téléphone

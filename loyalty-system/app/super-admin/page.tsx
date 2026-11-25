@@ -23,27 +23,42 @@ export default async function SuperAdminPage() {
   ]);
 
   return (
-    <div style={{ minHeight: '100dvh', background: 'var(--parchment, #FDFBF7)' }}>
+    <div style={{ minHeight: '100dvh', background: 'var(--crema-bg)' }}>
       <header
         style={{
-          background: '#1F1B18',
-          color: '#fff',
-          padding: '1rem',
+          background: 'linear-gradient(135deg, var(--espresso) 0%, var(--espresso-dark) 100%)',
+          color: '#FAF8F5',
+          padding: '0.85rem 1.25rem',
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
           flexWrap: 'wrap',
           gap: '0.75rem',
-          boxShadow: '0 2px 8px rgba(0,0,0,0.15)',
+          boxShadow: 'var(--shadow-md)',
+          borderBottom: '1px solid rgba(212, 160, 84, 0.25)',
         }}
       >
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <span style={{ fontSize: '1.5rem' }}>⚡</span>
+          <div
+            style={{
+              width: '38px',
+              height: '38px',
+              borderRadius: '11px',
+              background: 'rgba(212, 160, 84, 0.18)',
+              border: '1.5px solid rgba(212, 160, 84, 0.45)',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              fontSize: '1.2rem',
+            }}
+          >
+            ⚡
+          </div>
           <div>
-            <h1 style={{ fontSize: '1.05rem', fontWeight: 800, margin: 0, letterSpacing: '-0.02em' }}>
+            <h1 style={{ fontFamily: 'var(--font-serif)', fontSize: 'var(--text-lg)', fontWeight: 700, margin: 0, letterSpacing: '-0.01em', color: '#FAF8F5' }}>
               Console Super Admin
             </h1>
-            <p style={{ margin: 0, fontSize: '0.75rem', opacity: 0.8 }}>
+            <p style={{ margin: 0, fontSize: 'var(--text-xs)', color: 'var(--gold-light)', fontWeight: 600 }}>
               {employee.name || employee.email}
             </p>
           </div>
@@ -53,15 +68,15 @@ export default async function SuperAdminPage() {
           <form action="/api/auth/logout" method="POST" style={{ margin: 0 }}>
             <button
               type="submit"
+              className="touch-btn"
               style={{
-                background: '#A63D40',
+                minHeight: '36px',
+                background: 'var(--coral)',
                 color: '#fff',
-                border: 'none',
-                padding: '0.45rem 0.85rem',
-                borderRadius: '6px',
-                fontSize: '0.78rem',
-                fontWeight: 600,
-                cursor: 'pointer',
+                padding: '0.4rem 0.9rem',
+                borderRadius: 'var(--r-pill)',
+                fontSize: 'var(--text-xs)',
+                fontWeight: 700,
               }}
             >
               Déconnexion
@@ -70,7 +85,7 @@ export default async function SuperAdminPage() {
         </div>
       </header>
 
-      <main style={{ maxWidth: '1200px', margin: '0 auto', padding: '1.25rem 1rem' }}>
+      <main className="shell shell--wide animate-in" style={{ paddingTop: '1.5rem', paddingBottom: '2.5rem' }}>
         <SuperAdminDashboardClient
           stats={stats}
           initialStores={stores}

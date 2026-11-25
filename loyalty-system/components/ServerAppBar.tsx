@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   HomeIcon,
@@ -119,7 +120,7 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
           {employee && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
               {(employee.role === 'super_admin' || employee.email === 'grounmoetezhechmi@gmail.com') && (
-                <a
+                <Link
                   href="/super-admin"
                   style={{
                     background: '#8C4820',
@@ -135,7 +136,7 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
                   }}
                 >
                   ⚡ Super Admin
-                </a>
+                </Link>
               )}
               <div
                 title={employee.email}
@@ -204,7 +205,7 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
       {/* ─── Bottom Navigation App Bar (Mobile & Tablet) ─── */}
       {!hideBottomBar && (
         <nav className="bottom-app-bar" aria-label="Navigation principale">
-          <a
+          <Link
             href="/serveur"
             className={`bottom-tab ${isHome ? 'bottom-tab--active' : ''}`}
           >
@@ -212,9 +213,9 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
               <HomeIcon size={20} />
             </div>
             <span className="bottom-tab__label">Accueil</span>
-          </a>
+          </Link>
 
-          <a
+          <Link
             href="/serveur/customers"
             className={`bottom-tab ${isCustomers ? 'bottom-tab--active' : ''}`}
           >
@@ -222,10 +223,10 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
               <SearchIcon size={20} />
             </div>
             <span className="bottom-tab__label">Clients</span>
-          </a>
+          </Link>
 
           {/* Elevated Centered "+ Nouveau Client" Button */}
-          <a
+          <Link
             href="/serveur/customers?action=new"
             className="bottom-tab bottom-tab--raised"
             title="Créer un nouveau client"
@@ -254,11 +255,11 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
             >
               Nouveau
             </span>
-          </a>
+          </Link>
 
           {employee?.role === 'admin' ? (
             <>
-              <a
+              <Link
                 href="/admin?tab=notifications"
                 className={`bottom-tab ${isNotifTab ? 'bottom-tab--active' : ''}`}
               >
@@ -266,8 +267,8 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
                   <span style={{ fontSize: '1.15rem' }}>📣</span>
                 </div>
                 <span className="bottom-tab__label">Notifs</span>
-              </a>
-              <a
+              </Link>
+              <Link
                 href="/admin"
                 className={`bottom-tab ${isAdmin && !isNotifTab ? 'bottom-tab--active' : ''}`}
               >
@@ -275,7 +276,7 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
                   <SettingsIcon size={20} />
                 </div>
                 <span className="bottom-tab__label">Admin</span>
-              </a>
+              </Link>
             </>
           ) : (
             <a

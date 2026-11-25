@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { getAdminClient } from '@/lib/supabase';
 import { getEmployee } from '@/lib/auth-guard';
 import {
@@ -62,13 +63,13 @@ export default async function AdminPage({
 
   return (
     <div className="has-bottom-nav" style={{ minHeight: '100dvh' }}>
-      <ServerAppBar employee={displayedAdmin} />
+      <ServerAppBar employee={displayedAdmin} hideBottomBar />
 
       <main className="shell shell--wide animate-in">
         {!isNotifTab && (
           <div style={{ marginBottom: '1.25rem' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.35rem' }}>
-              <a
+              <Link
                 href="/serveur"
                 style={{
                   display: 'inline-flex',
@@ -81,7 +82,7 @@ export default async function AdminPage({
                 }}
               >
                 ← Espace Barista
-              </a>
+              </Link>
             </div>
             <h1
               style={{
