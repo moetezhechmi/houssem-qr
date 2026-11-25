@@ -4,8 +4,9 @@ import { apiError, requireEmployeeUser } from '@/lib/api-guard';
 import { getSettings } from '@/lib/server-data';
 
 export async function GET() {
-  if (!(await requireEmployeeUser('admin'))) return apiError(401, 'UNAUTHORIZED', 'Non connecté');
-  return NextResponse.json(await getSettings());
+  const admin = await requireEmployeeUser('admin');
+  if (!admin) return apiError(401, 'UNAUTHORIZED', 'Non connecté');
+  return NextResponse.json(await getSettings(admin.store_id));
 }
 
 export async function PUT(req: Request) {
@@ -34,12 +35,13 @@ export async function PUT(req: Request) {
   }
 
   const supabase = getAdminClient();
-  const { data: updated, error: updateError } = await supabase
-    .from('ProgramSettings')
-    .update(updatePayload)
-    .eq('id', 1)
-    .select()
-    .single();
+  let query = supabase.from('ProgramSettings').update(updatePayload);
+  if (admin.store_id) {
+    query = query.eq('store_id', admin.store_id);
+  } else {
+    query = query.eq('id', 1);
+  }
+  const { data: updated, error: updateError } = await query.select().single();
 
   if (updateError) {
     return apiError(400, 'UPDATE_FAILED', updateError.message);

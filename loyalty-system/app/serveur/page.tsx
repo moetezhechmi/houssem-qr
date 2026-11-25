@@ -15,7 +15,7 @@ export default async function ServeurDashboard() {
   const employee = await getEmployee('server');
   if (!employee) redirect('/serveur/login');
 
-  const stats = await getDashboardStats();
+  const stats = await getDashboardStats(employee.store_id);
 
   const isAdmin = employee.role === 'admin';
 

@@ -4,9 +4,14 @@ import { apiError, requireEmployeeUser } from '@/lib/api-guard';
 import { invokeEdge } from '@/lib/supabase';
 
 export async function GET() {
-  if (!(await requireEmployeeUser('admin'))) return apiError(401, 'UNAUTHORIZED', 'Non connecté');
+  const adminEmp = await requireEmployeeUser('admin');
+  if (!adminEmp) return apiError(401, 'UNAUTHORIZED', 'Non connecté');
   const admin = getAdminClient();
-  const { data, error } = await admin.from('NotificationCampaigns').select('*').order('created_at', { ascending: false }).limit(50);
+  let query = admin.from('NotificationCampaigns').select('*').order('created_at', { ascending: false }).limit(50);
+  if (adminEmp.store_id) {
+    query = query.eq('store_id', adminEmp.store_id);
+  }
+  const { data, error } = await query;
   if (error) return apiError(500, 'FETCH_FAILED', error.message);
   return NextResponse.json(data ?? []);
 }
@@ -30,6 +35,7 @@ export async function POST(req: Request) {
     scheduled_at: body?.scheduled_at ?? null,
     status: immediate ? 'sending' : 'scheduled',
     created_by: employee.id,
+    store_id: employee.store_id || null,
   }).select('*').single();
 
   if (error || !camp) return apiError(500, 'CREATE_FAILED', error?.message ?? 'Erreur');
@@ -38,6 +44,7 @@ export async function POST(req: Request) {
     // fire-and-forget send
     invokeEdge('send-campaign', {
       campaign_id: camp.id,
+      store_id: employee.store_id || null,
       btn_text: body?.btn_text,
       btn_action: body?.btn_action,
     }, { key: 'service' }).catch(() => null);

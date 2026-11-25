@@ -4,9 +4,10 @@ import { apiError, requireEmployeeUser } from '@/lib/api-guard';
 import { getEmployees } from '@/lib/server-data';
 
 export async function GET() {
-  if (!(await requireEmployeeUser('admin'))) return apiError(401, 'UNAUTHORIZED', 'Non connecté');
+  const admin = await requireEmployeeUser('admin');
+  if (!admin) return apiError(401, 'UNAUTHORIZED', 'Non connecté');
   try {
-    return NextResponse.json(await getEmployees());
+    return NextResponse.json(await getEmployees(admin.store_id));
   } catch (e: any) {
     return apiError(500, 'EMPLOYEES_ERROR', e.message);
   }
@@ -44,10 +45,10 @@ export async function POST(req: Request) {
 
   const userId = created.user.id;
 
-  // Insertion dans la table Employees
+  // Insertion dans la table Employees rattachée au store du gérant
   const { error: empErr } = await adminClient
     .from('Employees')
-    .insert({ id: userId, role, status, name, email });
+    .insert({ id: userId, role, status, name, email, store_id: admin.store_id || null });
 
   if (empErr) {
     // Rollback best-effort de l'utilisateur auth créé

@@ -14,7 +14,7 @@ export default async function ServeurCustomers({
   if (!employee) redirect('/serveur/login');
 
   const { q = '', action = '' } = await searchParams;
-  const customers = await getSearchCustomers(q);
+  const customers = await getSearchCustomers(q, employee.store_id);
 
   return (
     <main className="shell animate-in" style={{ paddingBottom: '2rem' }}>

@@ -16,23 +16,26 @@ import { ServerAppBar } from '@/components/ServerAppBar';
 export default async function AdminPage({
   searchParams,
 }: {
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; store_id?: string }>;
 }) {
   const admin = await getEmployee('admin');
   if (!admin) redirect('/serveur/login');
 
-  const { tab = 'overview' } = await searchParams;
+  const { tab = 'overview', store_id } = await searchParams;
+
+  // Si super_admin, peut visualiser un store_id passé en paramètre, sinon restreint à son propre store_id
+  const targetStoreId = admin.role === 'super_admin' ? (store_id || admin.store_id) : admin.store_id;
 
   const [settings, corrections, ops, stats, customers, cards, rewards, employees] =
     await Promise.all([
-      getSettings(),
-      getCorrections(30),
-      getRecentOperations(50),
-      getDashboardStats(),
-      getAllCustomers(100),
-      getAllCards(100),
-      getAllRewards(100),
-      getEmployees(),
+      getSettings(targetStoreId),
+      getCorrections(30, targetStoreId),
+      getRecentOperations(50, targetStoreId),
+      getDashboardStats(targetStoreId),
+      getAllCustomers(100, targetStoreId),
+      getAllCards(100, targetStoreId),
+      getAllRewards(100, targetStoreId),
+      getEmployees(targetStoreId),
     ]);
 
   const isNotifTab = tab === 'notifications';
