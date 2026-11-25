@@ -25,10 +25,17 @@ export async function generateMetadata({
       capable: true,
       statusBarStyle: 'default',
       title: appName,
+      startupImage: [logo],
     },
     icons: {
-      icon: logo,
-      apple: logo,
+      icon: [
+        { url: logo, sizes: '192x192' },
+        { url: logo, sizes: '512x512' },
+      ],
+      apple: [
+        { url: logo, sizes: '180x180' },
+      ],
+      shortcut: [logo],
     },
   };
 }

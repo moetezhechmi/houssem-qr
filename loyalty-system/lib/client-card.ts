@@ -1,10 +1,11 @@
 import { createHash } from 'crypto';
-import { getClient } from '@/lib/supabase';
+import { getAdminClient } from '@/lib/supabase';
 
-/** Récupère la carte client via son hash de token (lecture seule publique via Supabase RPC). */
+/** Récupère la carte client via son hash de token (côté serveur Next.js avec getAdminClient pour garantir la lecture du Store). */
 export async function fetchClientCard(token: string) {
   const tokenHash = createHash('sha256').update(token, 'utf8').digest('hex');
-  const { data, error } = await getClient().rpc('fn_get_client_card', { p_token_hash: tokenHash });
+  const adminClient = getAdminClient();
+  const { data, error } = await adminClient.rpc('fn_get_client_card', { p_token_hash: tokenHash });
   if (error) {
     return { ok: false as const, error: { code: 'FETCH_FAILED', message: error.message } };
   }
@@ -12,9 +13,9 @@ export async function fetchClientCard(token: string) {
     return { ok: false as const, error: { code: 'CARD_NOT_FOUND', message: 'Carte introuvable' } };
   }
 
-  // Récupérer le store associé si disponible
+  // Récupérer le store associé via adminClient pour traverser le RLS en toute sécurité
   let store = null;
-  const { data: cardRow } = await getClient()
+  const { data: cardRow } = await adminClient
     .from('LoyaltyCards')
     .select('store_id, Stores(name, slug, logo_url)')
     .eq('token_hash', tokenHash)

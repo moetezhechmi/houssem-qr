@@ -23,6 +23,7 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
   const [stores, setStores] = useState<Store[]>(initialStores);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isStorePickerOpen, setIsStorePickerOpen] = useState(false);
+  const [editingStore, setEditingStore] = useState<Store | null>(null);
   const [loading, setLoading] = useState(false);
   const [updatingStoreId, setUpdatingStoreId] = useState<string | null>(null);
   const [msg, setMsg] = useState<{ text: string; ok: boolean } | null>(null);
@@ -38,6 +39,96 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
   const [adminEmail, setAdminEmail] = useState('');
   const [adminPassword, setAdminPassword] = useState('');
 
+  // Formulaire modification store
+  const [editName, setEditName] = useState('');
+  const [editSlug, setEditSlug] = useState('');
+  const [editLogoUrl, setEditLogoUrl] = useState('');
+  const [editPhone, setEditPhone] = useState('');
+  const [editAddress, setEditAddress] = useState('');
+  const [uploadingEditLogo, setUploadingEditLogo] = useState(false);
+
+  const openEditModal = (s: Store) => {
+    setEditingStore(s);
+    setEditName(s.name);
+    setEditSlug(s.slug);
+    setEditLogoUrl(s.logo_url || '');
+    setEditPhone(s.phone || '');
+    setEditAddress(s.address || '');
+  };
+
+  const handleEditFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 4 * 1024 * 1024) {
+      alert('L’image est trop volumineuse (max 4 Mo).');
+      return;
+    }
+
+    setUploadingEditLogo(true);
+    setMsg(null);
+
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (err) => reject(err);
+        reader.readAsDataURL(file);
+      });
+
+      const res = await fetch('/api/super-admin/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: file.name, data: base64 }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de l’upload');
+
+      setEditLogoUrl(data.url);
+      setMsg({ text: `✓ Nouveau logo "${file.name}" uploadé avec succès !`, ok: true });
+    } catch (err: any) {
+      alert(`Erreur upload : ${err.message}`);
+      setMsg({ text: `Erreur upload : ${err.message}`, ok: false });
+    } finally {
+      setUploadingEditLogo(false);
+    }
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingStore) return;
+
+    setLoading(true);
+    setMsg(null);
+
+    try {
+      const res = await fetch(`/api/super-admin/stores/${editingStore.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editName,
+          slug: editSlug,
+          logo_url: editLogoUrl,
+          phone: editPhone,
+          address: editAddress,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur modification store');
+
+      setStores((prev) =>
+        prev.map((s) => (s.id === editingStore.id ? { ...s, ...data.store } : s))
+      );
+      setMsg({ text: `✓ Établissement "${data.store.name}" modifié avec succès !`, ok: true });
+      setEditingStore(null);
+    } catch (err: any) {
+      setMsg({ text: err.message, ok: false });
+    } finally {
+      setLoading(false);
+    }
+  };
   const handleNameChange = (val: string) => {
     setName(val);
     if (!slug || slug === name.toLowerCase().replace(/[^a-z0-9]/g, '-')) {
@@ -386,6 +477,23 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
                     {isBusy ? '...' : isSuspended ? '✓ Réactiver Abonnement' : '🚫 Désactiver Abonnement'}
                   </button>
 
+                  {/* Bouton Modifier Store */}
+                  <button
+                    onClick={() => openEditModal(s)}
+                    style={{
+                      background: '#fff',
+                      color: '#3A2618',
+                      border: '1px solid #CCC',
+                      padding: '0.45rem 0.75rem',
+                      borderRadius: '6px',
+                      fontSize: '0.78rem',
+                      fontWeight: 700,
+                      cursor: 'pointer',
+                    }}
+                  >
+                    ✏️ Modifier
+                  </button>
+
                   {/* Accès à la console du café */}
                   <a
                     href={`/admin?store_id=${s.id}`}
@@ -408,6 +516,203 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
           })
         )}
       </div>
+
+      {/* Modal Modification du Magasin */}
+      {editingStore && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(0,0,0,0.6)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            zIndex: 99999,
+            padding: '1rem',
+          }}
+        >
+          <div
+            style={{
+              background: '#fff',
+              borderRadius: '14px',
+              maxWidth: '520px',
+              width: '100%',
+              padding: '1.5rem',
+              boxShadow: '0 10px 25px rgba(0,0,0,0.2)',
+              maxHeight: '90vh',
+              overflowY: 'auto',
+            }}
+          >
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.25rem' }}>
+              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800, color: '#3A2618' }}>
+                ✏️ Modifier l’établissement : {editingStore.name}
+              </h3>
+              <button
+                onClick={() => setEditingStore(null)}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', cursor: 'pointer', color: '#888' }}
+              >
+                ✕
+              </button>
+            </div>
+
+            <form onSubmit={handleEditSubmit}>
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#3A2618', marginBottom: '0.2rem' }}>
+                  Nom de l'établissement *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editName}
+                  onChange={(e) => setEditName(e.target.value)}
+                  style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.88rem' }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#3A2618', marginBottom: '0.2rem' }}>
+                  Slug URL unique *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={editSlug}
+                  onChange={(e) => setEditSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
+                  style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.88rem' }}
+                />
+              </div>
+
+              {/* Logo / Photo */}
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#3A2618', marginBottom: '0.25rem' }}>
+                  Logo de l'établissement (depuis votre galerie / fichiers)
+                </label>
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    padding: '0.75rem',
+                    borderRadius: '8px',
+                    border: '1px dashed #C9A98C',
+                    background: '#FAF6F0',
+                  }}
+                >
+                  <div
+                    style={{
+                      width: '48px',
+                      height: '48px',
+                      borderRadius: '8px',
+                      background: '#fff',
+                      border: '1px solid #EAD8C7',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {editLogoUrl ? (
+                      <img src={editLogoUrl} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <span style={{ fontSize: '1.4rem' }}>📷</span>
+                    )}
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id="edit-logo-file-input"
+                      style={{ display: 'none' }}
+                      onChange={handleEditFileUpload}
+                      disabled={uploadingEditLogo}
+                    />
+                    <label
+                      htmlFor="edit-logo-file-input"
+                      style={{
+                        display: 'inline-block',
+                        background: '#8C4820',
+                        color: '#fff',
+                        padding: '0.4rem 0.85rem',
+                        borderRadius: '6px',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {uploadingEditLogo ? 'Upload en cours...' : 'Changer la photo'}
+                    </label>
+                    <div style={{ fontSize: '0.7rem', color: '#7E685A', marginTop: '0.2rem' }}>
+                      {editLogoUrl ? '✓ Logo enregistré' : 'Choisir une image (PNG, JPG)'}
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '1.25rem' }}>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#3A2618', marginBottom: '0.2rem' }}>
+                    Téléphone
+                  </label>
+                  <input
+                    type="tel"
+                    value={editPhone}
+                    onChange={(e) => setEditPhone(e.target.value)}
+                    style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.88rem' }}
+                  />
+                </div>
+                <div>
+                  <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#3A2618', marginBottom: '0.2rem' }}>
+                    Adresse
+                  </label>
+                  <input
+                    type="text"
+                    value={editAddress}
+                    onChange={(e) => setEditAddress(e.target.value)}
+                    style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.88rem' }}
+                  />
+                </div>
+              </div>
+
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '0.5rem' }}>
+                <button
+                  type="button"
+                  onClick={() => setEditingStore(null)}
+                  style={{
+                    padding: '0.55rem 0.9rem',
+                    borderRadius: '6px',
+                    border: '1px solid #CCC',
+                    background: '#fff',
+                    cursor: 'pointer',
+                    fontWeight: 600,
+                    fontSize: '0.85rem',
+                  }}
+                >
+                  Annuler
+                </button>
+                <button
+                  type="submit"
+                  disabled={loading}
+                  style={{
+                    padding: '0.55rem 1.15rem',
+                    borderRadius: '6px',
+                    border: 'none',
+                    background: '#8C4820',
+                    color: '#fff',
+                    fontWeight: 700,
+                    fontSize: '0.85rem',
+                    cursor: 'pointer',
+                    opacity: loading ? 0.7 : 1,
+                  }}
+                >
+                  {loading ? 'Enregistrement...' : 'Enregistrer les modifications'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Modal Choix du Magasin (Vue Magasin) */}
       {isStorePickerOpen && (

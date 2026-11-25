@@ -29,6 +29,7 @@ type CardData = {
     unlocked_at: string; expires_at: string; used_at: string | null;
   }>;
   history: Array<{ id: string; transaction_reference: string; created_at: string; status: string }>;
+  store?: { name: string; slug: string; logo_url?: string | null } | null;
 };
 
 type View = 'card' | 'menu' | 'reward' | 'history';
@@ -110,8 +111,8 @@ export default function ClientCard({ token, initialData }: { token: string; init
       <header className="top-app-bar">
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <img
-            src="/logo_houssem.jpeg"
-            alt="Bieny Coffeeshop"
+            src={data.store?.logo_url || '/logo_houssem.jpeg'}
+            alt={data.store?.name || 'Bieny Coffeeshop'}
             style={{
               width: '38px',
               height: '38px',
@@ -132,7 +133,7 @@ export default function ClientCard({ token, initialData }: { token: string; init
                 letterSpacing: '-0.01em',
               }}
             >
-              Bieny Coffeeshop
+              {data.store?.name || 'Bieny Coffeeshop'}
             </div>
             <div
               style={{
@@ -308,8 +309,8 @@ export default function ClientCard({ token, initialData }: { token: string; init
                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.2rem' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                     <img
-                      src="/logo_houssem.jpeg"
-                      alt="Logo"
+                      src={data.store?.logo_url || '/logo_houssem.jpeg'}
+                      alt={data.store?.name || 'Logo'}
                       style={{
                         width: '42px',
                         height: '42px',
@@ -321,7 +322,7 @@ export default function ClientCard({ token, initialData }: { token: string; init
                     />
                     <div>
                       <div style={{ fontSize: 'var(--text-2xs)', letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--gold)', fontWeight: 800 }}>
-                        Bieny Loyalty Club
+                        {data.store?.name || 'Bieny Loyalty Club'}
                       </div>
                       <div
                         style={{

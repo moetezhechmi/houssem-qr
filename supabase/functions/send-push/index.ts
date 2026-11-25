@@ -18,15 +18,35 @@ function json(status: number, obj: unknown) {
 Deno.serve(async (req) => {
   const body = await req.json().catch(() => null);
   const type = String(body?.type ?? 'generic');
-  const title = String(body?.title ?? 'Bieny Coffeeshop');
+  let title = String(body?.title ?? '');
   const message = String(body?.message ?? '');
   const url = String(body?.url ?? '/');
-  const icon = String(body?.icon ?? '/logo_houssem.jpeg');
+  let icon = String(body?.icon ?? '');
   const dedupKey = body?.dedup_key ? String(body.dedup_key) : null;
   const customerIds: string[] | null = Array.isArray(body?.customer_ids) ? body.customer_ids : null;
+  const storeId = body?.store_id ? String(body.store_id) : null;
   const marketing = body?.marketing === true;
 
   if (!message) return json(400, { error: 'INVALID_INPUT', message: 'message requis' });
+
+  // Si un store_id est présent (ou si un customerId est fourni), récupérer le nom et le logo du store
+  let resolvedStore = null;
+  if (storeId) {
+    const { data: st } = await admin.from('Stores').select('name, logo_url').eq('id', storeId).maybeSingle();
+    resolvedStore = st;
+  } else if (customerIds && customerIds.length > 0) {
+    const { data: cust } = await admin.from('Customers').select('store_id, Stores(name, logo_url)').eq('id', customerIds[0]).maybeSingle();
+    if (cust && (cust as any).Stores) {
+      resolvedStore = (cust as any).Stores;
+    }
+  }
+
+  if (!title || title === 'Bieny Coffeeshop' || title === 'Notification') {
+    title = resolvedStore?.name || 'Notification';
+  }
+  if (!icon || icon === '/logo_houssem.jpeg') {
+    icon = resolvedStore?.logo_url || '/logo_houssem.jpeg';
+  }
 
   // Idempotence
   if (dedupKey) {
