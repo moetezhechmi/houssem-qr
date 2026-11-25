@@ -9,7 +9,24 @@ export const getDashboardStats = async (storeId?: string | null): Promise<any> =
     if (errLegacy) throw new Error(`Dashboard : ${error.message}`);
     return legacy;
   }
-  return data;
+
+  // Normaliser les clés pour compatibilité ascendante avec toutes les vues admin et serveur
+  const totalClients = data?.total_customers ?? data?.total_clients ?? 0;
+  const activeCards = data?.active_cards ?? 0;
+  const expiredCards = data?.expired_cards ?? 0;
+  const pendingRewards = data?.available_rewards ?? data?.pending_rewards ?? 0;
+  const usedRewards = data?.used_rewards ?? 0;
+
+  return {
+    ...data,
+    total_clients: totalClients,
+    total_customers: totalClients,
+    active_cards: activeCards,
+    expired_cards: expiredCards,
+    pending_rewards: pendingRewards,
+    available_rewards: pendingRewards,
+    used_rewards: usedRewards,
+  };
 };
 
 export const getSuperAdminStats = async (): Promise<any> => {

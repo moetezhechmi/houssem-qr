@@ -9,11 +9,14 @@ export default async function ServeurLayout({ children }: { children: React.Reac
     return <>{children}</>;
   }
 
+  // Ne pas afficher le bouton flottant caméra pour les administrateurs
+  const isServerOnly = employee.role === 'server';
+
   return (
     <div className="has-bottom-nav" style={{ minHeight: '100dvh' }}>
       <ServerAppBar employee={employee} />
       {children}
-      <QrScannerFab />
+      {isServerOnly && <QrScannerFab />}
     </div>
   );
 }

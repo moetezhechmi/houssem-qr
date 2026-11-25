@@ -29,17 +29,17 @@ const PRESETS: Preset[] = [
     label: 'Joyeux Vendredi',
     icon: '☕',
     type: 'greetings',
-    title: 'Joyeux Vendredi chez Bieny ! ☕',
+    title: 'Joyeux Vendredi ! ☕',
     message: 'Le week-end commence maintenant ! Venez savourer votre boisson signature préférée et faire le plein d’énergie.',
-    btnText: 'Consulter le Menu',
-    btnAction: 'menu',
+    btnText: 'Voir ma Carte',
+    btnAction: 'close',
   },
   {
     label: 'Offre Spéciale',
     icon: '✨',
     type: 'marketing',
     title: 'Offre Spéciale du Jour ✨',
-    message: 'Offre exclusive aujourd’hui chez Bieny Coffeeshop ! Venez déguster nos douceurs artisanales et cafés de spécialité.',
+    message: 'Offre exclusive aujourd’hui chez nous ! Venez déguster nos douceurs artisanales et cafés de spécialité.',
     btnText: 'Découvrir & Profiter',
     btnAction: 'close',
   },
@@ -48,18 +48,18 @@ const PRESETS: Preset[] = [
     icon: '⏰',
     type: 'reminder',
     title: 'Votre carte expire bientôt ⏰',
-    message: 'Il ne vous reste que quelques jours pour compléter vos 9 tampons et débloquer vos 30% de réduction immédiate !',
+    message: 'N’oubliez pas d’utiliser vos points ou de renouveler votre cycle avant son expiration.',
     btnText: 'Ouvrir ma Carte',
     btnAction: 'close',
   },
   {
-    label: 'Nouveauté Carte',
+    label: 'Nouveauté',
     icon: '📢',
     type: 'announcement',
-    title: 'Nouveautés Gourmandes chez Bieny ! 📢',
-    message: 'Découvrez nos nouvelles boissons fraîches et pâtisseries du jour disponibles dès maintenant en coffeeshop.',
-    btnText: 'Découvrir la Carte',
-    btnAction: 'menu',
+    title: 'Nouveautés du moment ! 📢',
+    message: 'Découvrez nos nouvelles boissons fraîches et douceurs du jour disponibles dès maintenant.',
+    btnText: 'Découvrir',
+    btnAction: 'close',
   },
 ];
 
@@ -76,6 +76,7 @@ export function AdminNotifications() {
   const [message, setMessage] = useState('');
   const [type, setType] = useState<NotificationType>('marketing');
   const [imageUrl, setImageUrl] = useState('');
+  const [uploadingImage, setUploadingImage] = useState(false);
   const [btnText, setBtnText] = useState('Découvrir & Profiter');
   const [btnAction, setBtnAction] = useState('close'); // 'close' | 'menu' | 'reward'
   const [target, setTarget] = useState('all');
@@ -118,6 +119,41 @@ export function AdminNotifications() {
       channel.unsubscribe();
     };
   }, []);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 4 * 1024 * 1024) {
+      alert('L’image est trop volumineuse (max 4 Mo).');
+      return;
+    }
+
+    setUploadingImage(true);
+    try {
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (err) => reject(err);
+        reader.readAsDataURL(file);
+      });
+
+      const res = await fetch('/api/super-admin/upload', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ name: file.name, data: base64 }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur upload image');
+
+      setImageUrl(data.url);
+    } catch (err: any) {
+      alert(`Erreur upload : ${err.message}`);
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const applyPreset = (p: Preset) => {
     setType(p.type);
@@ -644,8 +680,7 @@ export function AdminNotifications() {
                       outline: 'none',
                     }}
                   >
-                    <option value="close">Fermer la modale</option>
-                    <option value="menu">Ouvrir le Menu Bieny</option>
+                    <option value="close">Fermer la modale / Rester sur la carte</option>
                     <option value="reward">Voir les Récompenses</option>
                   </select>
                 </div>
@@ -686,13 +721,59 @@ export function AdminNotifications() {
                     }}
                   >
                     <div>
-                      <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', marginBottom: '0.25rem' }}>
-                        Image d'illustration (URL optionnelle)
+                      <label style={{ display: 'block', fontSize: 'var(--text-2xs)', fontWeight: 800, color: 'var(--coffee-mid)', marginBottom: '0.35rem' }}>
+                        Image d'illustration
                       </label>
+
+                      <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                        {imageUrl && (
+                          <img
+                            src={imageUrl}
+                            alt="Illustration"
+                            style={{ width: '48px', height: '48px', borderRadius: '8px', objectFit: 'cover', border: '1px solid var(--crema-border)' }}
+                          />
+                        )}
+
+                        <input
+                          type="file"
+                          accept="image/*"
+                          id="notif-image-upload"
+                          style={{ display: 'none' }}
+                          onChange={handleImageUpload}
+                          disabled={uploadingImage}
+                        />
+                        <label
+                          htmlFor="notif-image-upload"
+                          className="touch-btn touch-btn--secondary"
+                          style={{
+                            minHeight: '34px',
+                            padding: '4px 12px',
+                            fontSize: '0.78rem',
+                            cursor: 'pointer',
+                            display: 'inline-flex',
+                            alignItems: 'center',
+                            gap: '6px',
+                          }}
+                        >
+                          <span>📷</span>
+                          <span>{uploadingImage ? 'Upload...' : imageUrl ? 'Changer l’image' : 'Choisir une image'}</span>
+                        </label>
+
+                        {imageUrl && (
+                          <button
+                            type="button"
+                            onClick={() => setImageUrl('')}
+                            style={{ background: 'none', border: 'none', color: 'var(--coral)', fontSize: '0.78rem', cursor: 'pointer' }}
+                          >
+                            Supprimer
+                          </button>
+                        )}
+                      </div>
+
                       <input
                         value={imageUrl}
                         onChange={(e) => setImageUrl(e.target.value)}
-                        placeholder="https://..."
+                        placeholder="Ou collez une URL : https://..."
                         style={{
                           width: '100%',
                           padding: '0.65rem 0.75rem',
