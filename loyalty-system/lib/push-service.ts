@@ -1,12 +1,18 @@
-import webpush from 'web-push';
+import * as webpushModule from 'web-push';
 import { getAdminClient } from './supabase';
+
+const webpush = (webpushModule as any).default || webpushModule;
 
 const VAPID_PUBLIC = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || '';
 const VAPID_PRIVATE = process.env.VAPID_PRIVATE_KEY || '';
 const VAPID_SUBJECT = process.env.VAPID_SUBJECT || 'mailto:admin@example.com';
 
-if (VAPID_PUBLIC && VAPID_PRIVATE) {
-  webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC, VAPID_PRIVATE);
+function ensureVapidDetails() {
+  if (VAPID_PUBLIC && VAPID_PRIVATE && webpush && typeof webpush.setVapidDetails === 'function') {
+    try {
+      webpush.setVapidDetails(VAPID_SUBJECT, VAPID_PUBLIC, VAPID_PRIVATE);
+    } catch {}
+  }
 }
 
 export interface SendPushParams {
@@ -25,6 +31,7 @@ export interface SendPushParams {
  * Ne dépend pas d'Edge Functions déphasées : tourne directement dans le serveur Next.js.
  */
 export async function sendStorePushNotification(params: SendPushParams) {
+  ensureVapidDetails();
   const { storeId, target = 'all', title, message, imageUrl, btnText = 'Découvrir', btnAction = 'close', campaignId } = params;
   const admin = getAdminClient();
 
