@@ -32,7 +32,7 @@ type CardData = {
   store?: { name: string; slug: string; logo_url?: string | null } | null;
 };
 
-type View = 'card' | 'menu' | 'reward' | 'history';
+type View = 'card' | 'reward' | 'history';
 
 export default function ClientCard({ token, initialData }: { token: string; initialData: CardData }) {
   const [data, setData] = useState<CardData>(initialData);
@@ -43,14 +43,30 @@ export default function ClientCard({ token, initialData }: { token: string; init
 
   const refresh = useCallback(async () => {
     setIsRefreshing(true);
-    const r = await fetchClientCard(token);
-    if (r.ok && r.data) setData(r.data);
-    setIsRefreshing(false);
-  }, [token]);
+    try {
+      // Appel API côté serveur pour garantir les données fraîches et le store associé
+      const res = await fetch(`/api/client/${token}`, { cache: 'no-store' });
+      if (res.ok) {
+        const freshData = await res.json();
+        if (freshData) {
+          setData((prev) => ({
+            ...prev,
+            ...freshData,
+            // Préserver les informations du store si le refresh ne les ré-injecte pas
+            store: freshData.store || prev.store || initialData.store,
+          }));
+        }
+      }
+    } catch (e) {
+      // Ignorer l'erreur silencieusement en polling
+    } finally {
+      setIsRefreshing(false);
+    }
+  }, [token, initialData.store]);
 
   useEffect(() => {
     const handleNav = (e: any) => {
-      if (e.detail && ['card', 'menu', 'reward', 'history'].includes(e.detail)) {
+      if (e.detail && ['card', 'reward', 'history'].includes(e.detail)) {
         setView(e.detail);
       }
     };
@@ -596,71 +612,32 @@ export default function ClientCard({ token, initialData }: { token: string; init
               </p>
             </div>
 
-            {/* ── Quick Menu Banner Shortcut ── */}
+            {/* ── Instructions Banner ── */}
             <div
               className="ui-card"
-              onClick={() => setView('menu')}
               style={{
-                padding: '1.15rem 1.35rem',
-                cursor: 'pointer',
+                padding: '1.25rem 1.35rem',
                 background: 'linear-gradient(135deg, #FAF8F5 0%, #F4EFEA 100%)',
                 border: '1.5px solid var(--crema-border)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'space-between',
+                borderRadius: 'var(--r-xl)',
                 boxShadow: 'var(--shadow-sm)',
-                transition: 'all 0.2s ease',
               }}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <div
-                  style={{
-                    width: '46px',
-                    height: '46px',
-                    borderRadius: '14px',
-                    background: 'var(--espresso)',
-                    color: 'var(--gold)',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 4px 12px rgba(44, 30, 22, 0.2)',
-                  }}
-                >
-                  <BookOpenIcon size={24} />
-                </div>
-                <div>
-                  <div style={{ fontWeight: 800, fontSize: 'var(--text-base)', color: 'var(--espresso)' }}>
-                    Découvrir la Carte Bieny
-                  </div>
-                  <div style={{ fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)', marginTop: '0.15rem' }}>
-                    Boissons d'exception & douceurs fraîches
-                  </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', marginBottom: '0.5rem' }}>
+                <span style={{ fontSize: '1.3rem' }}>🎁</span>
+                <div style={{ fontWeight: 800, fontSize: 'var(--text-base)', color: 'var(--espresso)' }}>
+                  Programme Fidélité {data.store?.name || ''}
                 </div>
               </div>
-
-              <div
-                style={{
-                  width: '34px',
-                  height: '34px',
-                  borderRadius: '50%',
-                  background: 'var(--crema-surface)',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  border: '1px solid var(--crema-border)',
-                  color: 'var(--espresso)',
-                  fontSize: '1rem',
-                  boxShadow: 'var(--shadow-xs)',
-                }}
-              >
-                →
-              </div>
+              <p style={{ margin: 0, fontSize: 'var(--text-xs)', color: 'var(--coffee-mid)', lineHeight: 1.5 }}>
+                Cumulez des tampons à chaque visite et débloquez vos réductions et récompenses exclusives en présentant votre QR code en caisse.
+              </p>
             </div>
 
             {/* ── How it works ── */}
             <div className="ui-card ui-card--subtle" style={{ padding: '1.35rem' }}>
               <div style={{ fontWeight: 800, fontSize: 'var(--text-sm)', color: 'var(--espresso)', marginBottom: '0.85rem' }}>
-                ☕ Fonctionnement du Programme Bieny
+                ☕ Fonctionnement du Programme
               </div>
               <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', fontSize: 'var(--text-sm)', color: 'var(--espresso)', lineHeight: 1.5 }}>
                 <div style={{ display: 'flex', alignItems: 'flex-start', gap: '10px' }}>
@@ -852,71 +829,6 @@ export default function ClientCard({ token, initialData }: { token: string; init
             )}
           </div>
         )}
-
-        {/* VIEW 4: MENU */}
-        {view === 'menu' && (
-          <div className="animate-in" style={{ paddingBottom: '0.5rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem' }}>
-              <div>
-                <div className="section-label">Carte Gourmande</div>
-                <h2 className="section-title">
-                  Notre Menu
-                </h2>
-              </div>
-
-              <a
-                href="https://houssem-qr.onrender.com/qr"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="touch-btn touch-btn--outline"
-                style={{
-                  minHeight: '38px',
-                  padding: '6px 14px',
-                  fontSize: 'var(--text-xs)',
-                  display: 'inline-flex',
-                  alignItems: 'center',
-                  gap: '6px',
-                  borderRadius: 'var(--r-pill)',
-                  background: 'var(--crema-surface)',
-                  boxShadow: 'var(--shadow-xs)',
-                }}
-              >
-                <span>Plein écran</span>
-                <ExternalLinkIcon size={14} />
-              </a>
-            </div>
-
-            {/* Menu container iframe */}
-            <div
-              className="ui-card"
-              style={{
-                padding: '0',
-                overflow: 'hidden',
-                borderRadius: 'var(--r-xl)',
-                border: '1.5px solid var(--crema-border)',
-                background: '#FFFFFF',
-                boxShadow: 'var(--shadow-md)',
-                height: 'calc(100dvh - 200px)',
-                minHeight: '520px',
-                position: 'relative',
-              }}
-            >
-              <iframe
-                src="https://houssem-qr.onrender.com/qr"
-                title="Menu Bieny Coffeeshop"
-                style={{
-                  width: '100%',
-                  height: '100%',
-                  border: 'none',
-                  display: 'block',
-                  background: 'transparent',
-                }}
-                loading="lazy"
-                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope"
-              />
-            </div>
-          </div>
-        )}
       </main>
 
       <PwaInstallPrompt token={token} />
@@ -933,17 +845,6 @@ export default function ClientCard({ token, initialData }: { token: string; init
             <CoffeeIcon size={20} />
           </div>
           <span className="bottom-tab__label">Ma Carte</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setView('menu')}
-          className={`bottom-tab ${view === 'menu' ? 'bottom-tab--active' : ''}`}
-        >
-          <div className="bottom-tab__icon-wrap">
-            <BookOpenIcon size={20} />
-          </div>
-          <span className="bottom-tab__label">Le Menu</span>
         </button>
 
         <button

@@ -112,9 +112,7 @@ export function NotificationModal() {
 
   const handleAction = () => {
     const action = activeNotif.btn_action;
-    if (action === 'menu') {
-      window.dispatchEvent(new CustomEvent('bieny_navigate_view', { detail: 'menu' }));
-    } else if (action === 'reward') {
+    if (action === 'reward') {
       window.dispatchEvent(new CustomEvent('bieny_navigate_view', { detail: 'reward' }));
     }
     setActiveNotif(null);
