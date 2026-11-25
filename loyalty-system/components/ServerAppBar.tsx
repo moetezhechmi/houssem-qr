@@ -112,6 +112,25 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
           {/* User profile & logout */}
           {employee && (
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.45rem' }}>
+              {(employee.role === 'super_admin' || employee.email === 'grounmoetezhechmi@gmail.com') && (
+                <a
+                  href="/super-admin"
+                  style={{
+                    background: '#8C4820',
+                    color: '#fff',
+                    padding: '4px 9px',
+                    borderRadius: 'var(--r-pill)',
+                    fontSize: 'var(--text-2xs)',
+                    fontWeight: 800,
+                    textDecoration: 'none',
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '4px',
+                  }}
+                >
+                  ⚡ Super Admin
+                </a>
+              )}
               <div
                 title={employee.email}
                 style={{

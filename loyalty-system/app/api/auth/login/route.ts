@@ -11,7 +11,22 @@ export async function POST(req: Request) {
   if (error || !data.session?.access_token) {
     return NextResponse.json({ error: { code: 'LOGIN_FAILED', message: 'Email ou mot de passe incorrect' } }, { status: 401 });
   }
-  const res = NextResponse.json({ ok: true, email: email.trim() });
+  // Déterminer la redirection selon le rôle de l'utilisateur
+  let redirectUrl = '/serveur';
+  try {
+    const { data: emp } = await getAdminClient().rpc('fn_get_employee_by_id', { p_user_id: data.user.id });
+    if (email.trim().toLowerCase() === 'grounmoetezhechmi@gmail.com' || emp?.role === 'super_admin') {
+      redirectUrl = '/super-admin';
+    } else if (emp?.role === 'admin') {
+      redirectUrl = '/admin';
+    }
+  } catch (e) {
+    if (email.trim().toLowerCase() === 'grounmoetezhechmi@gmail.com') {
+      redirectUrl = '/super-admin';
+    }
+  }
+
+  const res = NextResponse.json({ ok: true, email: email.trim(), redirectUrl });
   res.cookies.set(ACCESS_TOKEN_COOKIE, data.session.access_token, {
     httpOnly: true, secure: process.env.NODE_ENV === 'production', sameSite: 'lax', path: '/', maxAge: 60 * 60 * 24 * 7,
   });

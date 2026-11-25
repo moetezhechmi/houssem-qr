@@ -29,7 +29,9 @@ export default function LoginPage() {
       });
 
       if (res.ok) {
-        const dest = new URLSearchParams(window.location.search).get('redirect') || '/serveur';
+        const data = await res.json().catch(() => ({}));
+        const redirectParam = new URLSearchParams(window.location.search).get('redirect');
+        const dest = redirectParam || data?.redirectUrl || '/serveur';
         window.location.href = dest;
         return;
       }
