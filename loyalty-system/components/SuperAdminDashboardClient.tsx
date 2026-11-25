@@ -31,6 +31,7 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
   const [logoUrl, setLogoUrl] = useState('');
+  const [uploadingLogo, setUploadingLogo] = useState(false);
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [adminName, setAdminName] = useState('');
@@ -48,6 +49,34 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
           .replace(/[^a-z0-9]+/g, '-')
           .replace(/(^-|-$)+/g, '')
       );
+    }
+  };
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingLogo(true);
+    setMsg(null);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const res = await fetch('/api/super-admin/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || 'Erreur lors de l’upload');
+
+      setLogoUrl(data.url);
+      setMsg({ text: 'Logo uploadé avec succès depuis votre appareil !', ok: true });
+    } catch (err: any) {
+      setMsg({ text: err.message, ok: false });
+    } finally {
+      setUploadingLogo(false);
     }
   };
 
@@ -502,19 +531,72 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
               </div>
 
               <div style={{ marginBottom: '0.85rem' }}>
-                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#3A2618', marginBottom: '0.2rem' }}>
-                  Logo de l'établissement (URL de l'image)
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#3A2618', marginBottom: '0.25rem' }}>
+                  Logo de l'établissement (depuis votre galerie / fichiers)
                 </label>
-                <input
-                  type="url"
-                  placeholder="https://... ou /images/mon_logo.png"
-                  value={logoUrl}
-                  onChange={(e) => setLogoUrl(e.target.value)}
-                  style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.88rem' }}
-                />
-                <span style={{ fontSize: '0.7rem', color: '#7E685A' }}>
-                  Utilisé comme icône de raccourci Web App lors de l'installation et pour les notifications push.
-                </span>
+
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '0.75rem',
+                    padding: '0.75rem',
+                    borderRadius: '8px',
+                    border: '1px dashed #C9A98C',
+                    background: '#FAF6F0',
+                  }}
+                >
+                  {/* Prévisualisation logo */}
+                  <div
+                    style={{
+                      width: '48px',
+                      height: '48px',
+                      borderRadius: '8px',
+                      background: '#fff',
+                      border: '1px solid #EAD8C7',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      overflow: 'hidden',
+                      flexShrink: 0,
+                    }}
+                  >
+                    {logoUrl ? (
+                      <img src={logoUrl} alt="Logo" style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                    ) : (
+                      <span style={{ fontSize: '1.4rem' }}>📷</span>
+                    )}
+                  </div>
+
+                  <div style={{ flex: 1 }}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      id="logo-file-input"
+                      style={{ display: 'none' }}
+                      onChange={handleFileUpload}
+                      disabled={uploadingLogo}
+                    />
+                    <label
+                      htmlFor="logo-file-input"
+                      style={{
+                        display: 'inline-block',
+                        background: '#8C4820',
+                        color: '#fff',
+                        padding: '0.4rem 0.85rem',
+                        borderRadius: '6px',
+                        fontSize: '0.78rem',
+                        fontWeight: 700,
+                        cursor: 'pointer',
+                      }}
+                    >
+                      {uploadingLogo ? 'Upload en cours...' : 'Choisir une photo / image'}
+                    </label>
+                    <div style={{ fontSize: '0.7rem', color: '#7E685A', marginTop: '0.2rem' }}>
+                      {logoUrl ? '✓ Image prête et enregistrée' : 'Depuis votre smartphone ou votre ordinateur (PNG, JPG)'}
+                    </div>
+                  </div>
+                </div>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>
