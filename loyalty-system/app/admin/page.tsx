@@ -47,19 +47,20 @@ export default async function AdminPage({
     }
   }
 
-  const [settings, corrections, ops, stats, customers, cards, rewards, employees] =
-    await Promise.all([
-      getSettings(targetStoreId),
-      getCorrections(30, targetStoreId),
-      getRecentOperations(50, targetStoreId),
-      getDashboardStats(targetStoreId),
-      getAllCustomers(100, targetStoreId),
-      getAllCards(100, targetStoreId),
-      getAllRewards(100, targetStoreId),
-      getEmployees(targetStoreId),
-    ]);
-
   const isNotifTab = tab === 'notifications';
+
+  const [settings, corrections, ops, stats, customers, cards, rewards, employees] = isNotifTab
+    ? [null, [], [], null, [], [], [], []]
+    : await Promise.all([
+        getSettings(targetStoreId),
+        getCorrections(30, targetStoreId),
+        getRecentOperations(50, targetStoreId),
+        getDashboardStats(targetStoreId),
+        getAllCustomers(100, targetStoreId),
+        getAllCards(100, targetStoreId),
+        getAllRewards(100, targetStoreId),
+        getEmployees(targetStoreId),
+      ]);
 
   return (
     <div className="has-bottom-nav" style={{ minHeight: '100dvh' }}>
@@ -113,6 +114,8 @@ export default async function AdminPage({
           initialTab={tab}
           storeName={displayedAdmin.store_name}
           storeLogo={displayedAdmin.store_logo_url}
+          storeId={targetStoreId}
+          hasFullData={!isNotifTab}
         />
       </main>
     </div>

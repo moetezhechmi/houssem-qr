@@ -103,7 +103,12 @@ export default function ClientCard({ token, initialData }: { token: string; init
         subs.push(ch);
       }
     }
-    const timer = setInterval(refresh, 10_000);
+    // Polling de secours uniquement lorsque l'onglet est actif (économie serveur & batterie)
+    const timer = setInterval(() => {
+      if (typeof document !== 'undefined' && document.visibilityState === 'visible') {
+        refresh();
+      }
+    }, 30_000);
     return () => {
       subs.forEach((c) => c.unsubscribe());
       clearInterval(timer);

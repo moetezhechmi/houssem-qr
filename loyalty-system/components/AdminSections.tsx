@@ -1,6 +1,8 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { fmtDate, fmtDateTime } from '@/lib/format';
 import { AdminNotifications } from './AdminNotifications';
 
@@ -27,6 +29,8 @@ interface AdminSectionsProps {
   initialTab?: string;
   storeName?: string | null;
   storeLogo?: string | null;
+  storeId?: string | null;
+  hasFullData?: boolean;
 }
 
 export function AdminSections({
@@ -41,10 +45,21 @@ export function AdminSections({
   initialTab,
   storeName,
   storeLogo,
+  storeId,
+  hasFullData = true,
 }: AdminSectionsProps) {
+  const router = useRouter();
   const validTabs: SectionId[] = ['overview','customers','employees','cards','rewards','history','stats','settings','notifications'];
   const startTab = (validTabs.includes(initialTab as SectionId) ? initialTab : 'overview') as SectionId;
   const [activeTab, setActiveTab] = useState<SectionId>(startTab);
+
+  const selectTab = (id: SectionId) => {
+    if (!hasFullData && id !== 'notifications') {
+      router.push(`/admin?tab=${id}${storeId ? `&store_id=${storeId}` : ''}`);
+      return;
+    }
+    setActiveTab(id);
+  };
   const [showMore, setShowMore] = useState(false);
   const [opsPage, setOpsPage] = useState(1);
   const OPS_PER_PAGE = 15;
@@ -198,7 +213,7 @@ export function AdminSections({
               <button
                 key={item.id}
                 type="button"
-                onClick={() => setActiveTab(item.id)}
+                onClick={() => selectTab(item.id)}
                 className={`admin-nav-item ${isActive ? 'admin-nav-item--active' : ''}`}
               >
                 <span style={{ fontSize: '1.1rem' }}>{item.icon}</span>
@@ -330,13 +345,13 @@ export function AdminSections({
                     </div>
                   </div>
 
-                  <a
+                  <Link
                     href={`/serveur/customers/${c.id}`}
                     className="touch-btn touch-btn--outline"
                     style={{ minHeight: '34px', padding: '0.3rem 0.85rem', fontSize: '0.78rem', textDecoration: 'none' }}
                   >
                     Voir la fiche →
-                  </a>
+                  </Link>
                 </div>
               ))}
             </div>
@@ -1035,7 +1050,7 @@ export function AdminSections({
             <button
               key={item.id}
               type="button"
-              onClick={() => setActiveTab(item.id as SectionId)}
+              onClick={() => selectTab(item.id as SectionId)}
               className={`admin-mobile-bottom-item ${isActive ? 'admin-mobile-bottom-item--active' : ''}`}
             >
               <span>{item.icon}</span>
@@ -1089,7 +1104,7 @@ export function AdminSections({
                   <button
                     key={item.id}
                     type="button"
-                    onClick={() => { setActiveTab(item.id); setShowMore(false); }}
+                    onClick={() => { selectTab(item.id); setShowMore(false); }}
                     style={{
                       display: 'flex',
                       alignItems: 'center',

@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 import { getEmployee } from '@/lib/auth-guard';
 import { getDashboardStats } from '@/lib/server-data';
 import {
@@ -145,16 +146,16 @@ export default async function ServeurDashboard() {
 
           {/* Quick Action Touch Targets */}
           <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
-            <a
+            <Link
               href="/serveur/customers"
               className="touch-btn touch-btn--gold"
               style={{ flex: '1 1 180px', textDecoration: 'none', gap: '8px' }}
             >
               <SearchIcon size={18} color="var(--espresso)" />
               <span>Rechercher un Client</span>
-            </a>
+            </Link>
 
-            <a
+            <Link
               href="/serveur/customers?action=new"
               className="touch-btn"
               style={{
@@ -168,7 +169,7 @@ export default async function ServeurDashboard() {
             >
               <PlusIcon size={18} color="#FFFFFF" />
               <span>+ Nouveau</span>
-            </a>
+            </Link>
           </div>
         </div>
       </div>
@@ -183,7 +184,7 @@ export default async function ServeurDashboard() {
         }}
       >
         {statCards.map((c, idx) => (
-          <a
+          <Link
             key={c.label}
             href={c.href}
             className="stat-card"
@@ -240,7 +241,7 @@ export default async function ServeurDashboard() {
                 {c.sub}
               </div>
             </div>
-          </a>
+          </Link>
         ))}
       </div>
 

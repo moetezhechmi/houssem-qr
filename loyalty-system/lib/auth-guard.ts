@@ -44,8 +44,8 @@ const resolveCurrentEmployee = cache(async (): Promise<Employee | null> => {
   const { data: employee } = await getAdminClient().rpc('fn_get_employee_by_id', { p_user_id: user.id });
   if (!employee || employee.status !== 'active') return null;
 
-  // Récupérer le store associé si l'employé en a un
-  if (employee.store_id) {
+  // Récupérer le store associé uniquement si la RPC ne l'a pas déjà joint (migration 012)
+  if (employee.store_id && employee.store_status === undefined) {
     const { data: store } = await getAdminClient()
       .from('Stores')
       .select('status, name, slug, logo_url')
