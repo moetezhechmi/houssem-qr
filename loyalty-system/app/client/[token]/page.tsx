@@ -1,7 +1,37 @@
 import { redirect } from 'next/navigation';
+import type { Metadata } from 'next';
 import { getEmployee } from '@/lib/auth-guard';
 import { fetchClientCard } from '@/lib/client-card';
 import ClientCard from '@/components/ClientCard';
+
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ token: string }>;
+}): Promise<Metadata> {
+  const { token } = await params;
+  const res = await fetchClientCard(token);
+  const store = res.ok && res.data ? (res.data as any).store : null;
+
+  const appName = store?.name || 'Bieny Coffeeshop';
+  const logo = store?.logo_url || '/logo_houssem.jpeg';
+  const manifestUrl = store?.slug ? `/api/manifest?store=${store.slug}` : '/manifest.webmanifest';
+
+  return {
+    title: `Fidélité — ${appName}`,
+    description: `Votre carte de fidélité ${appName}`,
+    manifest: manifestUrl,
+    appleWebApp: {
+      capable: true,
+      statusBarStyle: 'default',
+      title: appName,
+    },
+    icons: {
+      icon: logo,
+      apple: logo,
+    },
+  };
+}
 
 export default async function ClientPage({
   params,

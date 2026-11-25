@@ -6,6 +6,7 @@ interface Store {
   id: string;
   name: string;
   slug: string;
+  logo_url?: string | null;
   phone?: string | null;
   address?: string | null;
   status: string;
@@ -29,6 +30,7 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
   // Formulaire nouveau store
   const [name, setName] = useState('');
   const [slug, setSlug] = useState('');
+  const [logoUrl, setLogoUrl] = useState('');
   const [phone, setPhone] = useState('');
   const [address, setAddress] = useState('');
   const [adminName, setAdminName] = useState('');
@@ -90,6 +92,7 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
         body: JSON.stringify({
           name,
           slug,
+          logo_url: logoUrl,
           phone,
           address,
           adminName,
@@ -113,6 +116,7 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
       setStores([data.store, ...stores]);
       setName('');
       setSlug('');
+      setLogoUrl('');
       setPhone('');
       setAddress('');
       setAdminName('');
@@ -276,7 +280,22 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
                 }}
               >
                 <div style={{ minWidth: '220px' }}>
-                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.65rem', marginBottom: '0.35rem' }}>
+                    {s.logo_url ? (
+                      <img
+                        src={s.logo_url}
+                        alt={s.name}
+                        style={{
+                          width: '32px',
+                          height: '32px',
+                          borderRadius: '8px',
+                          objectFit: 'cover',
+                          border: '1px solid #EAD8C7',
+                        }}
+                      />
+                    ) : (
+                      <span style={{ fontSize: '1.25rem' }}>☕</span>
+                    )}
                     <span style={{ fontWeight: 800, fontSize: '1rem', color: '#3A2618' }}>
                       {s.name}
                     </span>
@@ -480,6 +499,22 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
                   onChange={(e) => setSlug(e.target.value.toLowerCase().replace(/[^a-z0-9-]/g, ''))}
                   style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.88rem' }}
                 />
+              </div>
+
+              <div style={{ marginBottom: '0.85rem' }}>
+                <label style={{ display: 'block', fontSize: '0.78rem', fontWeight: 700, color: '#3A2618', marginBottom: '0.2rem' }}>
+                  Logo de l'établissement (URL de l'image)
+                </label>
+                <input
+                  type="url"
+                  placeholder="https://... ou /images/mon_logo.png"
+                  value={logoUrl}
+                  onChange={(e) => setLogoUrl(e.target.value)}
+                  style={{ width: '100%', padding: '0.55rem', borderRadius: '6px', border: '1px solid #CCC', fontSize: '0.88rem' }}
+                />
+                <span style={{ fontSize: '0.7rem', color: '#7E685A' }}>
+                  Utilisé comme icône de raccourci Web App lors de l'installation et pour les notifications push.
+                </span>
               </div>
 
               <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '0.75rem', marginBottom: '0.85rem' }}>

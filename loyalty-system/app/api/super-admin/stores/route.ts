@@ -10,7 +10,7 @@ export async function POST(req: Request) {
     }
 
     const body = await req.json();
-    const { name, slug, phone, address, adminName, adminEmail, adminPassword } = body;
+    const { name, slug, logo_url, phone, address, adminName, adminEmail, adminPassword } = body;
 
     if (!name || !slug) {
       return NextResponse.json({ error: 'Nom et slug du café sont obligatoires' }, { status: 400 });
@@ -24,6 +24,7 @@ export async function POST(req: Request) {
       .insert({
         name,
         slug: slug.toLowerCase().trim(),
+        logo_url: logo_url?.trim() || null,
         phone: phone || null,
         address: address || null,
         status: 'active',

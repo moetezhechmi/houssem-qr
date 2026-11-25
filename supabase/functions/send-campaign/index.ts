@@ -58,6 +58,16 @@ Deno.serve(async (req) => {
   const dedupKey = campaign.id ? `campaign:${campaign.id}` : null;
   const pushType = campaign.target === 'marketing' ? 'marketing' : 'generic';
 
+  // Récupérer le nom et le logo du store si store_id est présent
+  let storeInfo = null;
+  if (campaign.store_id) {
+    const { data: st } = await admin.from('Stores').select('name, logo_url').eq('id', campaign.store_id).maybeSingle();
+    storeInfo = st;
+  }
+
+  const notificationTitle = campaign.title || storeInfo?.name || 'Notification';
+  const notificationIcon = storeInfo?.logo_url || '/logo_houssem.jpeg';
+
   // 3. Déclencher l'envoi push uniquement à cette liste isolée
   const res = await fetch(`${SUPABASE_URL}/functions/v1/send-push`, {
     method: 'POST',
@@ -66,9 +76,9 @@ Deno.serve(async (req) => {
       customer_ids: customerIds,
       store_id: campaign.store_id || null,
       type: pushType,
-      title: campaign.title,
+      title: notificationTitle,
       message: campaign.message,
-      icon: '/logo_houssem.jpeg',
+      icon: notificationIcon,
       image_url: campaign.image_url || null,
       btn_text: body?.btn_text || 'Découvrir',
       btn_action: body?.btn_action || 'close',

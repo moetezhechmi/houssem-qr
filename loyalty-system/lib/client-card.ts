@@ -11,5 +11,18 @@ export async function fetchClientCard(token: string) {
   if (!data) {
     return { ok: false as const, error: { code: 'CARD_NOT_FOUND', message: 'Carte introuvable' } };
   }
-  return { ok: true as const, data };
+
+  // Récupérer le store associé si disponible
+  let store = null;
+  const { data: cardRow } = await getClient()
+    .from('LoyaltyCards')
+    .select('store_id, Stores(name, slug, logo_url)')
+    .eq('token_hash', tokenHash)
+    .maybeSingle();
+
+  if (cardRow && (cardRow as any).Stores) {
+    store = (cardRow as any).Stores;
+  }
+
+  return { ok: true as const, data: { ...data, store } };
 }

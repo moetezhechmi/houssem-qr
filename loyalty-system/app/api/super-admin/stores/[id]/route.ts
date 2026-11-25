@@ -14,16 +14,28 @@ export async function PATCH(
 
     const { id } = await params;
     const body = await req.json().catch(() => ({}));
-    const { status } = body;
+    const { status, logo_url, name, phone, address } = body;
 
-    if (!status || !['active', 'suspended', 'trial', 'archived'].includes(status)) {
-      return NextResponse.json({ error: 'Statut invalide' }, { status: 400 });
+    const updatePayload: Record<string, any> = {
+      updated_at: new Date().toISOString(),
+    };
+
+    if (status) {
+      if (!['active', 'suspended', 'trial', 'archived'].includes(status)) {
+        return NextResponse.json({ error: 'Statut invalide' }, { status: 400 });
+      }
+      updatePayload.status = status;
     }
+
+    if (logo_url !== undefined) updatePayload.logo_url = logo_url?.trim() || null;
+    if (name !== undefined) updatePayload.name = name.trim();
+    if (phone !== undefined) updatePayload.phone = phone.trim() || null;
+    if (address !== undefined) updatePayload.address = address.trim() || null;
 
     const adminClient = getAdminClient();
     const { data: updated, error } = await adminClient
       .from('Stores')
-      .update({ status, updated_at: new Date().toISOString() })
+      .update(updatePayload)
       .eq('id', id)
       .select()
       .single();
