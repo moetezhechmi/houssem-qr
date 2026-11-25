@@ -9,18 +9,27 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: 'Accès réservé au Super Admin' }, { status: 403 });
     }
 
-    const formData = await req.formData();
-    const file = formData.get('file') as File | null;
-
-    if (!file) {
-      return NextResponse.json({ error: 'Aucun fichier fourni' }, { status: 400 });
+    const body = await req.json().catch(() => null);
+    if (!body?.data || !body?.name) {
+      return NextResponse.json({ error: 'Fichier invalide ou manquant' }, { status: 400 });
     }
 
-    const bytes = await file.arrayBuffer();
-    const buffer = Buffer.from(bytes);
+    // Le client envoie une dataURL base64 : "data:image/png;base64,iVBORw..."
+    const base64Data = body.data;
+    const matches = base64Data.match(/^data:([A-Za-z-+\/]+);base64,(.+)$/);
+
+    let mimeType = 'image/png';
+    let buffer: Buffer;
+
+    if (matches && matches.length === 3) {
+      mimeType = matches[1];
+      buffer = Buffer.from(matches[2], 'base64');
+    } else {
+      buffer = Buffer.from(base64Data, 'base64');
+    }
 
     // Déterminer l'extension
-    const origName = file.name || 'logo.png';
+    const origName = String(body.name || 'logo.png');
     const ext = origName.split('.').pop()?.toLowerCase() || 'png';
     const fileName = `logo-${Date.now()}-${Math.random().toString(36).substring(2, 8)}.${ext}`;
 
@@ -36,7 +45,7 @@ export async function POST(req: Request) {
     const { data, error } = await admin.storage
       .from('store-logos')
       .upload(fileName, buffer, {
-        contentType: file.type || 'image/png',
+        contentType: mimeType,
         upsert: true,
       });
 

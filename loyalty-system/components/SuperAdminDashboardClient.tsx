@@ -56,9 +56,9 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Vérifier la taille du fichier (max 5 Mo)
-    if (file.size > 5 * 1024 * 1024) {
-      alert('L’image est trop volumineuse (max 5 Mo).');
+    // Vérifier la taille du fichier (max 4 Mo)
+    if (file.size > 4 * 1024 * 1024) {
+      alert('L’image est trop volumineuse (max 4 Mo).');
       return;
     }
 
@@ -66,12 +66,21 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
     setMsg(null);
 
     try {
-      const formData = new FormData();
-      formData.append('file', file);
+      // Convertir le fichier en Base64 pour un transfert fiable sans problème de multipart/formData
+      const base64 = await new Promise<string>((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result as string);
+        reader.onerror = (err) => reject(err);
+        reader.readAsDataURL(file);
+      });
 
       const res = await fetch('/api/super-admin/upload', {
         method: 'POST',
-        body: formData,
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: file.name,
+          data: base64,
+        }),
       });
 
       const data = await res.json();
@@ -82,7 +91,7 @@ export function SuperAdminDashboardClient({ stats, initialStores, employees }: P
       setLogoUrl(data.url);
       setMsg({ text: `✓ Logo "${file.name}" uploadé avec succès sur Supabase Storage !`, ok: true });
     } catch (err: any) {
-      alert(`Erreur upload: ${err.message}`);
+      alert(`Erreur upload : ${err.message}`);
       setMsg({ text: `Erreur upload : ${err.message}`, ok: false });
     } finally {
       setUploadingLogo(false);
