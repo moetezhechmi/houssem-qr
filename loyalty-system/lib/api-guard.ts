@@ -26,6 +26,25 @@ export async function requireEmployeeUser(role: 'server' | 'admin' = 'server'): 
   if (!user?.id) return null;
   const { data: employee } = await getAdminClient().rpc('fn_get_employee_by_id', { p_user_id: user.id });
   if (!employee || employee.status !== 'active') return null;
+
+  // Si super_admin, tout autoriser
+  if (employee.email === 'grounmoetezhechmi@gmail.com' || employee.role === 'super_admin') {
+    return employee;
+  }
+
+  // Vérifier si le store est suspendu
+  if (employee.store_id) {
+    const { data: store } = await getAdminClient()
+      .from('Stores')
+      .select('status')
+      .eq('id', employee.store_id)
+      .maybeSingle();
+
+    if (store && store.status === 'suspended') {
+      return null; // accès bloqué si abonnement désactivé
+    }
+  }
+
   if (role === 'admin' && employee.role !== 'admin') return null;
   return employee;
 }

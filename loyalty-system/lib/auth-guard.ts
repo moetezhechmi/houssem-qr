@@ -11,6 +11,7 @@ export interface Employee {
   store_id: string | null;
   store_name?: string | null;
   store_slug?: string | null;
+  store_status?: string | null;
   created_at: string;
 }
 
@@ -47,6 +48,25 @@ export async function getEmployee(requiredRole: 'server' | 'admin' | 'super_admi
   // Si l'utilisateur est Moetez Hechmi ou a le rôle super_admin, lui accorder les pleins pouvoirs
   if (employee.email === 'grounmoetezhechmi@gmail.com' || employee.role === 'super_admin') {
     return { ...employee, role: 'super_admin' } as Employee;
+  }
+
+  // Si l'employé est rattaché à un store, vérifier si le store est actif
+  if (employee.store_id) {
+    const { data: store } = await getAdminClient()
+      .from('Stores')
+      .select('status, name, slug')
+      .eq('id', employee.store_id)
+      .maybeSingle();
+
+    if (store) {
+      employee.store_status = store.status;
+      employee.store_name = store.name;
+      employee.store_slug = store.slug;
+
+      if (store.status === 'suspended') {
+        redirect('/store-suspended');
+      }
+    }
   }
 
   if (requiredRole === 'super_admin' && employee.role !== 'super_admin') return null;
