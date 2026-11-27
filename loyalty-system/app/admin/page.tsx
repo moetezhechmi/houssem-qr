@@ -1,7 +1,6 @@
 import { redirect } from 'next/navigation';
 import Link from 'next/link';
-import { getAdminClient } from '@/lib/supabase';
-import { getEmployee } from '@/lib/auth-guard';
+import { getAdminClient } from '@/lib/supabase';import { getEmployee } from '@/lib/auth-guard';
 import {
   getSettings,
   getCorrections,
@@ -65,6 +64,32 @@ export default async function AdminPage({
   return (
     <div className="has-bottom-nav" style={{ minHeight: '100dvh' }}>
       <ServerAppBar employee={displayedAdmin} hideBottomBar />
+
+      {/* FAB Scan QR */}
+      <Link
+        href="/serveur/scan"
+        title="Scanner une carte fidélité"
+        style={{
+          position: 'fixed',
+          bottom: '1.5rem',
+          right: '1rem',
+          zIndex: 95,
+          width: '56px',
+          height: '56px',
+          borderRadius: '50%',
+          background: 'var(--espresso, #2C1A0E)',
+          border: '2px solid var(--gold, #D4A054)',
+          color: '#FAF8F5',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          fontSize: '1.5rem',
+          boxShadow: '0 6px 24px rgba(0,0,0,0.45)',
+          textDecoration: 'none',
+        }}
+      >
+        📷
+      </Link>
 
       <main className="shell shell--wide">
         {!isNotifTab && (

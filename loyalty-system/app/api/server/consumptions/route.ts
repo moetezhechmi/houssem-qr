@@ -21,7 +21,13 @@ export async function POST(req: Request) {
     return apiError(404, 'CARD_NOT_FOUND', 'Carte introuvable');
   }
 
-  if (employee.role !== 'super_admin' && employee.store_id && cardRow.store_id !== employee.store_id) {
+  // Bloquer seulement si l'employé ET la carte ont un store_id ET qu'ils diffèrent
+  if (
+    employee.role !== 'super_admin' &&
+    employee.store_id &&
+    cardRow.store_id &&
+    cardRow.store_id !== employee.store_id
+  ) {
     return apiError(403, 'FORBIDDEN', 'Cette carte appartient à un autre établissement');
   }
 
