@@ -6,7 +6,6 @@ import { usePathname } from 'next/navigation';
 import {
   HomeIcon,
   SearchIcon,
-  PlusIcon,
   SettingsIcon,
   RefreshCwIcon,
   LogoutIcon,
@@ -225,37 +224,6 @@ export function ServerAppBar({ employee, hideBottomBar = false }: ServerAppBarPr
             <span className="bottom-tab__label">Clients</span>
           </Link>
 
-          {/* Elevated Centered "+ Nouveau Client" Button */}
-          <Link
-            href="/serveur/customers?action=new"
-            className="bottom-tab bottom-tab--raised"
-            title="Créer un nouveau client"
-          >
-            <div
-              className="bottom-tab__icon-wrap bottom-tab__raised-btn"
-              style={{
-                width: '48px',
-                height: '48px',
-                borderRadius: '50%',
-                background: 'linear-gradient(135deg, #382419 0%, #1A0F08 100%)',
-                color: '#FAF8F5',
-                boxShadow: '0 8px 20px rgba(24, 16, 10, 0.38), 0 0 0 1px rgba(212, 160, 84, 0.4)',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center',
-                transform: 'translateY(-9px)',
-                border: '3px solid #FAF8F5',
-              }}
-            >
-              <PlusIcon size={22} color="#FFFFFF" />
-            </div>
-            <span
-              className="bottom-tab__label"
-              style={{ color: 'var(--espresso)', fontWeight: 800, transform: 'translateY(-4px)' }}
-            >
-              Nouveau
-            </span>
-          </Link>
 
           {employee?.role === 'admin' ? (
             <>
