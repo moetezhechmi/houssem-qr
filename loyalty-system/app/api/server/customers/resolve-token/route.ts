@@ -22,7 +22,12 @@ export async function POST(req: Request) {
   if (cardErr) return apiError(500, 'FETCH_FAILED', cardErr.message);
   if (!cardRow?.customer_id) return apiError(404, 'CARD_NOT_FOUND', 'Carte introuvable');
 
-  if (employee.role !== 'super_admin' && employee.store_id && cardRow.store_id !== employee.store_id) {
+  if (
+    employee.role !== 'super_admin' &&
+    employee.store_id &&
+    cardRow.store_id &&
+    cardRow.store_id !== employee.store_id
+  ) {
     return apiError(403, 'FORBIDDEN', 'Cette carte appartient à un autre établissement');
   }
 

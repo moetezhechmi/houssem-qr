@@ -60,6 +60,7 @@ export async function POST(req: Request) {
   try {
     await adminClient.from('AuditLogs').insert({
       employee_id: admin.id,
+      store_id: admin.store_id || null,
       action: 'create_employee',
       entity_type: 'Employees',
       entity_id: userId,

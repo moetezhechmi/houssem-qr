@@ -35,22 +35,62 @@ export async function PUT(req: Request) {
   }
 
   const supabase = getAdminClient();
-  let query = supabase.from('ProgramSettings').update(updatePayload);
-  if (admin.store_id) {
-    query = query.eq('store_id', admin.store_id);
-  } else {
-    query = query.eq('id', 1);
-  }
-  const { data: updated, error: updateError } = await query.select().single();
+  let updated: any = null;
+  let updateError: any = null;
 
-  if (updateError) {
-    return apiError(400, 'UPDATE_FAILED', updateError.message);
+  if (admin.store_id) {
+    const { data: existing } = await supabase
+      .from('ProgramSettings')
+      .select('store_id')
+      .eq('store_id', admin.store_id)
+      .maybeSingle();
+
+    if (existing) {
+      const res = await supabase
+        .from('ProgramSettings')
+        .update(updatePayload)
+        .eq('store_id', admin.store_id)
+        .select()
+        .single();
+      updated = res.data;
+      updateError = res.error;
+    } else {
+      const res = await supabase
+        .from('ProgramSettings')
+        .insert({
+          store_id: admin.store_id,
+          required_consumptions: updatePayload.required_consumptions ?? 9,
+          discount_percentage: updatePayload.discount_percentage ?? 30,
+          card_validity_days: updatePayload.card_validity_days ?? 30,
+          reward_validity_days: updatePayload.reward_validity_days ?? 7,
+          updated_at: updatePayload.updated_at,
+          updated_by: updatePayload.updated_by,
+        })
+        .select()
+        .single();
+      updated = res.data;
+      updateError = res.error;
+    }
+  } else {
+    const res = await supabase
+      .from('ProgramSettings')
+      .update(updatePayload)
+      .eq('id', 1)
+      .select()
+      .single();
+    updated = res.data;
+    updateError = res.error;
+  }
+
+  if (updateError || !updated) {
+    return apiError(400, 'UPDATE_FAILED', updateError?.message ?? 'Erreur mise à jour paramètres');
   }
 
   // Audit log with entity_id: null (avoids UUID vs INT constraint failure)
   try {
     await supabase.from('AuditLogs').insert({
       employee_id: admin.id,
+      store_id: admin.store_id || null,
       action: 'update_settings',
       entity_type: 'ProgramSettings',
       entity_id: null,

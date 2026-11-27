@@ -15,7 +15,7 @@ export async function GET(req: Request, ctx: { params: Promise<{ id: string }> }
       .eq('id', id)
       .maybeSingle();
 
-    if (!cust || cust.store_id !== employee.store_id) {
+    if (!cust || (cust.store_id && cust.store_id !== employee.store_id)) {
       return apiError(403, 'FORBIDDEN', 'Client rattaché à un autre établissement');
     }
   }

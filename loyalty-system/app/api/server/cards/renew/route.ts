@@ -25,7 +25,12 @@ export async function POST(req: Request) {
     return apiError(404, 'CUSTOMER_NOT_FOUND', 'Client introuvable.');
   }
 
-  if (employee.role !== 'super_admin' && employee.store_id && customer.store_id !== employee.store_id) {
+  if (
+    employee.role !== 'super_admin' &&
+    employee.store_id &&
+    customer.store_id &&
+    customer.store_id !== employee.store_id
+  ) {
     return apiError(403, 'FORBIDDEN', 'Ce client appartient à un autre établissement.');
   }
 

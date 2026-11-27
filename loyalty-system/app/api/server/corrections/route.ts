@@ -10,7 +10,21 @@ export async function POST(req: Request) {
     return apiError(400, 'INVALID_INPUT', 'transaction_id et justification requis');
   }
 
-  const { data, error } = await getAdminClient().rpc('fn_correction', {
+  const client = getAdminClient();
+
+  if (admin.role !== 'super_admin' && admin.store_id) {
+    const { data: txRow } = await client
+      .from('ConsumptionTransactions')
+      .select('store_id')
+      .eq('id', body.transaction_id)
+      .maybeSingle();
+
+    if (!txRow || (txRow.store_id && txRow.store_id !== admin.store_id)) {
+      return apiError(403, 'FORBIDDEN', 'Transaction rattachée à un autre établissement');
+    }
+  }
+
+  const { data, error } = await client.rpc('fn_correction', {
     p_transaction_id: body.transaction_id,
     p_justification: body.justification.trim(),
     p_employee_id: admin.id,

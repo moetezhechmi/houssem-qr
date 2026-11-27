@@ -345,13 +345,18 @@ export function AdminSections({
                     </div>
                   </div>
 
-                  <Link
-                    href={`/serveur/customers/${c.id}`}
-                    className="touch-btn touch-btn--outline"
-                    style={{ minHeight: '34px', padding: '0.3rem 0.85rem', fontSize: '0.78rem', textDecoration: 'none' }}
-                  >
-                    Voir la fiche →
-                  </Link>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+                    <span className={`ui-badge ${c.has_active_card ? 'ui-badge--sage' : 'ui-badge--coral'}`}>
+                      {c.has_active_card ? 'Active' : 'Expirée'}
+                    </span>
+                    <Link
+                      href={`/serveur/customers/${c.id}`}
+                      className="touch-btn touch-btn--outline"
+                      style={{ minHeight: '34px', padding: '0.3rem 0.85rem', fontSize: '0.78rem', textDecoration: 'none' }}
+                    >
+                      Voir la fiche →
+                    </Link>
+                  </div>
                 </div>
               ))}
             </div>
@@ -554,9 +559,14 @@ export function AdminSections({
                     </div>
                   </div>
 
-                  <span className={`ui-badge ${card.status === 'active' ? 'ui-badge--sage' : 'ui-badge--coral'}`}>
-                    {card.status === 'active' ? 'Active' : 'Expirée'}
-                  </span>
+                  {(() => {
+                    const cardIsActive = card.status === 'active' && new Date(card.expiration_date).getTime() > Date.now();
+                    return (
+                      <span className={`ui-badge ${cardIsActive ? 'ui-badge--sage' : 'ui-badge--coral'}`}>
+                        {cardIsActive ? 'Active' : card.status === 'archived' ? 'Archivée' : 'Expirée'}
+                      </span>
+                    );
+                  })()}
                 </div>
               ))}
             </div>
