@@ -168,7 +168,7 @@ export default async function ServeurDashboard() {
               }}
             >
               <PlusIcon size={18} color="#FFFFFF" />
-              <span>+ Nouveau</span>
+              <span>Nouveau</span>
             </Link>
           </div>
         </div>
